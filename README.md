@@ -2,12 +2,6 @@
     <strong>TwigStan</strong> is a static analyzer for <a href="https://twig.symfony.com">Twig</a> templates powered by <a href="https://phpstan.org">PHPStan</a>.
 </p>
 
-<p align="center">
-    <a href="https://github.com/ruudk/phpstan-twig/actions"><img alt="GitHub Workflow Status (main)" src="https://github.com/ruudk/phpstan-twig/actions/workflows/ci.yaml/badge.svg?branch=main&label=tests&style=round-square"></a>
-    <a href="https://packagist.org/packages/twigstan/twigstan"><img alt="License" src="http://poser.pugx.org/twigstan/twigstan/license"></a>
-    <a href="https://packagist.org/packages/twigstan/twigstan"><img alt="PHP Version Require" src="http://poser.pugx.org/twigstan/twigstan/require/php"></a>
-</p>
-
 ------
 
 > [!CAUTION]
