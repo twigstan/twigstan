@@ -1,0 +1,2 @@
+03: Template "@ExtendsRequirements/does_not_exist.twig" not found.
+03: Requirements for template "@ExtendsRequirements/layout.twig" are not valid: 'year' (int) does not accept given true.

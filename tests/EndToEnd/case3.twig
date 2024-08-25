@@ -1,0 +1,11 @@
+{% type names 'list<string>' %}
+{% set name = 'Ruud' %}
+
+{% assert_type name "'Ruud'" %}
+
+{% for name in names %}
+    Hello {{ name }}
+    {% assert_type name "string" %}
+{% endfor %}
+
+{% assert_type name "'Ruud'" %}

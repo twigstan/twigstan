@@ -1,0 +1,5 @@
+{% requirements year 'int' %}
+
+{% include year < 2024 ? '@IncludeRequirements/footer_old.twig' : '@IncludeRequirements/footer.twig' with {
+    owner: 'Ruud Kamphuis',
+} %}

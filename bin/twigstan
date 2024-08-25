@@ -1,0 +1,69 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require __DIR__.'/../vendor/autoload.php';
+
+use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Filesystem\Path;
+use TwigStan\Application\AnalyzeCommand;
+use TwigStan\Application\ContainerFactory;
+
+$currentWorkingDirectory = getcwd();
+
+$application = new Application();
+$application->getDefinition()->addOption(
+    new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The path to the configuration file', 'twigstan.neon'),
+);
+
+$input = new ArgvInput();
+$configurationArg = $input->getParameterOption(['--configuration', '-c'], null);
+$configurationFile = Path::makeAbsolute($configurationArg ?? 'twigstan.neon', $currentWorkingDirectory);
+
+if (!file_exists($configurationFile)) {
+    if ($configurationFile !== null) {
+        echo sprintf("Configuration file \"%s\" does not exist.\n", $configurationFile);
+
+        exit(1);
+    }
+
+    echo "Could not find TwigStan configuration file.\n\n";
+
+    echo "Create 'twigstan.neon' in the root of your project with the following contents:\n```neon\n";
+    echo file_get_contents(__DIR__ . '/../twigstan.neon.dist');
+    echo "```\n\n";
+
+    echo "Create 'twig-loader.php' in the root of your project with the following contents:\n```php\n";
+    echo file_get_contents(__DIR__ . '/../twig-loader.php.dist');
+    echo "```\n\n";
+
+    echo "Make sure that the `twig` service is public in your Symfony application by adding a compiler pass to your Kernel:\n```php\n";
+    echo <<<'PHP'
+    protected function build(\Symfony\Component\DependencyInjection\ContainerBuilder $container) : void
+    {
+        $container->addCompilerPass(new class implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
+            public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container) : void
+            {
+                $container->getDefinition('twig')->setPublic(true);
+            }
+        });
+    }
+    PHP;
+    echo "\n```\n";
+
+    exit(1);
+}
+
+$tmpDir = sys_get_temp_dir() . '/phpstan-tests';
+
+$factory = new ContainerFactory(getcwd(), $configurationFile);
+$container = $factory->create($tmpDir);
+
+$application->add($container->getByType(AnalyzeCommand::class));
+
+exit($application->run());

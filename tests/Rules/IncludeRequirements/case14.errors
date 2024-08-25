@@ -1,0 +1,5 @@
+05: Requirements for template "@IncludeRequirements/footer.twig" are not valid: 'year' is required but not given.
+05: Requirements for template "@IncludeRequirements/footer.twig" are not valid: 'address' is given but not required.
+14: Requirements for template "@IncludeRequirements/footer.twig" are not valid: 'year' is required but not given.
+14: Requirements for template "@IncludeRequirements/footer.twig" are not valid: 'address' is given but not required.
+21: Requirements for template "@IncludeRequirements/footer.twig" are not valid: 'address' is given but not required.

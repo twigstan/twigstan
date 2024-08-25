@@ -1,0 +1,9 @@
+parameters:
+    twigstan:
+        directories:
+            - templates
+        environmentLoader: twig-loader.php
+        globals:
+            -
+                variable: app
+                type: Symfony\Bridge\Twig\AppVariable

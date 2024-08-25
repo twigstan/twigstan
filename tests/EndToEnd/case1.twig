@@ -1,0 +1,7 @@
+Hello {{ name }}
+
+{% expect_error 1 "Undefined variable: name" %}
+
+{% type name 'string' %}
+
+Hello {{ name }}
