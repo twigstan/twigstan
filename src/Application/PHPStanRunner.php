@@ -25,7 +25,7 @@ final readonly class PHPStanRunner
         string $analysisResultJsonFile,
         bool $debugMode,
         bool $xdebugMode,
-    ): void {
+    ): int {
         $tempConfigFile = tempnam(sys_get_temp_dir(), 'twigstan-phpstan-');
         $this->filesystem->rename($tempConfigFile, $tempConfigFile . '.neon');
         $tempConfigFile = $tempConfigFile . '.neon';
@@ -69,7 +69,7 @@ final readonly class PHPStanRunner
 
         $output->writeln($process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
 
-        $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
+        $exitCode = $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
             if (Process::ERR === $type) {
                 $errorOutput->write($buffer);
                 return;
@@ -79,5 +79,7 @@ final readonly class PHPStanRunner
         });
 
         $this->filesystem->remove($tempConfigFile);
+
+        return $exitCode;
     }
 }

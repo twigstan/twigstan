@@ -108,7 +108,7 @@ final class AnalyzeCommand extends Command
         try {
             $output->writeln('<info>Analyzing templates</info>');
 
-            $this->phpStanRunner->run(
+            $exitCode = $this->phpStanRunner->run(
                 $output,
                 $errorOutput,
                 __DIR__ . '/../../config/phpstan.neon',
@@ -176,7 +176,7 @@ final class AnalyzeCommand extends Command
                 }
             }
 
-            return Command::SUCCESS;
+            return $exitCode;
         } finally {
             if (file_exists('vendor/phpstan/extension-installer/src/GeneratedConfig.php.bak')) {
                 rename('vendor/phpstan/extension-installer/src/GeneratedConfig.php.bak', 'vendor/phpstan/extension-installer/src/GeneratedConfig.php');
