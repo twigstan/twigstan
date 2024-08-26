@@ -11,7 +11,8 @@
         "nette/bootstrap": "^3.2",
         "composer-runtime-api": "^2.2",
         "symfony/filesystem": "^7.1",
-        "nikic/php-parser": "^4.13.0"
+        "nikic/php-parser": "^4.13.0",
+        "symfony/finder": "^7.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5",
