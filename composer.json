@@ -9,7 +9,8 @@
         "symfony/process": "^7.1",
         "nette/di": "^3.2",
         "nette/bootstrap": "^3.2",
-        "composer-runtime-api": "^2.2"
+        "composer-runtime-api": "^2.2",
+        "symfony/filesystem": "^7.1"
     },
     "require-dev": {
         "nikic/php-parser": "^4.13.0",
