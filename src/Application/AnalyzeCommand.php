@@ -59,6 +59,13 @@ final class AnalyzeCommand extends Command
         $workingDirectory = getcwd();
         $finder = $this->getFinder($workingDirectory, $input->getArgument('paths'));
         $count = count($finder);
+
+        if ($count === 0) {
+            $output->writeln('<error>No templates found</error>');
+
+            return Command::FAILURE;
+        }
+
         $output->writeln(sprintf('<info>Compiling %d templates...</info>', $count));
 
         $progressBar = new ProgressBar($output, $count);
