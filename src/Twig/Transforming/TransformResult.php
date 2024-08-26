@@ -24,5 +24,7 @@ final readonly class TransformResult
 
             $line--;
         } while ($line > 0);
+
+        return 0;
     }
 }
