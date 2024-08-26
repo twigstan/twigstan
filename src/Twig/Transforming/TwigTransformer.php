@@ -7,7 +7,7 @@ namespace TwigStan\Twig\Transforming;
 use PhpParser\NodeTraverser;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
-use PHPStan\ShouldNotHappenException;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Twig\Node\ModuleNode;
@@ -37,7 +37,7 @@ final readonly class TwigTransformer
         }
 
         if ($template->getSourceContext() === null) {
-            throw new ShouldNotHappenException('Template does not have a source context');
+            throw new RuntimeException('Template does not have a source context');
         }
 
         $twigFile = $template->getSourceContext()->getPath();
