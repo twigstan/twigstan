@@ -3,3 +3,5 @@ parameters:
 	paths:
 		- src
 		- tests
+	errorFormat: ticketswap
+	editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e52a24ff6cedbfd86f8afd47beb4070c",
+    "content-hash": "20f5be17fecbefb17034538c5b1b4137",
     "packages": [
         {
             "name": "nette/bootstrap",
@@ -2435,6 +2435,50 @@
             "time": "2022-02-21T01:04:05+00:00"
         },
         {
+            "name": "phpstan/extension-installer",
+            "version": "1.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpstan/extension-installer.git",
+                "reference": "f6b87faf9fc7978eab2f7919a8760bc9f58f9203"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpstan/extension-installer/zipball/f6b87faf9fc7978eab2f7919a8760bc9f58f9203",
+                "reference": "f6b87faf9fc7978eab2f7919a8760bc9f58f9203",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^2.0",
+                "php": "^7.2 || ^8.0",
+                "phpstan/phpstan": "^1.9.0"
+            },
+            "require-dev": {
+                "composer/composer": "^2.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2.0",
+                "phpstan/phpstan-strict-rules": "^0.11 || ^0.12 || ^1.0"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "PHPStan\\ExtensionInstaller\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\ExtensionInstaller\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Composer plugin for automatic installation of PHPStan extensions",
+            "support": {
+                "issues": "https://github.com/phpstan/extension-installer/issues",
+                "source": "https://github.com/phpstan/extension-installer/tree/1.4.1"
+            },
+            "time": "2024-06-10T08:20:49+00:00"
+        },
+        {
             "name": "phpstan/phpdoc-parser",
             "version": "1.29.1",
             "source": {
@@ -4783,6 +4827,52 @@
                 }
             ],
             "time": "2024-03-03T12:36:25+00:00"
+        },
+        {
+            "name": "ticketswap/phpstan-error-formatter",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/TicketSwap/phpstan-error-formatter.git",
+                "reference": "e57cc1bb83ed29b74d4caae1548ec97a9541ebc1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/TicketSwap/phpstan-error-formatter/zipball/e57cc1bb83ed29b74d4caae1548ec97a9541ebc1",
+                "reference": "e57cc1bb83ed29b74d4caae1548ec97a9541ebc1",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.3",
+                "phpstan/phpstan": "^1.11"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TicketSwap\\PHPstanErrorFormatter\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A minimalistic error formatter for PHPStan",
+            "keywords": [
+                "PHPStan",
+                "dev"
+            ],
+            "support": {
+                "issues": "https://github.com/TicketSwap/phpstan-error-formatter/issues",
+                "source": "https://github.com/TicketSwap/phpstan-error-formatter/tree/1.0.0"
+            },
+            "time": "2024-08-26T07:47:21+00:00"
         }
     ],
     "aliases": [],
