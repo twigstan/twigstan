@@ -26,7 +26,7 @@ $configurationArg = $input->getParameterOption(['--configuration', '-c'], null);
 $configurationFile = Path::makeAbsolute($configurationArg ?? 'twigstan.neon', $currentWorkingDirectory);
 
 if (!file_exists($configurationFile)) {
-    if ($configurationFile !== null) {
+    if ($configurationArg !== null) {
         echo sprintf("Configuration file \"%s\" does not exist.\n", $configurationFile);
 
         exit(1);
