@@ -1,6 +1,9 @@
 <p align="center">
     <strong>TwigStan</strong> is a static analyzer for <a href="https://twig.symfony.com">Twig</a> templates powered by <a href="https://phpstan.org">PHPStan</a>.
 </p>
+<p align="center">
+    <img src="https://raw.githubusercontent.com/twigstan/twigstan/main/screenshot.png" alt="Screenshot" height="300">
+</p>
 
 ------
 
