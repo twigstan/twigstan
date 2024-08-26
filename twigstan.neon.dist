@@ -4,6 +4,7 @@ parameters:
             - templates
         environmentLoader: twig-loader.php
         globals:
-            -
-                variable: app
-                type: Symfony\Bridge\Twig\AppVariable
+        # If you have the Symfony Twig Bridge installed, you can enable the `app global:`
+        #    -
+        #        variable: app
+        #        type: Symfony\Bridge\Twig\AppVariable
