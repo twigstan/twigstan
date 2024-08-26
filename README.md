@@ -30,6 +30,9 @@ TwigStan works by transforming your Twig templates to naive PHP equivalents that
    - Map errors back to the original Twig file and line numbers
    - Display the errors
 
+> [!NOTE]
+> If you want to see how a template is transformed into PHP, you can check the [examples](examples) directory.
+
 ## Transforming
 
 Every Twig node needs to be transformed to a PHP node. This can be done by creating
