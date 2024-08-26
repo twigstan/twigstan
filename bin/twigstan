@@ -17,6 +17,7 @@ use TwigStan\Application\ContainerFactory;
 $currentWorkingDirectory = getcwd();
 
 $application = new Application();
+$application->setDefaultCommand('analyze');
 $application->getDefinition()->addOption(
     new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The path to the configuration file', 'twigstan.neon'),
 );
