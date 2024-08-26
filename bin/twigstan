@@ -60,7 +60,7 @@ if (!file_exists($configurationFile)) {
     exit(1);
 }
 
-$tmpDir = sys_get_temp_dir() . '/phpstan-tests';
+$tmpDir = sys_get_temp_dir() . '/twigstan';
 
 $factory = new ContainerFactory(getcwd(), $configurationFile);
 $container = $factory->create($tmpDir);
