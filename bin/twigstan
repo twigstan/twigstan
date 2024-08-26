@@ -35,27 +35,17 @@ if (!file_exists($configurationFile)) {
 
     echo "Could not find TwigStan configuration file.\n\n";
 
-    echo "Create 'twigstan.neon' in the root of your project with the following contents:\n```neon\n";
+    echo "Create file 'twigstan.neon' in the root of your project with the following contents:\n```neon\n";
     echo file_get_contents(__DIR__ . '/../twigstan.neon.dist');
     echo "```\n\n";
 
-    echo "Create 'twig-loader.php' in the root of your project with the following contents:\n```php\n";
+    echo "Create file 'twig-loader.php' in the root of your project with the following contents:\n```php\n";
     echo file_get_contents(__DIR__ . '/../twig-loader.php.dist');
     echo "```\n\n";
 
-    echo "Make sure that the `twig` service is public in your Symfony application by adding a compiler pass to your Kernel:\n```php\n";
-    echo <<<'PHP'
-    protected function build(\Symfony\Component\DependencyInjection\ContainerBuilder $container) : void
-    {
-        $container->addCompilerPass(new class implements \Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface {
-            public function process(\Symfony\Component\DependencyInjection\ContainerBuilder $container) : void
-            {
-                $container->getDefinition('twig')->setPublic(true);
-            }
-        });
-    }
-    PHP;
-    echo "\n```\n";
+    echo "If you are using Symfony, you can use the following `twig-loader.php`:\n```php\n";
+    echo file_get_contents(__DIR__ . '/../twig-loader-symfony.php.dist');
+    echo "```\n\n";
 
     exit(1);
 }

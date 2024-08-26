@@ -2,14 +2,8 @@
 
 declare(strict_types=1);
 
-use Symfony\Component\Dotenv\Dotenv;
-use App\Kernel;
-
-require __DIR__ . '/vendor/autoload.php';
-
-(new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
-
-$kernel = new Kernel($context['APP_ENV'], (bool) $context['APP_DEBUG']);
-$kernel->boot();
-
-return $kernel->getContainer()->get('twig');
+return new Twig\Environment(
+    new Twig\Loader\FilesystemLoader(
+        [], __DIR__,
+    ),
+);
