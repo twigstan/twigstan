@@ -18,8 +18,9 @@ final readonly class AbsolutePathLoader implements LoaderInterface
     {
         foreach ($this->loader->getNamespaces() as $namespace) {
             foreach ($this->loader->getPaths($namespace) as $path) {
+                $path = rtrim($path, DIRECTORY_SEPARATOR);
                 if (str_starts_with($name, $path)) {
-                    return sprintf('@%s/%s', $namespace, substr($name, strlen($path)));
+                    return sprintf('@%s/%s', $namespace, ltrim(substr($name, strlen($path)), DIRECTORY_SEPARATOR));
                 }
             }
         }
