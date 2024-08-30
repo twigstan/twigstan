@@ -86,9 +86,6 @@ class RenderRequirementsRule implements Rule
     }
 
     /**
-     * @param Node\Expr $expr
-     * @param Scope $scope
-     * @param string $methodName
      *
      * @return array{string|null, ConstantArrayType|null}
      * @throws ReflectionException

@@ -55,7 +55,6 @@ final readonly class ExpressionToStringResult
     /**
      * @param callable(string): string $callable
      *
-     * @return self
      */
     public function map(callable $callable): self
     {

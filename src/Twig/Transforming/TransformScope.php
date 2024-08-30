@@ -146,7 +146,6 @@ final class TransformScope
     /**
      * @param array<string, list<Node>> $blocks
      *
-     * @return self
      */
     public function withBlocks(array $blocks): self
     {

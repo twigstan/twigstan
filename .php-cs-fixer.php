@@ -16,6 +16,7 @@ return (new Config())
     ->setRules(
         [
             '@PER-CS2.0' => true,
+            'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => true],
         ],
     )
     ->setFinder($finder);

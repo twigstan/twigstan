@@ -19,7 +19,6 @@ interface TwigNodeTransformer
     public static function getType(): string | array;
 
     /**
-     * @param TwigNode $node
      * @return PhpNode|list<PhpNode>
      */
     public function transform(TwigNode $node, TransformScope $scope, DelegatingTwigNodeTransformer $delegator): array | PhpNode;

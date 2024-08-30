@@ -10,7 +10,6 @@ final readonly class NodeMapper
 {
     /**
      * @template TResult of mixed
-     * @param Node $node
      * @param callable(Node): TResult $callback
      *
      * @return list<TResult>
