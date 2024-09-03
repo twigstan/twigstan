@@ -1,8 +1,9 @@
 <p align="center">
+    <img src="https://avatars.githubusercontent.com/u/179125187?s=200&v=4" alt="Logo" width=100><br>
     <strong>TwigStan</strong> is a static analyzer for <a href="https://twig.symfony.com">Twig</a> templates powered by <a href="https://phpstan.org">PHPStan</a>.
 </p>
 <p align="center">
-    <img src="https://raw.githubusercontent.com/twigstan/twigstan/main/screenshot.png" alt="Screenshot" height="300">
+    <img src="https://raw.githubusercontent.com/twigstan/twigstan/main/screenshot.png" alt="Screenshot">
 </p>
 
 ------
