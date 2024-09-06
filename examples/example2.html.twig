@@ -1,7 +1,0 @@
-{% requirements name 'null|string', users 'array<int, App\\Entity\\User>' %}
-
-Hello {{ name }}
-
-{% for id, user in users %}
-    <p>{{ id }} {{ user.firstName }}</p>
-{% endfor %}
