@@ -6,18 +6,18 @@ namespace TwigStan\Testing;
 
 use Twig\Attribute\YieldReady;
 use Twig\Compiler;
-use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Node;
 
 #[YieldReady]
 final class ExpectErrorNode extends Node
 {
-    public function __construct(ConstantExpression $line, ConstantExpression $error, int $lineno = 0)
+    public function __construct(?string $file, int $line, string $error)
     {
-        parent::__construct([], [
-            'line' => $line->getAttribute('value'),
-            'error' => $error->getAttribute('value'),
-        ], $lineno);
+        parent::__construct([], array_filter([
+            'file' => $file,
+            'line' => $line,
+            'error' => $error,
+        ]));
     }
 
     public function compile(Compiler $compiler): void {}

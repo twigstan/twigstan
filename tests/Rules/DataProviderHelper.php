@@ -14,6 +14,7 @@ final class DataProviderHelper
         $finder = Finder::create()
             ->files()
             ->sortByName(true)
+            ->reverseSorting() // Handy for dev, so that the case with the higher number shows up first.
             ->in($directory)
             ->name($pattern);
 

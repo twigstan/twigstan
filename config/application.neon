@@ -2,7 +2,6 @@ parameters:
 	twigstan:
 		directories: []
 		environmentLoader: null
-		globals: []
 services:
 	-
 		class: Twig\Environment
@@ -11,70 +10,31 @@ services:
 	- TwigStan\Application\AnalyzeCommand(environmentLoader: %twigstan.environmentLoader%, directories: %twigstan.directories%)
 	- TwigStan\Application\PHPStanRunner(currentWorkingDirectory: %currentWorkingDirectory%)
 	- TwigStan\PHP\PrettyPrinter
+	- TwigStan\PHP\StrictPhpParser
 	- TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader
+	- TwigStan\PHPStan\Analysis\ErrorCollapser
 	- TwigStan\PHPStan\Analysis\ErrorFilter
 	- TwigStan\PHPStan\Analysis\ErrorToSourceFileMapper
 	- TwigStan\PHPStan\Analysis\ErrorTransformer
+	- TwigStan\Processing\Compilation\ModifiedCompiler
+	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
+	- TwigStan\Processing\Compilation\TwigCompiler
+	- TwigStan\Processing\Compilation\TwigGlobalsToPhpDoc
+	- TwigStan\Processing\Compilation\TwigVisitor\DisableGetAttributeOptimizationVisitor
+	- TwigStan\Processing\Compilation\TwigVisitor\RemoveProfilingNodeVisitor
+	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceNameExpressionNodeVisitor
+	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceTypesNodeVisitor
+	- TwigStan\Processing\Flattening\TwigFlattener
+	- TwigStan\Processing\ScopeInjection\TwigScopeInjector
+	- TwigStan\Processing\ScopeInjection\ArrayShapeMerger
+	- TwigStan\Twig\DependencyFinder
+	- TwigStan\Twig\DependencySorter
+	- TwigStan\Twig\Metadata\MetadataAnalyzer
+	- TwigStan\Twig\Metadata\MetadataRegistry
 	- TwigStan\Twig\Node\NodeFinder
 	- TwigStan\Twig\Node\NodeMapper
-	- TwigStan\Twig\Parser\TwigNodeParser
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TokenParser\RequirementsTokenParser
-	- TwigStan\Twig\TokenParser\TypeTokenParser
-	- TwigStan\Twig\Transforming\NodeTransformer\AssertTypeNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\BlockNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\BlockReferenceNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\BodyNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\CaptureNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\DelegatingTwigNodeTransformer(typed(TwigStan\Twig\Transforming\NodeTransformer\TwigNodeTransformer))
-	- TwigStan\Twig\Transforming\NodeTransformer\DumpTypeNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\ArrayExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\ArrowFunctionExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\AddBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\AndBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\ConcatBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\DivBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\EqualBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\GreaterBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\GreaterEqualBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\InBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\LessBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\LessEqualBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\ModBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\MulBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\NotEqualBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\NotInBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\OrBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\SpaceshipBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\StartsWithBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Binary\SubBinaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\BlockReferenceExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\ConditionalExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\ConstantExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\FunctionExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\GetAttrExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\MethodCallExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\NameExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\TempNameExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Test\DefinedTestExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Test\DivisiblebyTestExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Test\EvenTestExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Test\NullTestExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Test\OddTestExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Test\SameasTestExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Unary\NegUnaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\Expression\Unary\NotUnaryExpressionTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\ForNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\IfNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\IncludeNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\ModuleNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\PrintNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\SetNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\TextNodeTransformer
-	- TwigStan\Twig\Transforming\NodeTransformer\TypeNodeTransformer
-	- TwigStan\Twig\Transforming\TransformScopeFactory(globals: %twigstan.globals%)
-	- TwigStan\Twig\Transforming\TwigTransformer
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
-	- TwigStan\Twig\Visitor\IncludeFunctionToBlockVisitor
-	- TwigStan\Twig\Visitor\RequirementsVisitor
+	- TwigStan\Twig\TwigFileNormalizer

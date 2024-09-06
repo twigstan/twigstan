@@ -1,0 +1,34 @@
+{% use "_layout.twig" %}
+{% use "_other.twig" with main as other_main %}
+
+{% set subtitle = 'Hello' %}
+{% assert_type subtitle "'Hello'" %}
+
+{% block main %}
+    {% assert_type subtitle "'Hello'" %}
+    <h1>{{ subtitle }}</h1>
+
+    {% set name = 'Ruud' %}
+    {% assert_type name "'Ruud'" %}
+
+    <p>Hello {{ name }}</p>
+
+    {% set subtitle = 'Changed' %}
+    {% assert_type subtitle "'Changed'" %}
+{% endblock %}
+
+{% assert_type subtitle "'Hello'" %}
+{% assert_type name "*ERROR*" %}
+
+{% block footer %}
+    <footer>Copyright</footer>
+
+    {% assert_type subtitle "'Hello'" %}
+    {{ subtitle }}
+
+    {{ include('_random_footer.twig') }}
+
+    {{ parent() }}
+
+    {{ block('other') }}
+{% endblock %}

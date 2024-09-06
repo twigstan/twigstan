@@ -2,6 +2,18 @@ Hello {{ name }}
 
 {% expect_error 1 "Undefined variable: name" %}
 
-{% type name 'string' %}
+{% types {
+    name?: 'string',
+} %}
 
 Hello {{ name }}
+
+{% expect_error 9 "Variable name might not be defined." %}
+
+{% types {
+    name: 'string',
+} %}
+
+Hello {{ name }}
+
+{% assert_type name 'string' %}

@@ -1,12 +1,11 @@
 parameters:
-	level: 8
 	reportUnmatchedIgnoredErrors: false
 	treatPhpDocTypesAsCertain: false
 	bootstrapFiles:
 		- ../stubs/functions.php
 parametersSchema:
 	twigstan: structure([
-		environmentLoader: string()
+		environmentLoader: schema(string(), nullable())
 		analysisResultJsonFile: schema(string(), nullable())
 	])
 rules:
@@ -21,23 +20,32 @@ services:
 			jsonErrorFormatter: @errorFormatter.prettyJson
 			jsonFile: %twigstan.analysisResultJsonFile%
 	-
-		class: TwigStan\PHPStan\TypeSpecifying\VarTypeSpecifyingExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
-	-
-		class: TwigStan\PHPStan\DynamicFunctionReturnType\PropertyOrMethodCallReturnType
+		class: TwigStan\PHPStan\DynamicReturnType\GetDefinedVarsReturnType
 		tags:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
 	-
+		class: TwigStan\PHPStan\TypeSpecifying\VarTypeSpecifyingExtension
+		tags:
+			- phpstan.broker.dynamicFunctionReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetAttributeReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\Collector\BlockContextCollector
+		tags:
+			- phpstan.collector
+	-
+		class: TwigStan\PHPStan\Collector\TemplateRenderContextCollector
+		tags:
+			- phpstan.collector
+	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
-	- TwigStan\PHP\ExpressionToStringResolver
 	- TwigStan\PHP\PhpDocToPhpStanTypeResolver
 	- TwigStan\Twig\Requirements\RequirementsReader
-	- TwigStan\Twig\Parser\TwigNodeParser
+	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TokenParser\RequirementsTokenParser
-	- TwigStan\Twig\TokenParser\TypeTokenParser
-	- TwigStan\Twig\Visitor\RequirementsVisitor

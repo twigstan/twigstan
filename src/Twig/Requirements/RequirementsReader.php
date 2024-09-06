@@ -8,7 +8,7 @@ use Twig\Error\LoaderError;
 use Twig\Error\SyntaxError;
 use TwigStan\PHP\PhpDocToPhpStanTypeResolver;
 use TwigStan\PHPStan\Type\RequirementsConstantArrayType;
-use TwigStan\Twig\Parser\TwigNodeParser;
+use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 
 final readonly class RequirementsReader
 {

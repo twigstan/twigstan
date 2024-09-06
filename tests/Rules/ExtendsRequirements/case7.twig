@@ -1,5 +1,6 @@
-{% requirements isMobile 'bool' %}
-
+{% requirements {
+    isMobile: 'bool',
+} %}
 {% extends "@ExtendsRequirements/layout" ~ (isMobile ? "_mobile") ~ ".twig" %}
 
 {% set title = 'Hello, World' %}

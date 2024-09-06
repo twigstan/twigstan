@@ -5,43 +5,56 @@ declare(strict_types=1);
 namespace TwigStan\PHPStan\Analysis;
 
 use InvalidArgumentException;
-use TwigStan\Twig\Transforming\TransformResult;
+use Symfony\Component\Filesystem\Filesystem;
+use TwigStan\Processing\Flattening\FlatteningResultCollection;
+use TwigStan\Processing\ScopeInjection\ScopeInjectionResultCollection;
 
 final readonly class AnalysisResultFromJsonReader
 {
     public function __construct(
         private ErrorFilter $errorFilter,
+        private ErrorCollapser $errorCollapser,
         private ErrorTransformer $errorTransformer,
         private ErrorToSourceFileMapper $errorToSourceFileMapper,
+        private Filesystem $filesystem,
     ) {}
 
-    /**
-     * @param array<string, TransformResult> $mapping
-     */
-    public function read(string $file, array $mapping): AnalysisResult
+    public function read(string $file, FlatteningResultCollection|ScopeInjectionResultCollection $mapping): AnalysisResult
     {
         if (!file_exists($file)) {
             throw new InvalidArgumentException(sprintf('File "%s" does not exist', $file));
         }
 
-        $result = json_decode(file_get_contents($file), true);
+        $content = $this->filesystem->readFile($file);
+
+        if (!json_validate($content)) {
+            throw new InvalidArgumentException(sprintf('File "%s" is not a valid JSON file', $file));
+        }
+
+        $result = json_decode($content, true);
+
+        $errors = array_map(
+            Error::decode(...),
+            $result['fileSpecificErrors'],
+        );
+
+        if ($mapping instanceof ScopeInjectionResultCollection) {
+            $errors = $this->errorToSourceFileMapper->map(
+                $mapping,
+                $errors,
+            );
+        }
+
+        $errors = $this->errorFilter->filter($errors);
+        $errors = $this->errorCollapser->collapse($errors);
 
         return new AnalysisResult(
-            $this->errorTransformer->transform(
-                $this->errorFilter->filter(
-                    $this->errorToSourceFileMapper->map(
-                        $mapping,
-                        array_map(
-                            Error::decode(...),
-                            $result['fileSpecificErrors'],
-                        ),
-                    ),
-                ),
-            ),
+            $this->errorTransformer->transform($errors),
             array_map(
                 CollectedData::decode(...),
                 $result['collectedData'],
             ),
+            $result['notFileSpecificErrors'],
         );
     }
 }

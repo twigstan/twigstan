@@ -22,11 +22,14 @@ final readonly class PhpDocToPhpStanTypeResolver
     public function __construct(private TypeNodeResolver $typeNodeResolver)
     {
         $this->lexer = new Lexer();
-        $this->typeParser = new TypeParser(new ConstExprParser(true, true), true, );
+        $this->typeParser = new TypeParser(
+            new ConstExprParser(true, true),
+            true,
+        );
     }
 
     /**
-     * @param array<string, string> $phpDocTypes
+     * @param array<string, array{type: string, optional: bool}> $phpDocTypes
      */
     public function resolveArray(array $phpDocTypes): ConstantArrayType
     {
@@ -34,9 +37,8 @@ final readonly class PhpDocToPhpStanTypeResolver
         $valueTypes = [];
         $optionalKeys = [];
         $keyId = 0;
-        foreach ($phpDocTypes as $key => $phpDocType) {
-            if (str_ends_with($key, '?')) {
-                $key = substr($key, 0, -1);
+        foreach ($phpDocTypes as $key => ['type' => $phpDocType, 'optional' => $optional]) {
+            if ($optional) {
                 $optionalKeys[] = $keyId;
             }
             $keyTypes[$keyId] = new ConstantStringType($key);

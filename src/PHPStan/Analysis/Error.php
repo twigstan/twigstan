@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TwigStan\PHPStan\Analysis;
 
+use TwigStan\Twig\SourceLocation;
+
 final readonly class Error
 {
     private function __construct(
@@ -11,7 +13,7 @@ final readonly class Error
         public string $phpFile,
         public int $phpLine,
         public ?string $twigFile,
-        public int $twigLine,
+        public ?SourceLocation $sourceLocation,
         public ?string $identifier,
         public ?string $tip,
     ) {}
@@ -26,7 +28,7 @@ final readonly class Error
             $json['file'],
             $json['line'] ?? 0,
             null,
-            0,
+            null,
             $json['identifier'],
             $json['tip'],
         );
@@ -39,22 +41,24 @@ final readonly class Error
             $this->phpFile,
             $this->phpLine,
             $this->twigFile,
-            $this->twigLine,
+            $this->sourceLocation,
             $this->identifier,
             $this->tip,
         );
     }
 
-    public function withTwigFileAndLineNumber(string $file, int $line): self
+    public function withTwigFileAndSourceLocation(string $fileName, SourceLocation $sourceLocation): self
     {
         return new self(
             $this->message,
             $this->phpFile,
             $this->phpLine,
-            $file,
-            $line,
+            $fileName,
+            $sourceLocation,
             $this->identifier,
             $this->tip,
         );
     }
+
+
 }

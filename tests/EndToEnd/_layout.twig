@@ -1,0 +1,24 @@
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+{% block header %}
+    <header>Header</header>
+{% endblock %}
+
+{% set variableSetAfterHeaderBlockBeforeMainBlock = true %}
+{% block main %}
+    <h1>{{ subtitle }}</h1>
+{% endblock %}
+
+{% set variableSetAfterMainBlockBeforeFooterBlock = true %}
+{% block footer %}
+    <footer>Copyright</footer>
+{% endblock %}
+</body>
+</html>
+
+{# {% macro hello(name) %} #}
+{#    HELLO {{ name }} #}
+{# {% endmacro %} #}

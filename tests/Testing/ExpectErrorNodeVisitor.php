@@ -15,6 +15,8 @@ final class ExpectErrorNodeVisitor implements NodeVisitorInterface
      */
     public array $expectedErrors = [];
 
+    public function __construct(private string $fileName) {}
+
     public function enterNode(Node $node, Environment $env): Node
     {
         if (! $node instanceof ExpectErrorNode) {
@@ -22,7 +24,8 @@ final class ExpectErrorNodeVisitor implements NodeVisitorInterface
         }
 
         $this->expectedErrors[] = sprintf(
-            '%02d: %s',
+            '%s:%d: %s',
+            $node->hasAttribute('file') ? $node->getAttribute('file') : $this->fileName,
             $node->getAttribute('line'),
             $node->getAttribute('error'),
         );
@@ -42,7 +45,5 @@ final class ExpectErrorNodeVisitor implements NodeVisitorInterface
     public function getPriority(): int
     {
         return 0;
-
     }
-
 }

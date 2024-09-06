@@ -1,4 +1,6 @@
-{% type names 'list<string>' %}
+{% types {
+    names: 'list<string>'
+} %}
 {% set name = 'Ruud' %}
 
 {% assert_type name "'Ruud'" %}

@@ -1,0 +1,35 @@
+{# {% type data 'TwigStan\\Fixtures\\Context' %} #}
+{# {% assert_type data.someProp 'string|null' %} #}
+
+{% types {
+    titles: 'list<string>',
+} %}
+{% assert_type titles[0] 'string' %}
+
+{% types {
+    user: 'TwigStan\\Fixtures\\User',
+} %}
+{% assert_type user.roles 'array<int, string>' %}
+{% assert_type user.roles[0] 'string' %}
+
+{% assert_type user.firstName 'string' %}
+
+{% assert_type user.lastName 'string' %}
+
+{% assert_type user.name 'string' %}
+
+{% assert_type user.name() 'string' %}
+
+{% assert_type user.admin 'bool' %}
+
+{% assert_type user.isAdmin 'bool' %}
+
+{% assert_type user.email 'bool' %}
+
+{% assert_type user.hasEmail 'bool' %}
+
+{# Try calling a property as method, should not work #}
+{% assert_type user.lastName() '*ERROR*' %}
+
+{# Try calling a method that does not exist #}
+{% assert_type user.thisDoesNotExist '*ERROR*' %}

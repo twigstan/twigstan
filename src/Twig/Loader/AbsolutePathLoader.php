@@ -14,8 +14,17 @@ final readonly class AbsolutePathLoader implements LoaderInterface
         private FilesystemLoader $loader,
     ) {}
 
-    private function maybeResolveAbsolutePath(string $name): string
+    public function getLoader(): FilesystemLoader
     {
+        return $this->loader;
+    }
+
+    public function maybeResolveAbsolutePath(string $name): string
+    {
+        if (str_starts_with($name, '@')) {
+            return $name;
+        }
+
         foreach ($this->loader->getNamespaces() as $namespace) {
             foreach ($this->loader->getPaths($namespace) as $path) {
                 $path = rtrim($path, DIRECTORY_SEPARATOR);
@@ -25,7 +34,7 @@ final readonly class AbsolutePathLoader implements LoaderInterface
             }
         }
 
-        return $name;
+        return sprintf('@%s/%s', FilesystemLoader::MAIN_NAMESPACE, $name);
     }
 
     public function getSourceContext(string $name): Source

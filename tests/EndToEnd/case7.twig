@@ -1,0 +1,10 @@
+{% extends "@EndToEnd/_layout.twig" %}
+{% import "_layout.twig" as layout %}
+
+{% set title = 'Welcome' %}
+
+{% block header %}
+    Override header
+{% endblock %}
+
+{% expect_error "@EndToEnd/_layout.twig" 12 "Undefined variable: subtitle" %}

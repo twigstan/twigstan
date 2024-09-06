@@ -1,13 +1,17 @@
-{% requirements year 'int', title 'string' %}
+{% requirements {
+    year: 'int',
+    title: 'string',
+} %}
+
 <html>
-    <head>
-        <title>{{ title }}</title>
-    </head>
-    <body>
-        {% block content %}
-        {% endblock %}
-        <footer>
-            Copyright &copy; {{ year }}
-        </footer>
-    </body>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+{% block content %}
+{% endblock %}
+<footer>
+    Copyright &copy; {{ year }}
+</footer>
+</body>
 </html>

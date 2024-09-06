@@ -9,67 +9,60 @@
 ------
 
 > [!CAUTION]
-> This is very experimental and some parts are implemented very naive.
+> This is very experimental
 
 # Introduction
 
-TwigStan works by transforming your Twig templates to naive PHP equivalents that can be analyzed by PHPStan:
+TwigStan converts Twig templates into simplified PHP code, allowing PHPStan to analyze them. It then reports any errors back to the original template and line number.
 
-1. **For each Twig template:**
-   - Tokenize Twig template
-   - Parse Twig tokens into AST (Abstract Syntax Tree)
-   - Transform Twig AST to PHP AST
-   - Dump PHP AST to a file
-   - Keep track of line numbers between Twig template and PHP file
+The process consists of the following steps:
 
-2. **Run PHPStan:**
-   - Analyze all generated PHP files
-   - Run TwigStan's [PHPStan rules](src/PHPStan/Rules)
+## Compilation
 
-3. **Error Handling:**
-   - Get the reported errors from PHPStan
-   - Map errors back to the original Twig file and line numbers
-   - Display the errors
+The [TwigCompiler](src/Processing/Compilation/TwigCompiler.php) loads the template and converts it into a Twig AST (Abstract Syntax Tree). The AST is optimized by running [several Twig NodeVisitors](src/Processing/Compilation/TwigVisitor). The AST is then compiled into PHP using Twig's default compiler. The compiled PHP code is loaded and converted into a PHP AST. On the PHP AST, we run [various PHP NodeVisitors](src/Processing/Compilation/PhpVisitor). The goal is no longer to render the template but to analyze it. This means we can remove elements that are not relevant to us. The PHP AST is then dumped back into PHP code and saved to disk as a compilation result.
 
-> [!NOTE]
-> If you want to see how a template is transformed into PHP, you can check the [examples](examples) directory.
+In the next steps, we will use these PHP files.
 
-## Transforming
+## Flattening
 
-Every Twig node needs to be transformed to a PHP node. This can be done by creating
-a [TwigNodeTransformer](src/Twig/Transforming/NodeTransformer/TwigNodeTransformer.php).
+The next step is to flatten the Twig templates. Templates can [extend](https://twig.symfony.com/doc/3.x/tags/extends.html) other templates. The child template can choose to override blocks or not, and the parent template can also extend another template. Variables set in a parent template should be available in the child template.
 
-The goal of transforming is to produce PHP code that PHPStan can analyze.
-The transformed PHP code cannot ever be used to render the Twig template.
-Twig can perfectly compile templates
-to PHP code that can be rendered. But the issue is, that this code is very hard to analyze for PHPStan.
+The [TwigFlattener](src/Processing/Flattening/TwigFlattener.php) processes all the compilation results. It reads the Twig metadata to identify the parent(s) and defined blocks. It takes the logic in the parent template (set variables, etc.) from the `doDisplay` method and copies it into the child template's `doDisplay` block.
 
-## Understanding Twig's `.` operator
+The same is done for the block hierarchy. It understands which blocks are overridden. The child template will eventually have all blocks defined.
 
-Twig has a very powerful `.` operator that allows you to write expressions like `{{ user.account.name }}`.
+While flattening, the original filename and line numbers are preserved. This is important because later on, we want to trace errors back to their original location.
 
-Let's say `user` is an instance of `App\User`. When resolving `account`, Twig tries the following things:
-* `account` property;
-* `account()` method;
-* `getaccount()` method;
-* `isaccount()` method;
-* `hasaccount()` method.
+After the flattening process is finished, the PHP AST is again dumped to disk as a flattening result.
 
-This is hard to convert to PHP code because PHP does not have such concepts.
+## Scope Collecting
 
-TwigStan solves this by transforming `{{ user.account.name }}` to a function call:
-```php
-echo twigstan_get_property_or_call_method(twigstan_get_property_or_call_method($user, 'account'), 'name')
-```
+Now that we have a flat template, we don't know anything about the context the template receives or the modified context inside the template.
 
-The [PropertyOrMethodCallReturnType](src/PHPStan/DynamicFunctionReturnType/PropertyOrMethodCallReturnType.php) will then instruct
-PHPStan on the returned type of these function calls.
+We use PHPStan to run the [BlockContextCollector](src/PHPStan/Collector/BlockContextCollector.php). This collector gathers the context before rendering every block or parent block call.
+
+While running PHPStan, it's also a good time to search for places that render the template. The [TemplateRenderContextCollector](src/PHPStan/Collector/TemplateRenderContextCollector.php) identifies controllers that render a Twig template.
+
+## Scope Injection
+
+Now that we know the context passed to a template, and the context before every block call in the template, we can inject this knowledge as PHPDocs into the flattened template.
+
+## Analysis
+
+Every template is now flattened and has defined context types.
+
+We ask PHPStan to run the analysis on these files.
+
+The [AnalysisResultFromJsonReader](src/PHPStan/Analysis/AnalysisResultFromJsonReader.php) processes the results from PHPStan. For every error in the flattened PHP code, it tries to find the original Twig file and line number. It filters out a few errors that are false positives. It also collapses errors that are already reported higher in the hierarchy. When an error is reported in a parent template, it should only be reported once, instead of every time it's flattened in a child template.
 
 ### Installation
 
 ```command
 $ composer require --dev twigstan/twigstan:dev-main
 ```
+
+> [!IMPORTANT]
+> While waiting for Twig 3.13 to be tagged, TwigStan requires Twig 3.x-dev.
 
 Then run TwigStan and it will explain what to do next:
 ```command
@@ -78,92 +71,38 @@ $ vendor/bin/twigstan
 
 ## Usage
 
-### Defining requirements
-
-One of the problems while analyzing Twig templates is that there is no clear
-definition of available variables in the context.
-
-The context is provided by the process that renders the template. If you have multiple locations that render
-a template, the template needs to be validated per context provided.
-
-Some other projects have tried to solve static analysis like that.
-
-TwigStan aims to do this differently. Every template can define it's requirements at the top of the file:
-```twig
-{% requirements name 'string|null', users 'array<int, App\\User>' %}
-```
-
-Let's say the rest of the template looks like this:
-```twig
-<h1>Hello {{ name }}</h1>
-
-{% for id, user in users %}
-    <p>{{ user.firstName }}</p>
-{% endfor %}
-```
-
-When analyzing this file, TwigStan will be able to know that `name` exists.
-When looping over the `users`, TwigStan will know that `id` is of type `int` and that `user` is of type `App\User`.
-
-It becomes even better when you include other templates. Let's say you have a `footer.twig`:
-```twig
-{% requirements year 'int' %}
-Copyright &copy; {{ year }}
-```
-
-We can include this file in the template above:
-```twig
-{{ include('footer.twig') }}
-```
-
-TwigStan will complain:
-> Requirements for template "footer.twig" are not valid: 'year' is required but not given.
-
-We can solve it in multiple ways:
-```twig
-{{ include('footer.twig', { year: 2024 }) }}
-```
-
-Or by setting the variable in the template:
-```twig
-{% set year = 2024 %}
-{{ include('footer.twig') }}
-```
-
-When rendering the template from PHP, TwigStan will be able to tell of the provided context matches the requirements of the template.
-
-If a template does not require any variables, you can signal make it clear like this:
-```twig
-{% requirements none %}
-```
-
-> [!TIP]
-> You can check more examples by looking at the tests for the [ExtendsRequirementsRule](tests/Rules/ExtendsRequirements),
-[IncludeRequirementsRule](tests/Rules/IncludeRequirements) and [RenderRequirementsRule](tests/Rules/RenderRequirements).
-
 ### Defining types
 
-If you don't want to define requirements (yet) but do want to introduce type safety, you manually type each and every
-variable like this: :
+TwigStan supports [the new `{% types %}` tag](https://twig.symfony.com/doc/3.x/tags/types.html) that will be introduced in Twig 3.13. 
+
+If your types are not automatially resolved from where they are rendered, you manually type each and every
+variable like t
 ```twig
-{% type variableName 'type' %}
+{% types { variableName: 'type' } %}
 ```
 
 The type can be a valid PHPDoc expression. For example:
 ```twig
-{% type name 'string|null' %}
+{% types { name: 'string|null' } %}
 ```
 
-Next to using multiple `{% type %}` tags, you can also define multiple types in a single line:
+Next to using multiple `{% types %}` tags, you can also define multiple types in a single line:
 ```twig
-{% type name 'string', users 'array<int, App\\User>' %}
+{% types {
+    name: 'string', 
+    users: 'array<int, App\\User>',
+} %}
 ```
+
+If you want to indicate that a variable is optional, you can do it as follows:
+```twig
+{% types {
+    isEnabled?: 'bool',
+} %}
+```
+
 > [!NOTE]
 > Starting from Twig version 4 you [no longer have to escape backslashes](https://github.com/twigphp/Twig/pull/4199) in fully qualified class names.
-
-> [!IMPORTANT]
-> There is [currently a discussion happening](https://github.com/twigphp/Twig/issues/4165) to add a `var` or `type` tag into Twig core.
-> For now, TwigStan uses the `{% type %}` syntax. But depending on what the outcome will be, this could change.
 
 ### Debugging
 
@@ -176,7 +115,7 @@ When running TwigStan it will then output the type of the variable _at that poin
 
 For example:
 ```twig
-{% type authenticated 'bool' %}
+{% types { authenticated:  'bool' } %}
 
 This will print `bool`:
 {% dump_type authenticated %}
@@ -190,14 +129,24 @@ This will print `bool`:
 {% endif %}
 ```
 
-## Known issues
+If you want to dump the types for the whole context (everything that's available), you can do:
+```twig
+{% dump_type %}
+```
 
-* Macros are not supported
-* Some transformers are done very naive and should be verified
+## Known issues / todo
+
+* [Macros](https://twig.symfony.com/doc/3.x/tags/macro.html) are not yet supported
+* [Horizontal reuse](https://twig.symfony.com/doc/3.x/tags/use.html) is not yet supported
+* [Dynamic inheritance](https://twig.symfony.com/doc/3.x/tags/extends.html#dynamic-inheritance) is not supported
+* [Conditional inheritence](https://twig.symfony.com/doc/3.x/tags/extends.html#conditional-inheritance) is not yet supported
+* Not all render points are detected (currently only supports Symfony controllers)
+* Baseline is missing
+* PHPStan extension installer is not yet supported
 
 ## Credits & Inspiration
 
 * [Ondřej Mirtes](https://github.com/ondrejmirtes) for creating PHPStan and providing guidance to create TwigStan.
 * [Tomas Votruba](https://github.com/tomasvotruba) for creating and blogging about [Twig PHPStan Compiler](https://github.com/deprecated-packages/twig-phpstan-compiler); and for creating [Bladestan](https://github.com/TomasVotruba/bladestan).
 * [Jan Matošík](https://github.com/HonzaMatosik) for creating a [phpstan-twig proof of concept](https://github.com/driveto/phpstan-twig).
-* [Jeroen Versteeg](https://github.com/drjayvee) for creating a [TwigStan proof of concept](https://github.com/alisqi/TwigStan) and discussing ideas.
+* [Jeroen Versteeg](https://github.com/drjayvee) for creating [TwigQI](https://github.com/alisqi/TwigStan) and discussing ideas.

@@ -4,27 +4,26 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig\Node;
 
-use Twig\Node\Expression\NameExpression;
 use Twig\Node\Node;
 
 final readonly class NodeFinder
 {
     /**
-     * @return list<string>
+     * @param class-string<Node> $class
      */
-    public function findUsedVariables(Node $node): array
+    public function findInstanceOf(Node $node, string $class): ?Node
     {
-        $variables = [];
-
-        foreach ($node as $childNode) {
-            if ($childNode instanceof NameExpression) {
-                $variables[] = $childNode->getAttribute('name');
-                continue;
+        foreach ($node as $child) {
+            if (is_a($child, $class, true)) {
+                return $child;
             }
 
-            $variables = [...$variables, ...$this->findUsedVariables($childNode)];
+            $found = $this->findInstanceOf($child, $class);
+            if ($found !== null) {
+                return $found;
+            }
         }
 
-        return array_unique($variables);
+        return null;
     }
 }

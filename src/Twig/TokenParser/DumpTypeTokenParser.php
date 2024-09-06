@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig\TokenParser;
 
-use TwigStan\Twig\Node\DumpTypeNode;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 

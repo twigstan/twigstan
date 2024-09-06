@@ -26,7 +26,6 @@ class IncludeRequirementsRule implements Rule
 {
     public function __construct(
         private RequirementsReader $requirementsReader,
-        private ExpressionToStringResolver $expressionToStringResolver,
     ) {}
 
     public function getNodeType(): string

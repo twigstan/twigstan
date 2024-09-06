@@ -1,4 +1,6 @@
-{% requirements isMobile 'bool' %}
+{% requirements {
+    isMobile: 'bool',
+} %}
 
 {% if isMobile %}
     {% set template = "@ExtendsRequirements/layout_mobile.twig" %}

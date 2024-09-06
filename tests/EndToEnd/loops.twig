@@ -1,0 +1,23 @@
+{% types {
+    dates: 'array<int, DateTime>',
+} %}
+
+{% set date = '2024-01-01' %}
+{% assert_type date "'2024-01-01'" %}
+
+{% assert_type dates "array<int, DateTime>" %}
+
+{% for id, date in dates %}
+    {% assert_type id "int" %}
+    {% assert_type date "DateTime" %}
+
+    {% set result = date.getOffset() %}
+    {% assert_type result "int" %}
+
+    <p>{{ date.getOffset() }}</p>
+{% else %}
+    No dates
+{% endfor %}
+
+{% assert_type id "*ERROR*" %}
+{% assert_type date "'2024-01-01'" %}

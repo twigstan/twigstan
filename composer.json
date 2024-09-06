@@ -3,8 +3,7 @@
     "description": "TwigStan is a static analyzer for Twig templates powered by PHPStan",
     "require": {
         "php": "^8.3",
-        "phpstan/phpstan": "^1.11",
-        "twig/twig": "^3.10",
+        "twig/twig": "3.x-dev",
         "symfony/console": "^7.1",
         "symfony/process": "^7.1",
         "nette/di": "^3.2",
@@ -12,14 +11,16 @@
         "composer-runtime-api": "^2.2",
         "symfony/filesystem": "^7.1",
         "nikic/php-parser": "^4.13.0",
-        "symfony/finder": "^7.1"
+        "symfony/finder": "^7.1",
+        "phpstan/phpstan": "^1.12",
+        "phpstan/phpdoc-parser": "^1.30"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.5",
         "friendsofphp/php-cs-fixer": "^3.59",
-        "phpstan/phpdoc-parser": "^1.29",
         "phpstan/extension-installer": "^1.4",
-        "ticketswap/phpstan-error-formatter": "^1.0"
+        "ticketswap/phpstan-error-formatter": "^1.0",
+        "symfony/var-dumper": "^7.1"
     },
     "license": "MIT",
     "autoload": {
@@ -39,6 +40,10 @@
         "bin/twigstan"
     ],
     "config": {
+        "preferred-install": {
+            "twig/twig": "source",
+            "*": "dist"
+        },
         "allow-plugins": {
             "phpstan/extension-installer": true
         }

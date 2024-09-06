@@ -1,4 +1,6 @@
-{% requirements year 'int' %}
+{% requirements {
+    year: 'int',
+} %}
 
 {% set template = year < 2024 ? '@IncludeRequirements/footer_old.twig' : '@IncludeRequirements/footer.twig' %}
 

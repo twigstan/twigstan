@@ -5,3 +5,8 @@ parameters:
 		- tests
 	errorFormat: ticketswap
 	editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
+services:
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetDefinedVarsReturnType
+		tags:
+			- phpstan.broker.dynamicFunctionReturnTypeExtension

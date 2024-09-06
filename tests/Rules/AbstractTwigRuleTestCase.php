@@ -10,8 +10,8 @@ use PHPStan\Testing\RuleTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Application\ContainerFactory;
-use TwigStan\Twig\Transforming\TransformResult;
-use TwigStan\Twig\Transforming\TwigTransformer;
+use TwigStan\Processing\Compilation\CompilationResult;
+use TwigStan\Processing\Compilation\TwigCompiler;
 
 abstract class AbstractTwigRuleTestCase extends RuleTestCase
 {
@@ -53,10 +53,10 @@ abstract class AbstractTwigRuleTestCase extends RuleTestCase
 
     public function gatherAnalyserErrors(array $files): array
     {
-        $transformer = $this->twigStanContainer->getByType(TwigTransformer::class);
+        $transformer = $this->twigStanContainer->getByType(TwigCompiler::class);
 
         /**
-         * @var array<string, TransformResult> $mapping
+         * @var array<string, CompilationResult> $mapping
          */
         $mapping = [];
 
@@ -72,12 +72,12 @@ abstract class AbstractTwigRuleTestCase extends RuleTestCase
                 return new Error(
                     $error->getMessage(),
                     $error->getFile(),
-                    $error->getLine() !== null ? $mapping[$error->getFile()]->getTwigLineNumber($error->getLine()) : null,
+                    $error->getLine() !== null ? $mapping[$error->getFile()]->getSourceLocationForPhpLine($error->getLine()) : null,
                     $error->canBeIgnored(),
                     $error->getFilePath(),
                     $error->getTraitFilePath(),
                     $error->getTip(),
-                    $error->getNodeLine() !== null ? $mapping[$error->getFile()]->getTwigLineNumber($error->getNodeLine()) : null,
+                    $error->getNodeLine() !== null ? $mapping[$error->getFile()]->getSourceLocationForPhpLine($error->getNodeLine()) : null,
                     $error->getNodeType(),
                     $error->getIdentifier(),
                     $error->getMetadata(),

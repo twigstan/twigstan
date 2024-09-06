@@ -11,12 +11,19 @@ final class ExpectErrorTokenParser extends AbstractTokenParser
 {
     public function parse(Token $token): ExpectErrorNode
     {
-        $line = $this->parser->getExpressionParser()->parseExpression();
-        $error = $this->parser->getExpressionParser()->parseExpression();
+        $stream = $this->parser->getStream();
+        $arg1 = $this->parser->getExpressionParser()->parseExpression();
+        $arg2 = $this->parser->getExpressionParser()->parseExpression();
 
-        $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
+        if ($stream->nextIf(Token::BLOCK_END_TYPE)) {
+            return new ExpectErrorNode(null, $arg1->getAttribute('value'), $arg2->getAttribute('value'));
+        }
 
-        return new ExpectErrorNode($line, $error, $token->getLine());
+        $arg3 = $this->parser->getExpressionParser()->parseExpression();
+
+        $stream->expect(Token::BLOCK_END_TYPE);
+
+        return new ExpectErrorNode($arg1->getAttribute('value'), $arg2->getAttribute('value'), $arg3->getAttribute('value'));
     }
 
     public function getTag(): string

@@ -1,0 +1,13 @@
+{% set number = 1 %}
+
+{% block main %}
+    {% assert_type number "1|3|5" %}
+{% endblock %}
+
+{% set number = 3 %}
+
+{{ block('main') }}
+
+{% set number = 5 %}
+
+{{ block('main') }}
