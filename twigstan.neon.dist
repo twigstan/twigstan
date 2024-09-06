@@ -1,10 +1,6 @@
 parameters:
     twigstan:
         directories:
+            - src/Controller
             - templates
         environmentLoader: twig-loader.php
-        globals:
-        # If you have the Symfony Twig Bridge installed, you can enable the `app global:`
-        #    -
-        #        variable: app
-        #        type: Symfony\Bridge\Twig\AppVariable
