@@ -182,7 +182,7 @@ class EndToEndTest extends TestCase
         $mapping = new CompilationResultCollection();
 
         $metadata = $metadataRegistry->getMetadata($twigFileName);
-        if ($metadata->hasParents()) {
+        if ($metadata->hasResolvableParents()) {
             foreach ($metadata->parents as $parent) {
                 $ast = $twigNodeParser->parse($parent);
                 $transformResult = $twigCompiler->compile($ast, $this->transformedDirectory);

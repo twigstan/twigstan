@@ -36,7 +36,7 @@ final readonly class TwigFlattener
         foreach ($collection as $compilationResult) {
 
             $metadata = $this->metadataRegistry->getMetadata($compilationResult->twigFileName);
-            if ($metadata->hasParents()) {
+            if ($metadata->hasResolvableParents()) {
                 foreach ($metadata->parents as $parent) {
                     $parentMetadata = $this->metadataRegistry->getMetadata($parent);
 

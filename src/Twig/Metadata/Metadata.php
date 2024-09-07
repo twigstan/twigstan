@@ -29,6 +29,18 @@ final readonly class Metadata
         return $this->parents !== [];
     }
 
+    public function hasResolvableParents(): bool
+    {
+        if ($this->parents === []) {
+            return false;
+        }
+
+        return array_filter(
+            $this->parents,
+            fn($parent) => !str_starts_with($parent, '$'),
+        ) !== [];
+    }
+
 
     public function hasTraits(): bool
     {

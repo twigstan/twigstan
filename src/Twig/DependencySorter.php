@@ -25,7 +25,10 @@ final readonly class DependencySorter
 
         foreach ($twigFileNames as $twigFileName) {
             $metadata = $this->metadataRegistry->getMetadata($twigFileName);
-            $dependants[$twigFileName] = $metadata->parents;
+            $dependants[$twigFileName] = array_filter(
+                $metadata->parents,
+                fn($parent) => !str_starts_with($parent, '$'),
+            );
         }
 
         $sorted = [];
