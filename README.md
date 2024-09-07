@@ -138,6 +138,7 @@ If you want to dump the types for the whole context (everything that's available
 * [Dynamic inheritance](https://twig.symfony.com/doc/3.x/tags/extends.html#dynamic-inheritance) is not supported
 * [Conditional inheritence](https://twig.symfony.com/doc/3.x/tags/extends.html#conditional-inheritance) is not yet supported
 * Not all render points are detected (currently only supports Symfony controllers)
+* Performance (PHPStan's cache misses all the time, should be fixed to speed things up significantly)
 * Baseline is missing
 * PHPStan extension installer is not yet supported
 
