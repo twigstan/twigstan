@@ -1,13 +1,18 @@
 parameters:
 	twigstan:
 		directories: []
+		excludes: []
 		environmentLoader: null
 services:
 	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
 	- Symfony\Component\Filesystem\Filesystem
-	- TwigStan\Application\AnalyzeCommand(environmentLoader: %twigstan.environmentLoader%, directories: %twigstan.directories%)
+	- TwigStan\Application\AnalyzeCommand(
+		environmentLoader: %twigstan.environmentLoader%
+		directories: %twigstan.directories%
+		excludes: %twigstan.excludes%
+	  )
 	- TwigStan\Application\PHPStanRunner(currentWorkingDirectory: %currentWorkingDirectory%)
 	- TwigStan\PHP\PrettyPrinter
 	- TwigStan\PHP\StrictPhpParser

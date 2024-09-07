@@ -37,6 +37,12 @@ final readonly class ContainerFactory
                 $configuration['parameters']['twigstan']['directories'],
             );
         }
+        if (isset($configuration['parameters']['twigstan']['excludes'])) {
+            $configuration['parameters']['twigstan']['excludes'] = array_map(
+                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
+                $configuration['parameters']['twigstan']['excludes'],
+            );
+        }
 
         if (isset($configuration['parameters']['twigstan']['environmentLoader'])) {
             $configuration['parameters']['twigstan']['environmentLoader'] = Path::makeAbsolute(

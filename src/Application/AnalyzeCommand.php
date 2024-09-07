@@ -28,6 +28,10 @@ use TwigStan\Twig\TwigFileNormalizer;
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
 {
+    /**
+     * @param list<string> $directories
+     * @param list<string> $excludes
+     */
     public function __construct(
         private TwigCompiler $twigCompiler,
         private TwigFlattener $twigFlattener,
@@ -38,6 +42,7 @@ final class AnalyzeCommand extends Command
         private PHPStanRunner $phpStanRunner,
         private string $environmentLoader,
         private array $directories = [],
+        private array $excludes = [],
     ) {
         parent::__construct();
     }
@@ -350,11 +355,23 @@ final class AnalyzeCommand extends Command
             return [];
         }
 
-        return iterator_to_array(Finder::create()
+        $found = Finder::create()
             ->files()
             ->name(['*.twig', '*.php'])
             ->notName('*.untrack.php') // @todo remove later
             ->in($directories)
-            ->append($files));
+            ->append($files)
+            ->filter(function (SplFileInfo $file) {
+                foreach ($this->excludes as $exclude) {
+                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+
+        return iterator_to_array($found);
     }
 }
