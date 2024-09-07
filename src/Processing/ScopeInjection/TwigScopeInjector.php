@@ -126,10 +126,10 @@ final readonly class TwigScopeInjector
 
             $phpSource = $this->prettyPrinter->prettyPrintFile($stmts);
 
-            $this->filesystem->dumpFile(
-                Path::join(dirname($flatteningResult->twigFilePath), basename($flatteningResult->twigFilePath) . '.scope-injected.untrack.php'),
-                $phpSource,
-            );
+            //$this->filesystem->dumpFile(
+            //    Path::join(dirname($flatteningResult->twigFilePath), basename($flatteningResult->twigFilePath) . '.scope-injected.untrack.php'),
+            //    $phpSource,
+            //);
 
             $phpFile = Path::join($targetDirectory, basename($flatteningResult->phpFile));
 

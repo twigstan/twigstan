@@ -99,13 +99,13 @@ final readonly class TwigFlattener
 
                     $phpFile = Path::join($targetDirectory, basename($compilationResult->phpFile));
 
-                    $this->filesystem->dumpFile(
-                        Path::join(
-                            dirname($compilationResult->twigFilePath),
-                            basename($compilationResult->twigFilePath) . '.flattened.untrack.php',
-                        ),
-                        $phpSource,
-                    );
+                    //$this->filesystem->dumpFile(
+                    //    Path::join(
+                    //        dirname($compilationResult->twigFilePath),
+                    //        basename($compilationResult->twigFilePath) . '.flattened.untrack.php',
+                    //    ),
+                    //    $phpSource,
+                    //);
                     $this->filesystem->dumpFile(
                         $phpFile,
                         $phpSource,
@@ -121,13 +121,13 @@ final readonly class TwigFlattener
                 continue;
             }
 
-            $this->filesystem->copy(
-                $compilationResult->phpFile,
-                Path::join(
-                    dirname($compilationResult->twigFilePath),
-                    basename($compilationResult->twigFilePath) . '.flattened.untrack.php',
-                ),
-            );
+            //$this->filesystem->copy(
+            //    $compilationResult->phpFile,
+            //    Path::join(
+            //        dirname($compilationResult->twigFilePath),
+            //        basename($compilationResult->twigFilePath) . '.flattened.untrack.php',
+            //    ),
+            //);
             $this->filesystem->copy(
                 $compilationResult->phpFile,
                 Path::join($targetDirectory, basename($compilationResult->phpFile)),
