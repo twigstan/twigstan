@@ -61,9 +61,6 @@ The [AnalysisResultFromJsonReader](src/PHPStan/Analysis/AnalysisResultFromJsonRe
 $ composer require --dev twigstan/twigstan:dev-main
 ```
 
-> [!IMPORTANT]
-> While waiting for Twig 3.13 to be tagged, TwigStan requires Twig 3.x-dev.
-
 Then run TwigStan and it will explain what to do next:
 ```command
 $ vendor/bin/twigstan

@@ -3,7 +3,7 @@
     "description": "TwigStan is a static analyzer for Twig templates powered by PHPStan",
     "require": {
         "php": "^8.3",
-        "twig/twig": "3.x-dev",
+        "twig/twig": "^3.13",
         "symfony/console": "^7.1",
         "symfony/process": "^7.1",
         "nette/di": "^3.2",
