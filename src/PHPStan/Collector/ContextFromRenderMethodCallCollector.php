@@ -43,7 +43,7 @@ final readonly class ContextFromRenderMethodCallCollector implements Collector
             return null;
         }
 
-        if ($node->name->name !== 'render') {
+        if (!\in_array($node->name->name, ['render', 'renderView'], true)) {
             return null;
         }
 
