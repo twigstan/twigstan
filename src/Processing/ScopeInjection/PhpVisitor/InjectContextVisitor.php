@@ -110,6 +110,6 @@ final class InjectContextVisitor extends NodeVisitorAbstract
             $context = $this->arrayShapeMerger->merge($context, $contextBeforeBlock['context']);
         }
 
-        return $context;
+        return $context ?? new ArrayShapeNode([]);
     }
 }
