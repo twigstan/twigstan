@@ -41,7 +41,7 @@ Now that we have a flat template, we don't know anything about the context the t
 
 We use PHPStan to run the [BlockContextCollector](src/PHPStan/Collector/BlockContextCollector.php). This collector gathers the context before rendering every block or parent block call.
 
-While running PHPStan, it's also a good time to search for places that render the template. The [TemplateRenderContextCollector](src/PHPStan/Collector/TemplateRenderContextCollector.php) identifies controllers that render a Twig template.
+While running PHPStan, it's also a good time to search for places that render the template. [ContextFromReturnedArrayWithTemplateAttributeCollector](src/PHPStan/Collector/ContextFromReturnedArrayWithTemplateAttributeCollector.php) and [ContextFromRenderMethodCallCollector](src/PHPStan/Collector/ContextFromRenderMethodCallCollector.php) search for controllers that render a Twig template.
 
 ## Scope Injection
 
@@ -73,7 +73,7 @@ $ vendor/bin/twigstan
 
 ### Defining types
 
-TwigStan supports [the new `{% types %}` tag](https://twig.symfony.com/doc/3.x/tags/types.html) that will be introduced in Twig 3.13. 
+TwigStan supports [the new `{% types %}` tag](https://twig.symfony.com/doc/3.x/tags/types.html) that will be introduced in Twig 3.13.
 
 If your types are not automatially resolved from where they are rendered, you manually type each and every
 variable like t
@@ -89,7 +89,7 @@ The type can be a valid PHPDoc expression. For example:
 Next to using multiple `{% types %}` tags, you can also define multiple types in a single line:
 ```twig
 {% types {
-    name: 'string', 
+    name: 'string',
     users: 'array<int, App\\User>',
 } %}
 ```

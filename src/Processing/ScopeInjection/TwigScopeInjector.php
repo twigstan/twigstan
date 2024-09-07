@@ -21,11 +21,13 @@ use TwigStan\PHP\PrettyPrinter;
 use TwigStan\PHP\StrictPhpParser;
 use TwigStan\PHPStan\Analysis\CollectedData;
 use TwigStan\PHPStan\Collector\BlockContextCollector;
-use TwigStan\PHPStan\Collector\TemplateRenderContextCollector;
+use TwigStan\PHPStan\Collector\ContextFromRenderMethodCallCollector;
+use TwigStan\PHPStan\Collector\ContextFromReturnedArrayWithTemplateAttributeCollector;
 use TwigStan\Processing\Flattening\FlatteningResultCollection;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
 use TwigStan\Twig\SourceLocation;
+use TwigStan\Twig\TwigFileNormalizer;
 
 final readonly class TwigScopeInjector
 {
@@ -34,6 +36,7 @@ final readonly class TwigScopeInjector
         private Filesystem $filesystem,
         private StrictPhpParser $phpParser,
         private ArrayShapeMerger $arrayShapeMerger,
+        private TwigFileNormalizer $twigFileNormalizer,
     ) {}
 
     /**
@@ -68,12 +71,16 @@ final readonly class TwigScopeInjector
 
         $templateRenderContexts = [];
         foreach ($collectedData as $data) {
-            if ($data->collecterType !== TemplateRenderContextCollector::class) {
-                continue;
-            }
+            if ($data->collecterType == ContextFromReturnedArrayWithTemplateAttributeCollector::class) {
+                foreach ($data->data as $renderData) {
+                    $template = $this->twigFileNormalizer->normalize($renderData['template']);
 
-            foreach ($data->data as $renderData) {
-                $templateRenderContexts[$renderData['template']][] = $renderData['context'];
+                    $templateRenderContexts[$template][] = $renderData['context'];
+                }
+            } elseif ($data->collecterType === ContextFromRenderMethodCallCollector::class) {
+                $template = $this->twigFileNormalizer->normalize($data->data['template']);
+
+                $templateRenderContexts[$template][] = $data->data['context'];
             }
         }
 

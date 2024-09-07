@@ -36,7 +36,11 @@ services:
 		tags:
 			- phpstan.collector
 	-
-		class: TwigStan\PHPStan\Collector\TemplateRenderContextCollector
+		class: TwigStan\PHPStan\Collector\ContextFromRenderMethodCallCollector
+		tags:
+			- phpstan.collector
+	-
+		class: TwigStan\PHPStan\Collector\ContextFromReturnedArrayWithTemplateAttributeCollector
 		tags:
 			- phpstan.collector
 	-

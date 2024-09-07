@@ -16,7 +16,8 @@ use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
-use TwigStan\PHPStan\Collector\TemplateRenderContextCollector;
+use TwigStan\PHPStan\Collector\ContextFromRenderMethodCallCollector;
+use TwigStan\PHPStan\Collector\ContextFromReturnedArrayWithTemplateAttributeCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
 use TwigStan\Processing\Flattening\TwigFlattener;
@@ -185,12 +186,14 @@ final class AnalyzeCommand extends Command
          */
         $templateToRenderPoint = [];
         foreach ($analysisResult->collectedData as $data) {
-            if ($data->collecterType !== TemplateRenderContextCollector::class) {
-                continue;
-            }
-
-            foreach ($data->data as $renderData) {
-                $templateToRenderPoint[$renderData['template']][$data->filePath][] = $renderData['startLine'];
+            if ($data->collecterType === ContextFromReturnedArrayWithTemplateAttributeCollector::class) {
+                foreach ($data->data as $renderData) {
+                    $template = $this->twigFileNormalizer->normalize($renderData['template']);
+                    $templateToRenderPoint[$template][$data->filePath][] = $renderData['startLine'];
+                }
+            } elseif ($data->collecterType === ContextFromRenderMethodCallCollector::class) {
+                $template = $this->twigFileNormalizer->normalize($data->data['template']);
+                $templateToRenderPoint[$template][$data->filePath][] = $data->data['startLine'];
             }
         }
 

@@ -18,6 +18,7 @@ final readonly class TwigFileNormalizer
         if (str_starts_with($twigFileName, '$')) {
             return $twigFileName;
         }
+
         if (str_starts_with($twigFileName, '@')) {
             return $twigFileName;
         }
