@@ -56,10 +56,16 @@ final readonly class TwigScopeInjector
                     '@var',
                 );
 
+                $context = $phpDocNode->type;
+
+                if (!$context instanceof ArrayShapeNode) {
+                    $context = new ArrayShapeNode([]);
+                }
+
                 return [
                     'blockName' => $collectedData->data['blockName'],
                     'sourceLocation' => SourceLocation::decode($collectedData->data['sourceLocation']),
-                    'context' => $phpDocNode->type,
+                    'context' => $context,
                     'parent' => $collectedData->data['parent'],
                 ];
             },
