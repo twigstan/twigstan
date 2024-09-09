@@ -11,7 +11,6 @@ use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\ShouldNotHappenException;
 use TwigStan\Processing\ScopeInjection\ArrayShapeMerger;
-use TwigStan\Twig\CommentHelper;
 use TwigStan\Twig\SourceLocation;
 
 final class InjectContextVisitor extends NodeVisitorAbstract
@@ -54,15 +53,8 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         }
 
         if (preg_match('/^(?<parent>parent_)?block_(?<blockName>\w+)$/', $node->name->name, $match) === 1) {
-            $sourceLocation = CommentHelper::getSourceLocationFromComments($node->getComments());
-
-            if ($sourceLocation === null) {
-                throw new ShouldNotHappenException('Could not find line number');
-            }
-
             $contextBeforeBlock = $this->getContextBeforeBlock(
                 $match['blockName'],
-                $sourceLocation,
                 $match['parent'] !== '',
             );
 
@@ -90,7 +82,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
 
     }
 
-    private function getContextBeforeBlock(string $blockName, SourceLocation $sourceLocation, bool $parent): ArrayShapeNode
+    private function getContextBeforeBlock(string $blockName, bool $parent): ArrayShapeNode
     {
         $context = null;
         foreach ($this->contextBeforeBlock as $contextBeforeBlock) {
