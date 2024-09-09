@@ -5,6 +5,13 @@
 <p align="center">
     <img src="https://raw.githubusercontent.com/twigstan/twigstan/main/screenshot.png" alt="Screenshot">
 </p>
+<p align="center">
+    <a href="https://packagist.org/packages/twigstan/twigstan"><img src="https://poser.pugx.org/twigstan/twigstan/v?style=for-the-badge" alt="Latest Stable Version"></a>
+    <a href="https://packagist.org/packages/twigstan/twigstan"><img src="https://poser.pugx.org/twigstan/twigstan/require/php?style=for-the-badge" alt="PHP Version Require"></a>
+    <a href="https://packagist.org/packages/twigstan/twigstan"><img src="https://poser.pugx.org/twigstan/twigstan/downloads?style=for-the-badge" alt="Total Downloads"></a>
+    <a href="https://packagist.org/packages/twigstan/twigstan"><img src="https://poser.pugx.org/twigstan/twigstan/license?style=for-the-badge" alt="License"></a>
+</p>
+
 
 ------
 
