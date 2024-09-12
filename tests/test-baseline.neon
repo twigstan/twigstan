@@ -1,0 +1,7 @@
+parameters:
+	twigstan:
+		ignoreErrors:
+			-
+				message: '#^Undefined variable\: variableUndefined$#'
+				count: 1
+				path: EndToEnd/Baseline/NotEmpty/template_with_error.html.twig

@@ -12,11 +12,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
+use TwigStan\Application\Ignore\IgnoredErrorHelper;
+use TwigStan\Baseline\Formatter\BaselineNeonErrorFormatter;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
@@ -45,6 +48,9 @@ final class AnalyzeCommand extends Command
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
+        private array $directories,
+        private array $excludes,
+        private IgnoredErrorHelper $ignoredErrorHelper,
     ) {
         parent::__construct();
     }
@@ -54,6 +60,7 @@ final class AnalyzeCommand extends Command
         $this->addArgument('paths', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'Directories or files to analyze');
         $this->addOption('debug', null, InputOption::VALUE_NONE, 'Enable debug mode');
         $this->addOption('xdebug', null, InputOption::VALUE_NONE, 'Enable xdebug mode');
+        $this->addOption('generate-baseline', null, InputOption::VALUE_NONE, 'Path to a file where the baseline should be saved');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -66,6 +73,7 @@ final class AnalyzeCommand extends Command
             $errorOutput,
             $input->getOption('debug') === true,
             $input->getOption('xdebug') === true,
+            $input->getOption('generate-baseline'),
         );
 
         foreach ($result->errors as $error) {
@@ -158,6 +166,7 @@ final class AnalyzeCommand extends Command
         OutputInterface $errorOutput,
         bool $debugMode,
         bool $xdebugMode,
+        string | bool $generateBaselineFile = false,
     ): TwigStanAnalysisResult {
         $compilationDirectory = Path::normalize($this->tempDirectory . '/compilation');
         $this->filesystem->remove($compilationDirectory);
@@ -382,7 +391,111 @@ final class AnalyzeCommand extends Command
             );
         }
 
-        return $result;
+        if ($generateBaselineFile) {
+            $this->generateBaseline($result, $output, $generateBaselineFile);
+        }
+
+        $ignoredErrorHelperResult = $this->ignoredErrorHelper->initialize();
+
+        $ignoredErrorHelperProcessedResult = $ignoredErrorHelperResult->process($result->errors, true, $twigFileNames, false);
+
+        return new TwigStanAnalysisResult($ignoredErrorHelperProcessedResult->getNotIgnoredErrors());
     }
 
+    /**
+     * @param list<string> $paths
+     *
+     * @return array<SplFileInfo>
+     */
+    private function getFinder(array $paths): array
+    {
+        if ($paths !== []) {
+            $paths = array_map(
+                fn($path) => Path::makeAbsolute($path, $this->currentWorkingDirectory),
+                $paths,
+            );
+        } else {
+            $paths = $this->directories;
+        }
+
+        $paths = array_unique($paths);
+
+        $directories = [];
+        $files = [];
+        foreach ($paths as $path) {
+            if (is_dir($path)) {
+                $directories[] = $path;
+                continue;
+            }
+
+            if (is_file($path)) {
+                $files[] = new SplFileInfo(
+                    $path,
+                    basename(Path::makeRelative($path, $this->currentWorkingDirectory)),
+                    Path::makeRelative($path, $this->currentWorkingDirectory),
+                );
+                continue;
+            }
+
+            throw new \InvalidArgumentException(sprintf('Path %s is not a file or directory', $path));
+        }
+
+        if ($files === [] && $directories === []) {
+            return [];
+        }
+
+        $found = Finder::create()
+            ->files()
+            ->name(['*.twig', '*.php'])
+            ->notName('*.untrack.php') // @todo remove later
+            ->in($directories)
+            ->append($files)
+            ->filter(function (SplFileInfo $file) {
+                foreach ($this->excludes as $exclude) {
+                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+
+        return iterator_to_array($found);
+    }
+
+    private function generateBaseline(TwigStanAnalysisResult $result, OutputInterface $output, bool | string $generateBaselineFile): void
+    {
+        if ($generateBaselineFile === false) {
+            return;
+        }
+
+        if ($generateBaselineFile === true) {
+            $generateBaselineFile = 'twigstan-baseline.neon';
+        }
+
+        $extension = Path::getExtension($generateBaselineFile);
+
+        if ($extension !== 'neon') {
+            throw new \RuntimeException("$extension extension is not supported yet.");
+        }
+
+        $baselineFileDirectory = dirname($generateBaselineFile);
+
+        $baselineErrorFormatter = new BaselineNeonErrorFormatter($this->currentWorkingDirectory);
+        $existingBaselineContent = $this->filesystem->exists($generateBaselineFile) ? $this->filesystem->readFile($generateBaselineFile) : '';
+
+        $baselineFormatted = $baselineErrorFormatter->format($result, $existingBaselineContent);
+
+        try {
+            $this->filesystem->mkdir($baselineFileDirectory, 0644);
+            $this->filesystem->dumpFile($generateBaselineFile, $baselineFormatted);
+        } catch (IOException $e) {
+            $output->writeln($e->getMessage());
+
+            return;
+        }
+
+        $output->writeln('<info>Baseline generated.</info>');
+    }
 }

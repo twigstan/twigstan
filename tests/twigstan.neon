@@ -1,3 +1,5 @@
+includes:
+	- test-baseline.neon
 parameters:
 	twigstan:
 		twig:

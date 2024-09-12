@@ -1,5 +1,6 @@
 parameters:
 	twigstan:
+		ignoreErrors: []
 		php:
 			paths: []
 			excludes: []
@@ -21,7 +22,7 @@ services:
 			paths: %twigstan.php.paths%
 			exclusions: %twigstan.php.excludes%
 		)
-        twigFilesFinder: TwigStan\Finder\FilesFinder(
+		twigFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.twig
 			paths: %twigstan.twig.paths%
 			exclusions: %twigstan.twig.excludes%
@@ -29,6 +30,7 @@ services:
 		givenFilesFinder: TwigStan\Finder\GivenFilesFinder(
 			currentWorkingDirectory: %currentWorkingDirectory%
 		)
+		ignoredErrorHelper: @TwigStan\Application\Ignore\IgnoredErrorHelper
 	)
 	- TwigStan\Application\PHPStanRunner(currentWorkingDirectory: %currentWorkingDirectory%)
 	- TwigStan\PHP\PrettyPrinter
@@ -60,3 +62,8 @@ services:
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer
+	- TwigStan\Application\Ignore\IgnoredErrorHelper(
+		ignoreErrors: %twigstan.ignoreErrors%
+		reportUnmatchedIgnoredErrors: false
+		workingDirectory: %currentWorkingDirectory%
+	)

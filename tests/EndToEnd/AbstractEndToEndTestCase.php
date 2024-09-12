@@ -43,7 +43,7 @@ abstract class AbstractEndToEndTestCase extends TestCase
         throw $t;
     }
 
-    protected function runTests(string $directory): void
+    protected function runTests(string $directory, string | bool $generateBaseline = false): void
     {
         $filesystem = new Filesystem();
         $expectedErrors = json_decode(
@@ -59,6 +59,7 @@ abstract class AbstractEndToEndTestCase extends TestCase
             $this->errorOutput,
             extension_loaded('xdebug') ? true : false,
             extension_loaded('xdebug') ? true : false,
+            $generateBaseline,
         );
 
         $actual = $this->toArray($result, $directory);

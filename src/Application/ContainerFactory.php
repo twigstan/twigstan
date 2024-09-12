@@ -63,6 +63,18 @@ final readonly class ContainerFactory
             );
         }
 
+        if (isset($configuration['includes'])) {
+            foreach ($configuration['includes'] as $include) {
+                if(pathinfo($include, PATHINFO_EXTENSION) === 'neon') {
+                    $content = Neon::decodeFile(Path::makeAbsolute($include, Path::getDirectory($this->configurationFile)));
+                    $ignoreErrors = $content['parameters']['twigstan']['ignoreErrors'];
+                    $configuration['parameters']['twigstan']['ignoreErrors'][] = $ignoreErrors;
+                }
+            }
+
+            $configuration['parameters']['twigstan']['ignoreErrors'] = array_merge(...$configuration['parameters']['twigstan']['ignoreErrors']);
+        }
+
         $configurator = new Configurator();
         $configurator->addConfig(Path::join($this->rootDirectory, 'config/application.neon'));
         $configurator->addStaticParameters($configuration['parameters']);
