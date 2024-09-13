@@ -9,8 +9,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 use PHPStan\Node\MethodReturnStatementsNode;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Reflection\ClassReflection;
 use Symfony\Bridge\Twig\Attribute\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route as LegacyRoute;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -34,12 +34,17 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
         if (!$node instanceof MethodReturnStatementsNode) {
             return null;
         }
+        $classReflection = $scope->getClassReflection();
 
-        if (!$this->hasRouteAttribute($node, $scope)) {
+        if ($classReflection === null) {
             return null;
         }
 
-        $template =  $this->getTemplateFromAttribute($node, $scope);
+        if (!$this->hasRouteAttribute($node, $classReflection)) {
+            return null;
+        }
+
+        $template =  $this->getTemplateFromAttribute($node, $classReflection);
         if ($template === null) {
             return null;
         }
@@ -56,7 +61,11 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
                 continue;
             }
 
-            $context = $scope->getType($returnNode->expr);
+            $context = $returnStatement->getScope()->getType($returnNode->expr);
+
+            if (! $context->isArray()->yes()) {
+                continue;
+            }
 
             $data[] = [
                 'startLine' => $returnNode->getStartLine(),
@@ -74,9 +83,10 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
     }
 
 
-    private function hasRouteAttribute(Node $node, Scope $scope): bool
+    private function hasRouteAttribute(MethodReturnStatementsNode $node, ClassReflection $classReflection): bool
     {
-        foreach ($scope->getClassReflection()->getNativeReflection()->getMethod($node->getMethodName())->getAttributes() as $attribute) {
+
+        foreach ($classReflection->getNativeReflection()->getMethod($node->getMethodName())->getAttributes() as $attribute) {
             if ($attribute->getName() === Route::class) {
                 return true;
             }
@@ -89,9 +99,9 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
         return false;
     }
 
-    private function getTemplateFromAttribute(Node $node, Scope $scope): ?string
+    private function getTemplateFromAttribute(MethodReturnStatementsNode $node, ClassReflection $classReflection): ?string
     {
-        foreach ($scope->getClassReflection()->getNativeReflection()->getMethod($node->getMethodName())->getAttributes(Template::class) as $attribute) {
+        foreach ($classReflection->getNativeReflection()->getMethod($node->getMethodName())->getAttributes(Template::class) as $attribute) {
             return $attribute->getArguments()[0];
         }
 

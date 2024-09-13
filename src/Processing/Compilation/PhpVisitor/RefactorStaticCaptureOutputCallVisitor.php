@@ -44,6 +44,10 @@ final class RefactorStaticCaptureOutputCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
+        if (! $node->args[0] instanceof Node\Arg) {
+            return null;
+        }
+
         $funcCall = $node->args[0]->value;
 
         if (! $funcCall instanceof Node\Expr\FuncCall) {

@@ -1,2 +1,0 @@
-04: Requirements for template "@IncludeRequirements/footer.twig" are not valid: 'year' (int) does not accept given string.
-04: Requirements for template "@IncludeRequirements/footer.twig" are not valid: 'owner' (string) does not accept given int.

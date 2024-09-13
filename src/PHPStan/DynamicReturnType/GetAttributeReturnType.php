@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace TwigStan\PHPStan\DynamicReturnType;
 
+use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
-use PHPStan\Type\ConstantScalarType;
+use PHPStan\Type\Constant\ConstantIntegerType;
+use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
@@ -35,6 +37,22 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         StaticCall $methodCall,
         Scope $scope,
     ): ?Type {
+        if (count($methodCall->args) < 4) {
+            return null;
+        }
+
+        if (! $methodCall->args[2] instanceof Arg) {
+            return null;
+        }
+
+        if (! $methodCall->args[3] instanceof Arg) {
+            return null;
+        }
+
+        if (! $methodCall->args[5] instanceof Arg) {
+            return null;
+        }
+
         $objectType = $scope->getType($methodCall->args[2]->value);
 
         if ($objectType instanceof MixedType) {
@@ -43,7 +61,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
 
         $propertyOrMethodType = $scope->getType($methodCall->args[3]->value);
 
-        if (! $propertyOrMethodType instanceof ConstantScalarType) {
+        if (! $propertyOrMethodType instanceof ConstantStringType && ! $propertyOrMethodType instanceof ConstantIntegerType) {
             return new MixedType();
         }
 
@@ -67,13 +85,17 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
             $objectType = $objectType->tryRemove(new NullType());
         }
 
+        if ($objectType === null) {
+            return new ErrorType();
+        }
+
         //if (is_int($propertyOrMethod)) {
         //    return new ErrorType(); // @todo prob array?
         //}
 
         if (in_array($callType, [\Twig\Template::ANY_CALL], true)) {
-            if ($objectType->hasProperty($propertyOrMethod)->yes()) {
-                $property = $objectType->getProperty($propertyOrMethod, $scope);
+            if ($objectType->hasProperty((string) $propertyOrMethod)->yes()) {
+                $property = $objectType->getProperty((string) $propertyOrMethod, $scope);
                 if ($property->isPublic()) {
                     //if ($nullable) {
                     //    return new UnionType([$property->getReadableType(), new NullType()]);

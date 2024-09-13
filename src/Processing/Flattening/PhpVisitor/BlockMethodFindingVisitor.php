@@ -6,12 +6,11 @@ namespace TwigStan\Processing\Flattening\PhpVisitor;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
-use PHPStan\Node\ClassMethod;
 
 final class BlockMethodFindingVisitor extends NodeVisitorAbstract
 {
     /**
-     * @var array<string, ClassMethod>
+     * @var array<string, Node\Stmt\ClassMethod>
      */
     public array $blocks = [];
 

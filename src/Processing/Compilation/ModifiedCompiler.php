@@ -10,9 +10,6 @@ use Twig\Node\Node;
 
 final class ModifiedCompiler extends Compiler
 {
-    /**
-     * @var ReflectionProperty<Compiler>
-     */
     private ReflectionProperty $reflector;
 
     public function addDebugInfo(Node $node): self

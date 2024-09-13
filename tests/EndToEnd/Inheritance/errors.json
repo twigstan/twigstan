@@ -1,0 +1,26 @@
+{
+    "errors": [
+        {
+            "message": "Undefined variable: title",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "_layout.twig:3",
+            "renderPoints": []
+        },
+        {
+            "message": "Variable subtitle might not be defined.",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "_layout.twig:12",
+            "renderPoints": []
+        },
+        {
+            "message": "Undefined variable: subtitle",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "_layout.twig:12, case7.twig:1",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}

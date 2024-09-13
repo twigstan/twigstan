@@ -1,6 +1,3 @@
-includes:
-	- ../config/phpstan.neon
 parameters:
 	twigstan:
 		environmentLoader: twig-loader.php
-		analysisResultJsonFile: null

@@ -9,7 +9,6 @@ use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Printer\Printer;
-use PHPStan\ShouldNotHappenException;
 use TwigStan\Processing\ScopeInjection\ArrayShapeMerger;
 use TwigStan\Twig\SourceLocation;
 
@@ -67,12 +66,6 @@ final class InjectContextVisitor extends NodeVisitorAbstract
             $context = $this->contextFromTemplateRender;
         } else {
             return null;
-        }
-
-        if ($context === null) {
-            return $node; // @todo what to do with this?
-
-            throw new ShouldNotHappenException('Could not find context');
         }
 
         $node->setDocComment(new Doc(

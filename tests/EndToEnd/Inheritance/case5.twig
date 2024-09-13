@@ -1,0 +1,19 @@
+{% extends "@EndToEnd/Inheritance/_layout.twig" %}
+{% import "_layout.twig" as layout %}
+
+{% set title = 'Welcome' %}
+{% set subtitle = 'Welcome' %}
+
+{% block main %}
+    <h1>{{ subtitle }}</h1>
+    {% set name = 'Ruud' %}
+
+    {% assert_type variableSetAfterHeaderBlockBeforeMainBlock 'true' %}
+    {% assert_type variableSetAfterMainBlockBeforeFooterBlock '*ERROR*' %}
+{% endblock %}
+
+{% block footer %}
+    <footer>Copyright</footer>
+    {% assert_type variableSetAfterHeaderBlockBeforeMainBlock 'true' %}
+    {% assert_type variableSetAfterMainBlockBeforeFooterBlock 'true' %}
+{% endblock %}

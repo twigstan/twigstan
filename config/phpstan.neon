@@ -1,3 +1,5 @@
+includes:
+	- phar://phpstan.phar/conf/bleedingEdge.neon
 parameters:
 	reportUnmatchedIgnoredErrors: false
 	treatPhpDocTypesAsCertain: false
@@ -8,11 +10,6 @@ parametersSchema:
 		environmentLoader: schema(string(), nullable())
 		analysisResultJsonFile: schema(string(), nullable())
 	])
-rules:
-	- TwigStan\PHPStan\Rules\ExtendsRequirementsRule
-	- TwigStan\PHPStan\Rules\GetPropertyOrCallMethodReturnTypeRule
-	- TwigStan\PHPStan\Rules\IncludeRequirementsRule
-	- TwigStan\PHPStan\Rules\RenderRequirementsRule
 services:
 	errorFormatter.analysisResultToJson:
 		class: TwigStan\PHPStan\AnalysisResultToJson
@@ -47,9 +44,8 @@ services:
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
 	- TwigStan\PHP\PhpDocToPhpStanTypeResolver
-	- TwigStan\Twig\Requirements\RequirementsReader
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
+	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
-	- TwigStan\Twig\TokenParser\RequirementsTokenParser

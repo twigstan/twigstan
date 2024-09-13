@@ -52,7 +52,7 @@ final readonly class TwigFactory
             throw new InvalidArgumentException(sprintf('Loader must be an instance of %s', FilesystemLoader::class));
         }
 
-        $twig->setLoader(new AbsolutePathLoader($twig->getLoader()));
+        $twig->setLoader(new AbsolutePathLoader($loader));
 
         $twig->getExtension(EscaperExtension::class)->setDefaultStrategy(false);
 

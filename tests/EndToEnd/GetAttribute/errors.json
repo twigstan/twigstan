@@ -1,0 +1,12 @@
+{
+    "errors": [
+        {
+            "message": "Expected type string|null, actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "broken.twig:4",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}

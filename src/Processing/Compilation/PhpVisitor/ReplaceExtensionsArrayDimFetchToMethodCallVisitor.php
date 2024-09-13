@@ -15,27 +15,31 @@ final class ReplaceExtensionsArrayDimFetchToMethodCallVisitor extends NodeVisito
         // Replace: $this->env->getExtension('Symfony\\Bridge\\Twig\\Extension\\AssetExtension')
 
         if (!$node instanceof Node\Expr\ArrayDimFetch) {
-            return $node;
+            return null;
         }
 
         if (!$node->var instanceof Node\Expr\PropertyFetch) {
-            return $node;
+            return null;
         }
 
         if (!$node->var->var instanceof Node\Expr\Variable) {
-            return $node;
+            return null;
         }
 
         if ($node->var->var->name !== 'this') {
-            return $node;
+            return null;
         }
 
         if (!$node->var->name instanceof Node\Identifier) {
-            return $node;
+            return null;
         }
 
         if ($node->var->name->name !== 'extensions') {
-            return $node;
+            return null;
+        }
+
+        if ($node->dim === null) {
+            return null;
         }
 
         return new Node\Expr\MethodCall(

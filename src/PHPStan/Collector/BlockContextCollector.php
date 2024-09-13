@@ -10,11 +10,12 @@ use PHPStan\Collectors\Collector;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\ShouldNotHappenException;
 use TwigStan\Twig\CommentHelper;
+use TwigStan\Twig\SourceLocation;
 
 /**
- * @implements Collector<Node\Expr\MethodCall, array{
+ * @implements Collector<Node\Expr\YieldFrom, array{
  *     blockName: string,
- *     sourceLocation: string,
+ *     sourceLocation: SourceLocation,
  *     context: string,
  *     parent: bool,
  * }>
@@ -41,6 +42,22 @@ final readonly class BlockContextCollector implements Collector
         }
 
         if (!in_array($node->expr->name->name, ['yieldBlock', 'yieldParentBlock'], true)) {
+            return null;
+        }
+
+        if (count($node->expr->args) < 2) {
+            return null;
+        }
+
+        if (! $node->expr->args[0] instanceof Node\Arg) {
+            return null;
+        }
+
+        if (! $node->expr->args[0]->value instanceof Node\Scalar\String_) {
+            return null;
+        }
+
+        if (! $node->expr->args[1] instanceof Node\Arg) {
             return null;
         }
 

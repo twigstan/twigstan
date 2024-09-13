@@ -20,6 +20,10 @@ final class MainMethodFinderVisitor extends NodeVisitorAbstract
             return null;
         }
 
+        if ($node->stmts === null) {
+            return null;
+        }
+
         if ($node->name->name !== 'main') {
             return null;
         }

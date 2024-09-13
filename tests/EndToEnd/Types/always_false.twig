@@ -1,0 +1,8 @@
+{% set allowed = true %}
+
+{% assert_type allowed 'true' %}
+
+{% if not allowed %}
+    No access
+{% endif %}
+

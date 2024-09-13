@@ -76,7 +76,7 @@ final readonly class TwigFlattener
 
                     $sourceLocation = new SourceLocation(
                         $metadata->name,
-                        $metadata->parentLineNumber,
+                        $metadata->parentLineNumber ?? 0,
                     );
 
                     $blockMethods = [];

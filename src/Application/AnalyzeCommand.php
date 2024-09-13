@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace TwigStan\Application;
 
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -24,6 +26,7 @@ use TwigStan\Processing\Flattening\TwigFlattener;
 use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
 use TwigStan\Twig\DependencyFinder;
 use TwigStan\Twig\DependencySorter;
+use TwigStan\Twig\SourceLocation;
 use TwigStan\Twig\TwigFileNormalizer;
 
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
@@ -41,9 +44,12 @@ final class AnalyzeCommand extends Command
         private DependencySorter $dependencySorter,
         private TwigFileNormalizer $twigFileNormalizer,
         private PHPStanRunner $phpStanRunner,
+        private Filesystem $filesystem,
         private string $environmentLoader,
-        private array $directories = [],
-        private array $excludes = [],
+        private string $tempDirectory,
+        private string $currentWorkingDirectory,
+        private array $directories,
+        private array $excludes,
     ) {
         parent::__construct();
     }
@@ -57,29 +63,121 @@ final class AnalyzeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $filesystem = new Filesystem();
+        $errorOutput = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
 
-        $debugMode = $input->getOption('debug') === true;
-        $xdebugMode = $input->getOption('xdebug') === true;
-        $errorOutput = $output->getErrorOutput();
-
-        $compilationDirectory = Path::normalize(sys_get_temp_dir() . '/twigstan/compilation');
-        $filesystem->remove($compilationDirectory);
-        $filesystem->mkdir($compilationDirectory);
-
-        $flatteningDirectory = Path::normalize(sys_get_temp_dir() . '/twigstan/flattening');
-        $filesystem->remove($flatteningDirectory);
-        $filesystem->mkdir($flatteningDirectory);
-
-        $scopeInjectionDirectory = Path::normalize(sys_get_temp_dir() . '/twigstan/scope-injection');
-        $filesystem->remove($scopeInjectionDirectory);
-        $filesystem->mkdir($scopeInjectionDirectory);
-
-        $workingDirectory = getcwd();
-        $finder = $this->getFinder(
-            $workingDirectory,
+        $result = $this->analyze(
             $input->getArgument('paths'),
+            $output,
+            $errorOutput,
+            $input->getOption('debug') === true,
+            $input->getOption('xdebug') === true,
         );
+
+        foreach ($result->errors as $error) {
+            $errorOutput->writeln($error->message);
+
+            if ($error->tip !== null) {
+                foreach (explode("\n", $error->tip) as $line) {
+                    $errorOutput->writeLn(sprintf("💡 <fg=blue>%s</>", ltrim($line, ' •')));
+                }
+            }
+
+            if ($error->identifier !== null) {
+                $errorOutput->writeLn(sprintf("🔖 <fg=blue>%s</>", $error->identifier));
+            }
+
+            $errorOutput->writeln(
+                sprintf(
+                    '🐘 <href=%s>%s:%d</>',
+                    str_replace(
+                        ['%file%', '%line%'],
+                        [$error->phpFile, $error->phpLine],
+                        "phpstorm://open?file=%file%&line=%line%",
+                    ),
+                    sprintf(
+                        'compiled_%s.php',
+                        preg_replace(
+                            '/(\.html)?\.twig\.\w+\.php$/',
+                            '',
+                            basename($error->phpFile),
+                        ),
+                    ),
+                    $error->phpLine,
+                ),
+            );
+
+            if ($error->twigSourceLocation !== null) {
+                foreach ($error->twigSourceLocation as $sourceLocation) {
+                    $errorOutput->writeln(
+                        sprintf(
+                            '🌱 <href=%s>%s:%d</>',
+                            str_replace(
+                                ['%file%', '%line%'],
+                                [$sourceLocation->fileName, $sourceLocation->lineNumber],
+                                "phpstorm://open?file=%file%&line=%line%",
+                            ),
+                            Path::makeRelative($sourceLocation->fileName, $this->currentWorkingDirectory),
+                            $sourceLocation->lineNumber,
+                        ),
+                    );
+                }
+            }
+
+            foreach ($error->renderPoints as $renderPoint) {
+                $errorOutput->writeln(
+                    sprintf(
+                        '🕹️ <href=%s>%s:%d</>',
+                        str_replace(
+                            ['%file%', '%line%'],
+                            [$renderPoint->fileName, $renderPoint->lineNumber],
+                            "phpstorm://open?file=%file%&line=%line%",
+                        ),
+                        Path::makeRelative($renderPoint->fileName, $this->currentWorkingDirectory),
+                        $renderPoint->lineNumber,
+                    ),
+                );
+            }
+
+            $errorOutput->writeln('');
+        }
+
+        if (count($result->errors) > 0) {
+            $output->writeln(sprintf('<error>Found %d errors</error>', count($result->errors)));
+
+            return self::FAILURE;
+        }
+
+        $output->writeln('<info>No errors found</info>');
+
+        return self::SUCCESS;
+    }
+
+    /**
+     * @param list<string> $paths
+     *
+     * @throws Throwable
+     */
+    public function analyze(
+        array $paths,
+        OutputInterface $output,
+        OutputInterface $errorOutput,
+        bool $debugMode,
+        bool $xdebugMode,
+    ): TwigStanAnalysisResult {
+
+        $compilationDirectory = Path::normalize($this->tempDirectory . '/compilation');
+        $this->filesystem->remove($compilationDirectory);
+        $this->filesystem->mkdir($compilationDirectory);
+
+        $flatteningDirectory = Path::normalize($this->tempDirectory . '/flattening');
+        $this->filesystem->remove($flatteningDirectory);
+        $this->filesystem->mkdir($flatteningDirectory);
+
+        $scopeInjectionDirectory = Path::normalize($this->tempDirectory . '/scope-injection');
+        $this->filesystem->remove($scopeInjectionDirectory);
+        $this->filesystem->mkdir($scopeInjectionDirectory);
+
+        $finder = $this->getFinder($paths);
 
         $twigFileNames = [];
         $phpFileNames = [];
@@ -100,7 +198,7 @@ final class AnalyzeCommand extends Command
         if ($twigFileNames === []) {
             $output->writeln('<error>No templates found</error>');
 
-            return Command::FAILURE;
+            return new TwigStanAnalysisResult();
         }
 
         $twigFileNamesToAnalyze = $twigFileNames;
@@ -134,7 +232,7 @@ final class AnalyzeCommand extends Command
                 $progressBar->clear();
                 $errorOutput->writeln(sprintf(
                     'Error compiling %s: %s',
-                    Path::makeRelative($twigFile, $workingDirectory),
+                    Path::makeRelative($twigFile, $this->currentWorkingDirectory),
                     $error->getMessage(),
                 ));
 
@@ -173,12 +271,17 @@ final class AnalyzeCommand extends Command
             collectOnly: true,
         );
 
+        $result = new TwigStanAnalysisResult();
+
         foreach ($analysisResult->notFileSpecificErrors as $fileSpecificError) {
+            $result = $result->withFileSpecificError($fileSpecificError);
+
             $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
         }
 
+
         if ($analysisResult->notFileSpecificErrors !== []) {
-            return self::FAILURE;
+            return $result;
         }
 
         /**
@@ -227,96 +330,56 @@ final class AnalyzeCommand extends Command
             );
 
             foreach ($analysisResult->notFileSpecificErrors as $fileSpecificError) {
+                $result = $result->withFileSpecificError($fileSpecificError);
+
                 $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
             }
 
             foreach ($analysisResult->errors as $error) {
-                $errorOutput->writeln($error->message);
+                $twigSourceLocation = null;
+                $renderPoints = [];
+                if ($error->sourceLocation !== null) {
+                    $lastTwigFileName = null;
+                    foreach ($error->sourceLocation as $sourceLocation) {
+                        $twigFilePath = $compilationResults
+                            ->getByTwigFileName($sourceLocation->fileName)
+                            ->twigFilePath;
 
-                if ($error->tip !== null) {
-                    foreach (explode("\n", $error->tip) as $line) {
-                        $errorOutput->writeLn(sprintf("💡 <fg=blue>%s</>", ltrim($line, ' •')));
+                        $lastTwigFileName = $sourceLocation->fileName;
+
+                        $twigSourceLocation = SourceLocation::append(
+                            $twigSourceLocation,
+                            new SourceLocation(
+                                $twigFilePath,
+                                $sourceLocation->lineNumber,
+                            ),
+                        );
                     }
-                }
 
-                if ($error->identifier !== null) {
-                    $errorOutput->writeLn(sprintf("🔖 <fg=blue>%s</>", $error->identifier));
-                }
-
-                $line = $error->phpLine ?? 0;
-
-                $errorOutput->writeln(
-                    sprintf(
-                        '🐘 <href=%s>%s:%d</>',
-                        str_replace(
-                            ['%file%', '%line%'],
-                            [$error->phpFile, $line],
-                            "phpstorm://open?file=%file%&line=%line%",
-                        ),
-                        sprintf(
-                            'compiled_%s.php',
-                            preg_replace(
-                                '/(\.html)?\.twig\.\w+\.php$/',
-                                '',
-                                basename($error->phpFile),
-                            ),
-                        ),
-                        $line,
-                    ),
-                );
-
-                $lastTwigFileName = null;
-                foreach ($error->sourceLocation as $sourceLocation) {
-                    $twigFileName = $compilationResults
-                        ->getByTwigFileName($sourceLocation->fileName)
-                        ->twigFilePath;
-
-                    $lastTwigFileName = $sourceLocation->fileName;
-
-                    $errorOutput->writeln(
-                        sprintf(
-                            '🌱 <href=%s>%s:%d</>',
-                            str_replace(
-                                ['%file%', '%line%'],
-                                [$twigFileName, $sourceLocation->lineNumber],
-                                "phpstorm://open?file=%file%&line=%line%",
-                            ),
-                            Path::makeRelative($twigFileName, $workingDirectory),
-                            $sourceLocation->lineNumber,
-                        ),
-                    );
-                }
-
-                if ($lastTwigFileName !== null) {
                     foreach ($templateToRenderPoint[$lastTwigFileName] ?? [] as $renderPointFileName => $lineNumbers) {
                         foreach ($lineNumbers as $lineNumber) {
-                            $errorOutput->writeln(
-                                sprintf(
-                                    '🕹️ <href=%s>%s:%d</>',
-                                    str_replace(
-                                        ['%file%', '%line%'],
-                                        [$renderPointFileName, $lineNumber],
-                                        "phpstorm://open?file=%file%&line=%line%",
-                                    ),
-                                    Path::makeRelative($renderPointFileName, $workingDirectory),
-                                    $lineNumber,
-                                ),
+                            $renderPoints[] = new SourceLocation(
+                                $renderPointFileName,
+                                $lineNumber,
                             );
                         }
                     }
                 }
 
-                $errorOutput->writeln('');
+                $result = $result->withError(
+                    new TwigStanError(
+                        $error->message,
+                        $error->identifier,
+                        $error->tip,
+                        $error->phpFile,
+                        $error->phpLine ?? 0,
+                        $twigSourceLocation,
+                        $renderPoints,
+                    ),
+                );
             }
 
-            if (count($analysisResult->errors) > 0) {
-                $output->writeln(sprintf('<error>Found %d errors</error>', count($analysisResult->errors)));
-
-                return self::FAILURE;
-            }
-            $output->writeln('<info>No errors found</info>');
-
-            return self::SUCCESS;
+            return $result;
         } finally {
             if (file_exists('vendor/phpstan/extension-installer/src/GeneratedConfig.php.bak')) {
                 rename('vendor/phpstan/extension-installer/src/GeneratedConfig.php.bak', 'vendor/phpstan/extension-installer/src/GeneratedConfig.php');
@@ -329,9 +392,14 @@ final class AnalyzeCommand extends Command
      *
      * @return array<SplFileInfo>
      */
-    private function getFinder(string $currentWorkingDirectory, array $paths): array
+    private function getFinder(array $paths): array
     {
-        if ($paths === []) {
+        if ($paths !== []) {
+            $paths = array_map(
+                fn($path) => Path::makeAbsolute($path, $this->currentWorkingDirectory),
+                $paths,
+            );
+        } else {
             $paths = $this->directories;
         }
 
@@ -347,11 +415,14 @@ final class AnalyzeCommand extends Command
 
             if (is_file($path)) {
                 $files[] = new SplFileInfo(
-                    $currentWorkingDirectory . DIRECTORY_SEPARATOR . $path,
-                    dirname($path),
                     $path,
+                    basename(Path::makeRelative($path, $this->currentWorkingDirectory)),
+                    Path::makeRelative($path, $this->currentWorkingDirectory),
                 );
+                continue;
             }
+
+            throw new InvalidArgumentException(sprintf('Path %s is not a file or directory', $path));
         }
 
         if ($files === [] && $directories === []) {
