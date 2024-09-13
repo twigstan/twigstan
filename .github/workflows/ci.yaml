@@ -1,74 +1,75 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
+    pull_request:
+    push:
+        branches: [ main ]
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+    group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.3
+    tests:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
 
-      - name: Install Composer packages
-        uses: ramsey/composer-install@v3
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: 8.3
 
-      - name: Run tests
-        run: vendor/bin/phpunit --colors=always
+            -   name: Install Composer packages
+                uses: ramsey/composer-install@v3
 
-  php-cs-fixer:
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
+            -   name: Run tests
+                run: vendor/bin/phpunit --colors=always
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    php-cs-fixer:
+        permissions:
+            contents: write
+        runs-on: ubuntu-latest
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3'
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
 
-    - name: Install Composer packages
-      uses: ramsey/composer-install@v3
+            -   name: Set up PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.3'
 
-    - name: Run PHP CS Fixer
-      run: vendor/bin/php-cs-fixer fix --diff --ansi
+            -   name: Install Composer packages
+                uses: ramsey/composer-install@v3
 
-    - name: Check for changes
-      run: |
-        if [[ `git status --porcelain` ]]; then
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
-          git commit -m 'Apply PHP CS Fixer changes'
-          git push
-        fi
+            -   name: Run PHP CS Fixer
+                run: vendor/bin/php-cs-fixer fix --diff --ansi
 
-  phpstan:
-    runs-on: ubuntu-latest
+            -   name: Check for changes
+                run: |
+                    if [[ `git status --porcelain` ]]; then
+                      git config --global user.name 'github-actions[bot]'
+                      git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+                      git add .
+                      git commit -m 'Apply PHP CS Fixer changes'
+                      git push
+                    fi
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    phpstan:
+        runs-on: ubuntu-latest
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.3'
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
 
-    - name: Install Composer packages
-      uses: ramsey/composer-install@v3
+            -   name: Set up PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.3'
 
-    - name: Run PHPStan
-      run: vendor/bin/phpstan --ansi
+            -   name: Install Composer packages
+                uses: ramsey/composer-install@v3
+
+            -   name: Run PHPStan
+                run: vendor/bin/phpstan --ansi
