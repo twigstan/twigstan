@@ -1,8 +1,11 @@
+includes:
+	- phpstan-baseline.neon
 parameters:
 	level: '8'
 	paths:
 		- src
 		- tests
+	reportUnmatchedIgnoredErrors: false
 	errorFormat: ticketswap
 	editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
 services:

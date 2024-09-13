@@ -69,7 +69,7 @@ final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        $node->args[2] = new Node\Expr\Array_(attributes: ['kind' => Node\Expr\Array_::KIND_SHORT]);
+        $node->args[2]->value = new Node\Expr\Array_(attributes: ['kind' => Node\Expr\Array_::KIND_SHORT]);
 
         return $node;
     }

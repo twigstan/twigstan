@@ -1,0 +1,26 @@
+{
+    "errors": [
+        {
+            "message": "Undefined variable: name",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "certainty.twig:4",
+            "renderPoints": []
+        },
+        {
+            "message": "Variable name might not be defined.",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "certainty.twig:10",
+            "renderPoints": []
+        },
+        {
+            "message": "Negated boolean expression is always false.",
+            "identifier": "booleanNot.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "always_false.twig:5",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}

@@ -26,5 +26,4 @@ final class AssertTypeTokenParser extends AbstractTokenParser
     {
         return 'assert_type';
     }
-
 }

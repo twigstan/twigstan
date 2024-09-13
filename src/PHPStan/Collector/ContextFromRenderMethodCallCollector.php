@@ -50,6 +50,10 @@ final readonly class ContextFromRenderMethodCallCollector implements Collector
         $varType = $scope->getType($node->var);
         $method = $scope->getMethodReflection($varType, $node->name->toString());
 
+        if ($method === null) {
+            return null;
+        }
+
         if ($method->getDeclaringClass()->getName() !== AbstractController::class) {
             return null;
         }
@@ -58,7 +62,15 @@ final readonly class ContextFromRenderMethodCallCollector implements Collector
             return null;
         }
 
+        if (!$node->args[0] instanceof Node\Arg) {
+            return null;
+        }
+
         if (!$node->args[0]->value instanceof Node\Scalar\String_) {
+            return null;
+        }
+
+        if (!$node->args[1] instanceof Node\Arg) {
             return null;
         }
 

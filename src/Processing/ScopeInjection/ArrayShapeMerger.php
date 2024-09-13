@@ -33,6 +33,10 @@ final readonly class ArrayShapeMerger
             $leftItem = $leftItemsByKey[$key] ?? null;
             $rightItem = $rightItemsByKey[$key] ?? null;
 
+            if ($leftItem === null && $rightItem === null) {
+                continue;
+            }
+
             if ($leftItem === null) {
                 $items[] = new ArrayShapeItemNode(
                     $rightItem->keyName,

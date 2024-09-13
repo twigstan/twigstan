@@ -55,7 +55,15 @@ final class RefactorStaticMacroCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
+        if ($node->args[0]->value->dim === null) {
+            return null;
+        }
+
         $node->args[0]->value = $node->args[0]->value->dim;
+
+        if (! $node->args[4] instanceof Node\Arg) {
+            return null;
+        }
 
         $node->args[4]->value = new Node\Expr\FuncCall(
             new Node\Name('get_defined_vars'),

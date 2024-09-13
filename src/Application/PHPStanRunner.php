@@ -8,8 +8,8 @@ use Nette\Neon\Neon;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
-use TwigStan\PHPStan\Analysis\AnalysisResult;
 use TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader;
+use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
 use TwigStan\Processing\Flattening\FlatteningResultCollection;
 use TwigStan\Processing\ScopeInjection\ScopeInjectionResultCollection;
 
@@ -21,6 +21,9 @@ final readonly class PHPStanRunner
         private string $currentWorkingDirectory,
     ) {}
 
+    /**
+     * @param list<string> $pathsToAnalyze
+     */
     public function run(
         OutputInterface $output,
         OutputInterface $errorOutput,
@@ -31,7 +34,7 @@ final readonly class PHPStanRunner
         bool $xdebugMode,
         FlatteningResultCollection|ScopeInjectionResultCollection $mapping,
         bool $collectOnly = false,
-    ): AnalysisResult {
+    ): PHPStanAnalysisResult {
         $tempConfigFile = tempnam(sys_get_temp_dir(), 'twigstan-phpstan-');
         $this->filesystem->rename($tempConfigFile, $tempConfigFile . '.neon');
         $tempConfigFile = $tempConfigFile . '.neon';
@@ -85,10 +88,9 @@ final readonly class PHPStanRunner
             'XDEBUG_TRIGGER' => $xdebugMode ? '1' : null,
         ]), timeout: null);
 
-        //dump($process->getCommandLine());
         $output->writeln($process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
 
-        $exitCode = $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
+        $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
             if (Process::ERR === $type) {
                 $errorOutput->write($buffer);
                 return;
@@ -96,7 +98,6 @@ final readonly class PHPStanRunner
 
             $output->write($buffer);
         });
-
 
         $analysisResult = $this->analysisResultFromJsonReader->read($analysisResultJsonFile, $mapping);
 

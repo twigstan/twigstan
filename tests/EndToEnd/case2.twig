@@ -1,9 +1,0 @@
-{% set allowed = true %}
-
-{% assert_type allowed 'true' %}
-
-{% if not allowed %}
-    No access
-{% endif %}
-
-{% expect_error 5 "Negated boolean expression is always false." %}

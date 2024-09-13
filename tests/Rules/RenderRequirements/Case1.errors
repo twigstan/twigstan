@@ -1,4 +1,0 @@
-25: Requirements for template "@RenderRequirements/list.html.twig" are not valid: 'artists' is required but not given.
-31: Requirements for template "@RenderRequirements/list.html.twig" are not valid: 'title' is required but not given.
-31: Requirements for template "@RenderRequirements/list.html.twig" are not valid: 'artists' is required but not given.
-36: Requirements for template "@RenderRequirements/list.html.twig" are not valid: 'logos' is given but not required.

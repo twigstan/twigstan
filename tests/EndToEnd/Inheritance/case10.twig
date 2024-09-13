@@ -1,0 +1,12 @@
+{% extends "@EndToEnd/Inheritance/_layout.twig" %}
+
+{% block main %}
+    {% assert_variable_exists doesNotExist no %}
+
+    {{ parent() }}
+
+    {% set subtitle = 'Welcome' %}
+
+    {{ parent() }}
+{% endblock %}
+

@@ -1,0 +1,22 @@
+{% assert_variable_exists name no %}
+{% assert_type name '*ERROR*' %}
+
+Hello {{ name }}
+
+{% types {
+    name?: 'string',
+} %}
+
+Hello {{ name }}
+
+{% assert_variable_exists name maybe %}
+{% assert_type name 'string' %}
+
+{% types {
+    name: 'string',
+} %}
+
+Hello {{ name }}
+
+{% assert_variable_exists name yes %}
+{% assert_type name 'string' %}

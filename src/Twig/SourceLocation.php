@@ -6,6 +6,7 @@ namespace TwigStan\Twig;
 
 use IteratorAggregate;
 use Stringable;
+use Symfony\Component\Filesystem\Path;
 use Traversable;
 
 /**
@@ -19,8 +20,12 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
         public ?self $previous = null,
     ) {}
 
-    public static function append(self $current, self $toAppend): self
+    public static function append(?self $current, self $toAppend): self
     {
+        if ($current === null) {
+            return $toAppend;
+        }
+
         /**
          * @var non-empty-list<SourceLocation> $nodes
          */
@@ -45,6 +50,10 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
         return $sourceLocation;
     }
 
+    /**
+     * @param array<mixed> $data
+     *
+     */
     public static function decode(array $data): self
     {
         return new self(
@@ -54,14 +63,28 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
         );
     }
 
-    public function __toString(): string
+    public function toString(?string $relativeToDirectory = null): string
     {
         return sprintf(
             '%s:%d%s',
-            $this->fileName,
+            $relativeToDirectory !== null ? Path::makeRelative($this->fileName, $relativeToDirectory) : $this->fileName,
             $this->lineNumber,
-            $this->previous !== null ? ', ' . $this->previous : '',
+            $this->previous !== null ? ', ' . $this->previous->toString($relativeToDirectory) : '',
         );
+    }
+
+    public function contains(string $fileName): bool
+    {
+        if ($this->fileName === $fileName) {
+            return true;
+        }
+
+        return $this->previous?->contains($fileName) ?? false;
+    }
+
+    public function __toString(): string
+    {
+        return $this->toString();
     }
 
     public function getIterator(): Traversable
@@ -72,5 +95,6 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
             $current = $current->previous;
         }
     }
+
 
 }

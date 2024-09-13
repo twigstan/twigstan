@@ -1,0 +1,25 @@
+{
+    "errors": [
+        {
+            "message": "Variable error might not be defined.",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "complex.html.twig:3",
+            "renderPoints": [
+                "ComplexTemplateAttributeController.php:28",
+                "ComplexTemplateAttributeController.php:35",
+                "ComplexTemplateAttributeController.php:41"
+            ]
+        },
+        {
+            "message": "Negated boolean expression is always false.",
+            "identifier": "booleanNot.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "simple.html.twig:8",
+            "renderPoints": [
+                "SimpleTemplateAttributeController.php:21"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}

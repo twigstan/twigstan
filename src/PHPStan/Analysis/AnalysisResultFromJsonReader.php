@@ -19,10 +19,16 @@ final readonly class AnalysisResultFromJsonReader
         private Filesystem $filesystem,
     ) {}
 
-    public function read(string $file, FlatteningResultCollection|ScopeInjectionResultCollection $mapping): AnalysisResult
+    public function read(string $file, FlatteningResultCollection|ScopeInjectionResultCollection $mapping): PHPStanAnalysisResult
     {
         if (!file_exists($file)) {
-            throw new InvalidArgumentException(sprintf('File "%s" does not exist', $file));
+            return new PHPStanAnalysisResult(
+                [],
+                [],
+                [
+                    'Could not read results from PHPStan. This is most likely caused by a crash in PHPStan during analysis.',
+                ],
+            );
         }
 
         $content = $this->filesystem->readFile($file);
@@ -48,7 +54,7 @@ final readonly class AnalysisResultFromJsonReader
         $errors = $this->errorFilter->filter($errors);
         $errors = $this->errorCollapser->collapse($errors);
 
-        return new AnalysisResult(
+        return new PHPStanAnalysisResult(
             $this->errorTransformer->transform($errors),
             array_map(
                 CollectedData::decode(...),

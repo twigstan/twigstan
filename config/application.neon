@@ -12,6 +12,8 @@ services:
 		environmentLoader: %twigstan.environmentLoader%
 		directories: %twigstan.directories%
 		excludes: %twigstan.excludes%
+		tempDirectory: %tmpDir%
+		currentWorkingDirectory: %currentWorkingDirectory%
 	  )
 	- TwigStan\Application\PHPStanRunner(currentWorkingDirectory: %currentWorkingDirectory%)
 	- TwigStan\PHP\PrettyPrinter
@@ -39,7 +41,7 @@ services:
 	- TwigStan\Twig\Node\NodeFinder
 	- TwigStan\Twig\Node\NodeMapper
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
+	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
-	- TwigStan\Twig\TokenParser\RequirementsTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
 	- TwigStan\Twig\TwigFileNormalizer

@@ -56,6 +56,10 @@ final readonly class TwigScopeInjector
                     '@var',
                 );
 
+                if (! $phpDocNode instanceof  VarTagValueNode) {
+                    throw new \LogicException('Invalid @var tag');
+                }
+
                 $context = $phpDocNode->type;
 
                 if (!$context instanceof ArrayShapeNode) {
@@ -125,24 +129,22 @@ final readonly class TwigScopeInjector
 
         $results = new ScopeInjectionResultCollection();
         foreach ($collection as $flatteningResult) {
-            //$metadata = $this->metadataRegistry->findByTwigFile($flatteningResult->twigFile);
 
+            $contextBeforeBlockRelatedToTemplate = array_filter(
+                $contextBeforeBlock,
+                fn($contextBeforeBlock) => $contextBeforeBlock['sourceLocation']->contains($flatteningResult->twigFileName),
+            );
             $stmts = $this->applyVisitors(
                 $this->phpParser->parseFile($flatteningResult->phpFile),
                 new NameResolver(),
                 new InjectContextVisitor(
                     $templateRenderContext[$flatteningResult->twigFileName] ?? new ArrayShapeNode([]),
-                    $contextBeforeBlock,
+                    $contextBeforeBlockRelatedToTemplate,
                     $this->arrayShapeMerger,
                 ),
             );
 
             $phpSource = $this->prettyPrinter->prettyPrintFile($stmts);
-
-            //$this->filesystem->dumpFile(
-            //    Path::join(dirname($flatteningResult->twigFilePath), basename($flatteningResult->twigFilePath) . '.scope-injected.untrack.php'),
-            //    $phpSource,
-            //);
 
             $phpFile = Path::join($targetDirectory, basename($flatteningResult->phpFile));
 
