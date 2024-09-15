@@ -1,0 +1,13 @@
+{# This is an overridden template localized inside the vendor package folder and called from Controller also in the vendor #}
+
+{% assert_type title "'SimpleAction'" %}
+
+<h1>{{ title }}</h1>
+
+{% assert_type rows 'non-empty-list<string>' %}
+
+{% for row in rows %}
+    {{ row }}
+{% else %}
+    No rows
+{% endfor %}

@@ -1,0 +1,14 @@
+{
+    "errors": [
+        {
+            "message": "Negated boolean expression is always false.",
+            "identifier": "booleanNot.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "template.html.twig:8",
+            "customRenderPoints": [
+                "SimpleController.php:21"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}
