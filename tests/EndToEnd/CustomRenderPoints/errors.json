@@ -5,8 +5,8 @@
             "identifier": "booleanNot.alwaysFalse",
             "tip": null,
             "twigSourceLocation": "template.html.twig:8",
-            "customRenderPoints": [
-                "SimpleController.php:21"
+            "renderPoints": [
+                "SimpleController.php:17"
             ]
         }
     ],
