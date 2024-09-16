@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Annotation\Route as LegacyRoute;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * @implements Collector<MethodReturnStatementsNode, list<array{
+ * @implements Collector<MethodReturnStatementsNode, non-empty-list<array{
  *     startLine: int,
  *     endLine: int,
  *     template: string,
