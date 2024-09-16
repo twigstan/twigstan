@@ -48,7 +48,9 @@ Now that we have a flat template, we don't know anything about the context the t
 
 We use PHPStan to run the [BlockContextCollector](src/PHPStan/Collector/BlockContextCollector.php). This collector gathers the context before rendering every block or parent block call.
 
-While running PHPStan, it's also a good time to search for places that render the template. [ContextFromReturnedArrayWithTemplateAttributeCollector](src/PHPStan/Collector/ContextFromReturnedArrayWithTemplateAttributeCollector.php) and [ContextFromRenderMethodCallCollector](src/PHPStan/Collector/ContextFromRenderMethodCallCollector.php) search for controllers that render a Twig template.
+While running PHPStan, it's also a good time to search for places that render the template.
+- [ContextFromReturnedArrayWithTemplateAttributeCollector](src/PHPStan/Collector/ContextFromReturnedArrayWithTemplateAttributeCollector.php) and [ContextFromControllerRenderMethodCallCollector](src/PHPStan/Collector/ContextFromControllerRenderMethodCallCollector.php) search for controllers that render a Twig template.
+- [ContextFromTwigRenderMethodCallCollector](src/PHPStan/Collector/ContextFromTwigRenderMethodCallCollector.php) search for `Twig\Environment::render` calls.
 
 ## Scope Injection
 
