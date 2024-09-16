@@ -6,19 +6,13 @@ namespace TwigStan\PHPStan\Collector;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Collectors\Collector;
 use PHPStan\PhpDocParser\Printer\Printer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
- * @implements Collector<Node\Expr\MethodCall, array{
- *     startLine: int,
- *     endLine: int,
- *     template: string,
- *     context: string,
- * }>
+ * @implements TemplateContextCollector<Node\Expr\MethodCall>
  */
-final readonly class ContextFromRenderMethodCallCollector implements Collector
+final readonly class ContextFromRenderMethodCallCollector implements TemplateContextCollector
 {
     public function getNodeType(): string
     {
@@ -78,10 +72,12 @@ final readonly class ContextFromRenderMethodCallCollector implements Collector
         $context = $scope->getType($node->args[1]->value);
 
         return [
-            'startLine' => $node->getStartLine(),
-            'endLine' => $node->getEndLine(),
-            'template' => $template,
-            'context' => (new Printer())->print($context->toPhpDocNode()),
+            [
+                'startLine' => $node->getStartLine(),
+                'endLine' => $node->getEndLine(),
+                'template' => $template,
+                'context' => (new Printer())->print($context->toPhpDocNode()),
+            ],
         ];
     }
 }

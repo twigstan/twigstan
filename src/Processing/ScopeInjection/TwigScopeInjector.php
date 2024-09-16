@@ -21,8 +21,7 @@ use TwigStan\PHP\PrettyPrinter;
 use TwigStan\PHP\StrictPhpParser;
 use TwigStan\PHPStan\Analysis\CollectedData;
 use TwigStan\PHPStan\Collector\BlockContextCollector;
-use TwigStan\PHPStan\Collector\ContextFromRenderMethodCallCollector;
-use TwigStan\PHPStan\Collector\ContextFromReturnedArrayWithTemplateAttributeCollector;
+use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Flattening\FlatteningResultCollection;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
@@ -81,16 +80,12 @@ final readonly class TwigScopeInjector
 
         $templateRenderContexts = [];
         foreach ($collectedData as $data) {
-            if ($data->collecterType == ContextFromReturnedArrayWithTemplateAttributeCollector::class) {
+            if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
                     $template = $this->twigFileNormalizer->normalize($renderData['template']);
 
                     $templateRenderContexts[$template][] = $renderData['context'];
                 }
-            } elseif ($data->collecterType === ContextFromRenderMethodCallCollector::class) {
-                $template = $this->twigFileNormalizer->normalize($data->data['template']);
-
-                $templateRenderContexts[$template][] = $data->data['context'];
             }
         }
 
