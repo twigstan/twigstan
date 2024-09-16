@@ -6,7 +6,7 @@ namespace TwigStan\EndToEnd\CustomRenderPoints;
 
 use TwigStan\EndToEnd\AbstractEndToEndTestCase;
 
-final class TestCase extends AbstractEndToEndTestCase
+final class CustomRenderPointsTest extends AbstractEndToEndTestCase
 {
     public function test(): void
     {

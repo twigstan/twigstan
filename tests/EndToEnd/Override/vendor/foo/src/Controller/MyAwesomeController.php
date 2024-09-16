@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TwigStan\EndToEnd\OverrideTemplate\vendor\foo\src\Controller;
+namespace TwigStan\EndToEnd\Override\vendor\foo\src\Controller;
 
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpKernel\Attribute\AsController;

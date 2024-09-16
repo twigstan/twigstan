@@ -14,7 +14,7 @@ class SimpleController extends AbstractCustomController
     #[Route('/blaat')]
     public function __invoke(): Response
     {
-        return $this->renderStorefront('@EndToEnd/CustomRenderPoints/simple.html.twig', [
+        return $this->renderStorefront('@EndToEnd/CustomRenderPoints/template.html.twig', [
             'title' => 'SimpleAction',
             'rows' => $this->getRows(),
         ]);
