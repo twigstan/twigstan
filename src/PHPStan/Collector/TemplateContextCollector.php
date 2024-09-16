@@ -14,7 +14,7 @@ use PHPStan\Collectors\Collector;
  *  }
  *
  * @template-covariant TNodeType of Node
- * @extends Collector<TNodeType, non-empty-array<TemplateData>>
+ * @extends Collector<TNodeType, non-empty-list<TemplateData>>
  */
 interface TemplateContextCollector extends Collector
 {
