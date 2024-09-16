@@ -15,14 +15,9 @@ use Symfony\Component\Routing\Annotation\Route as LegacyRoute;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * @implements Collector<MethodReturnStatementsNode, non-empty-list<array{
- *     startLine: int,
- *     endLine: int,
- *     template: string,
- *     context: string,
- * }>>
+ * @implements TemplateContextCollector<MethodReturnStatementsNode>
  */
-final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector implements Collector
+final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector implements TemplateContextCollector
 {
     public function getNodeType(): string
     {
@@ -85,7 +80,6 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
 
     private function hasRouteAttribute(MethodReturnStatementsNode $node, ClassReflection $classReflection): bool
     {
-
         foreach ($classReflection->getNativeReflection()->getMethod($node->getMethodName())->getAttributes() as $attribute) {
             if ($attribute->getName() === Route::class) {
                 return true;

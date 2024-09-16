@@ -20,6 +20,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
 use TwigStan\PHPStan\Collector\ContextFromRenderMethodCallCollector;
 use TwigStan\PHPStan\Collector\ContextFromReturnedArrayWithTemplateAttributeCollector;
+use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
 use TwigStan\Processing\Flattening\TwigFlattener;
@@ -289,14 +290,11 @@ final class AnalyzeCommand extends Command
          */
         $templateToRenderPoint = [];
         foreach ($analysisResult->collectedData as $data) {
-            if ($data->collecterType === ContextFromReturnedArrayWithTemplateAttributeCollector::class) {
+            if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
                     $template = $this->twigFileNormalizer->normalize($renderData['template']);
                     $templateToRenderPoint[$template][$data->filePath][] = $renderData['startLine'];
                 }
-            } elseif ($data->collecterType === ContextFromRenderMethodCallCollector::class) {
-                $template = $this->twigFileNormalizer->normalize($data->data['template']);
-                $templateToRenderPoint[$template][$data->filePath][] = $data->data['startLine'];
             }
         }
 
