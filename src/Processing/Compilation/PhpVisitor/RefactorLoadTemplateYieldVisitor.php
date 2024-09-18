@@ -9,7 +9,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RefactorLoadTemplateYieldVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         // Find: $this->parent = $this->loadTemplate("@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1, ... maybe more);
         // Replace: yield from $this->yieldTemplate(get_defined_vars(), "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1, .. maybe more);

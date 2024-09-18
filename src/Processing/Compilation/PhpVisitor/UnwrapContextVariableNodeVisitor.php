@@ -12,7 +12,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class UnwrapContextVariableNodeVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Variable|null
+    public function enterNode(Node $node): Variable | null
     {
         if (! $node instanceof ArrayDimFetch) {
             return null;

@@ -18,8 +18,6 @@ use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
-use TwigStan\PHPStan\Collector\ContextFromRenderMethodCallCollector;
-use TwigStan\PHPStan\Collector\ContextFromReturnedArrayWithTemplateAttributeCollector;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;

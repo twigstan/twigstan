@@ -45,7 +45,7 @@ final readonly class TwigCompiler
         private TwigGlobalsToPhpDoc $twigGlobalsToPhpDoc,
     ) {}
 
-    public function compile(string|ModuleNode $template, string $targetDirectory): CompilationResult
+    public function compile(string | ModuleNode $template, string $targetDirectory): CompilationResult
     {
         $template = $this->twigNodeParser->parse($template);
 

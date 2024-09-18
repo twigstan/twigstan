@@ -13,7 +13,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RemoveParentAssignVisitor extends NodeVisitorAbstract
 {
-    public function leaveNode(Node $node): int|null
+    public function leaveNode(Node $node): int | null
     {
         // Find: expression stmt $_parent = $context['_parent'];
         // Remove it

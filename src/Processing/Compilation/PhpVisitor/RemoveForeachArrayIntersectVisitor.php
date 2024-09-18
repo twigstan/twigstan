@@ -13,7 +13,7 @@ final class RemoveForeachArrayIntersectVisitor extends NodeVisitorAbstract
     /**
      * @return list<Node\Stmt>|null
      */
-    public function leaveNode(Node $node): array|null
+    public function leaveNode(Node $node): array | null
     {
         // Find: $context = array_intersect_key($context, $_parent) + $_parent;
         // Replace with: extract($_parent); unset($_parent);

@@ -12,7 +12,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class AssignGetDefinedVarsInParentVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         // Find: $context['_parent'] = $context;
         // Replace with: $context['_parent'] = get_defined_vars();

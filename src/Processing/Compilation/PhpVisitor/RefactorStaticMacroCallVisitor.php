@@ -10,7 +10,7 @@ use Twig\Extension\CoreExtension;
 
 final class RefactorStaticMacroCallVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         // Find: CoreExtension::callMacro($macros["layout"], "macro_hello", [$name], 9, $context, $this->getSourceContext());
         // Replace: self::callMacro("layout", "macro_hello", [$name], 9, get_defined_vars())

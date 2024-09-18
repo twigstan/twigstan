@@ -9,7 +9,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class ReplaceExtensionsArrayDimFetchToMethodCallVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         // Find: $this->extensions['Symfony\\Bridge\\Twig\\Extension\\AssetExtension']
         // Replace: $this->env->getExtension('Symfony\\Bridge\\Twig\\Extension\\AssetExtension')

@@ -17,6 +17,8 @@ return (new Config())
         [
             '@PER-CS2.0' => true,
             'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => true],
+            'type_declaration_spaces' => true,
+            'types_spaces' => ['space' => 'single'],
         ],
     )
     ->setFinder($finder);

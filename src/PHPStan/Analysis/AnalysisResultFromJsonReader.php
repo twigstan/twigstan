@@ -19,7 +19,7 @@ final readonly class AnalysisResultFromJsonReader
         private Filesystem $filesystem,
     ) {}
 
-    public function read(string $file, FlatteningResultCollection|ScopeInjectionResultCollection $mapping): PHPStanAnalysisResult
+    public function read(string $file, FlatteningResultCollection | ScopeInjectionResultCollection $mapping): PHPStanAnalysisResult
     {
         if (!file_exists($file)) {
             return new PHPStanAnalysisResult(

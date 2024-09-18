@@ -17,7 +17,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
         private TwigGlobalsToPhpDoc $twigGlobalsToPhpDoc,
     ) {}
 
-    public function leaveNode(Node $node): Node|null
+    public function leaveNode(Node $node): Node | null
     {
         if (! $node instanceof Node\Stmt\Class_) {
             return null;

@@ -10,7 +10,7 @@ use Twig\Extension\CoreExtension;
 
 final class RefactorStaticCaptureOutputCallVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         // Find: \Twig\Extension\CoreExtension::captureOutput((function () use(&$context, $macros, $blocks) { ... statements ... })())
         // Replace: \Twig\Extension\CoreExtension::captureOutput((function (array $__twigstan_context) {

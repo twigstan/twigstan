@@ -28,7 +28,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         private ArrayShapeMerger $arrayShapeMerger,
     ) {}
 
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         // Search for the following pattern:
         //     // line 7

@@ -9,7 +9,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         // Find: $this->yieldBlock("other", $context, $blocks);
         // Replace: $this->yieldBlock("other", get_defined_vars(), []);

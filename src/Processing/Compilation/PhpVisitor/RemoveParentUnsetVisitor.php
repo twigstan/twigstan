@@ -10,7 +10,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RemoveParentUnsetVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         if (! $node instanceof Node\Stmt\Unset_) {
             return null;

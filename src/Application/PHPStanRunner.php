@@ -32,7 +32,7 @@ final readonly class PHPStanRunner
         array $pathsToAnalyze,
         bool $debugMode,
         bool $xdebugMode,
-        FlatteningResultCollection|ScopeInjectionResultCollection $mapping,
+        FlatteningResultCollection | ScopeInjectionResultCollection $mapping,
         bool $collectOnly = false,
     ): PHPStanAnalysisResult {
         $tempConfigFile = tempnam(sys_get_temp_dir(), 'twigstan-phpstan-');

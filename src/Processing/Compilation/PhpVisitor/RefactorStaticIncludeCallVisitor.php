@@ -10,7 +10,7 @@ use Twig\Extension\CoreExtension;
 
 final class RefactorStaticIncludeCallVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         // Find: \Twig\Extension\CoreExtension::include($this->env, $context, "_random_footer.twig"))
         // Replace: $this->include(get_defined_vars(), "_random_footer.twig"))

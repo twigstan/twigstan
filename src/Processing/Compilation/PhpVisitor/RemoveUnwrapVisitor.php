@@ -9,7 +9,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RemoveUnwrapVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node|null
+    public function enterNode(Node $node): Node | null
     {
         if (! $node instanceof Node\Expr\MethodCall) {
             return null;
