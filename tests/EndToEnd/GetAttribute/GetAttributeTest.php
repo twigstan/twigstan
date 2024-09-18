@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TwigStan\EndToEnd\RenderPoints;
+namespace TwigStan\EndToEnd\GetAttribute;
 
 use TwigStan\EndToEnd\AbstractEndToEndTestCase;
 
-final class TestCase extends AbstractEndToEndTestCase
+final class GetAttributeTest extends AbstractEndToEndTestCase
 {
     public function test(): void
     {
