@@ -5,7 +5,7 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache"
          backupStaticProperties="false">
     <testsuites>
-        <testsuite name="PHPStan Twig">
+        <testsuite name="TwigStan">
             <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
