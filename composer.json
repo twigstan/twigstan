@@ -51,5 +51,8 @@
         "allow-plugins": {
             "phpstan/extension-installer": true
         }
+    },
+    "scripts": {
+        "cs": "vendor/bin/php-cs-fixer fix --diff --ansi"
     }
 }
