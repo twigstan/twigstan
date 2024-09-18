@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TwigStan\EndToEnd\GetAttribute;
+namespace TwigStan\EndToEnd\Inheritance;
 
 use TwigStan\EndToEnd\AbstractEndToEndTestCase;
 
-final class TestCase extends AbstractEndToEndTestCase
+final class InheritanceTest extends AbstractEndToEndTestCase
 {
     public function test(): void
     {
