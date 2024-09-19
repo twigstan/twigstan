@@ -300,87 +300,75 @@ final class AnalyzeCommand extends Command
 
         $scopeInjectionResults = $this->twigScopeInjector->inject($analysisResult->collectedData, $flatteningResults, $scopeInjectionDirectory);
 
-        // Disable the extension installer for now
-        // This disables the noise from `phpstan/phpstan-strict-rules`
-        if (file_exists('vendor/phpstan/extension-installer/src/GeneratedConfig.php')) {
-            rename('vendor/phpstan/extension-installer/src/GeneratedConfig.php', 'vendor/phpstan/extension-installer/src/GeneratedConfig.php.bak');
-        }
-
         $phpFileNamesToAnalyze = array_map(
             fn($twigFileName) => $scopeInjectionResults->getByTwigFileName($twigFileName)->phpFile,
             $twigFileNamesToAnalyze,
         );
 
-        try {
-            $output->writeln('<info>Analyzing templates</info>');
+        $output->writeln('<info>Analyzing templates</info>');
 
-            $analysisResult = $this->phpStanRunner->run(
-                $output,
-                $errorOutput,
-                __DIR__ . '/../../config/phpstan.neon',
-                $this->environmentLoader,
-                $phpFileNamesToAnalyze,
-                $debugMode,
-                $xdebugMode,
-                $scopeInjectionResults,
-            );
+        $analysisResult = $this->phpStanRunner->run(
+            $output,
+            $errorOutput,
+            __DIR__ . '/../../config/phpstan.neon',
+            $this->environmentLoader,
+            $phpFileNamesToAnalyze,
+            $debugMode,
+            $xdebugMode,
+            $scopeInjectionResults,
+        );
 
-            foreach ($analysisResult->notFileSpecificErrors as $fileSpecificError) {
-                $result = $result->withFileSpecificError($fileSpecificError);
+        foreach ($analysisResult->notFileSpecificErrors as $fileSpecificError) {
+            $result = $result->withFileSpecificError($fileSpecificError);
 
-                $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
-            }
+            $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
+        }
 
-            foreach ($analysisResult->errors as $error) {
-                $twigSourceLocation = null;
-                $renderPoints = [];
-                if ($error->sourceLocation !== null) {
-                    $lastTwigFileName = null;
-                    foreach ($error->sourceLocation as $sourceLocation) {
-                        $twigFilePath = $compilationResults
-                            ->getByTwigFileName($sourceLocation->fileName)
-                            ->twigFilePath;
+        foreach ($analysisResult->errors as $error) {
+            $twigSourceLocation = null;
+            $renderPoints = [];
+            if ($error->sourceLocation !== null) {
+                $lastTwigFileName = null;
+                foreach ($error->sourceLocation as $sourceLocation) {
+                    $twigFilePath = $compilationResults
+                        ->getByTwigFileName($sourceLocation->fileName)
+                        ->twigFilePath;
 
-                        $lastTwigFileName = $sourceLocation->fileName;
+                    $lastTwigFileName = $sourceLocation->fileName;
 
-                        $twigSourceLocation = SourceLocation::append(
-                            $twigSourceLocation,
-                            new SourceLocation(
-                                $twigFilePath,
-                                $sourceLocation->lineNumber,
-                            ),
-                        );
-                    }
-
-                    foreach ($templateToRenderPoint[$lastTwigFileName] ?? [] as $renderPointFileName => $lineNumbers) {
-                        foreach ($lineNumbers as $lineNumber) {
-                            $renderPoints[] = new SourceLocation(
-                                $renderPointFileName,
-                                $lineNumber,
-                            );
-                        }
-                    }
+                    $twigSourceLocation = SourceLocation::append(
+                        $twigSourceLocation,
+                        new SourceLocation(
+                            $twigFilePath,
+                            $sourceLocation->lineNumber,
+                        ),
+                    );
                 }
 
-                $result = $result->withError(
-                    new TwigStanError(
-                        $error->message,
-                        $error->identifier,
-                        $error->tip,
-                        $error->phpFile,
-                        $error->phpLine ?? 0,
-                        $twigSourceLocation,
-                        $renderPoints,
-                    ),
-                );
+                foreach ($templateToRenderPoint[$lastTwigFileName] ?? [] as $renderPointFileName => $lineNumbers) {
+                    foreach ($lineNumbers as $lineNumber) {
+                        $renderPoints[] = new SourceLocation(
+                            $renderPointFileName,
+                            $lineNumber,
+                        );
+                    }
+                }
             }
 
-            return $result;
-        } finally {
-            if (file_exists('vendor/phpstan/extension-installer/src/GeneratedConfig.php.bak')) {
-                rename('vendor/phpstan/extension-installer/src/GeneratedConfig.php.bak', 'vendor/phpstan/extension-installer/src/GeneratedConfig.php');
-            }
+            $result = $result->withError(
+                new TwigStanError(
+                    $error->message,
+                    $error->identifier,
+                    $error->tip,
+                    $error->phpFile,
+                    $error->phpLine ?? 0,
+                    $twigSourceLocation,
+                    $renderPoints,
+                ),
+            );
         }
+
+        return $result;
     }
 
     /**
