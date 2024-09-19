@@ -9,6 +9,9 @@ final readonly class ErrorFilter
     private const array IDENTIFIERS_TO_IGNORE = [
         'isset.variable' => true,
 
+        // It's perfectly fine to do `a == b ? 'yes' : 'no'` in Twig.
+        'equal.notAllowed' => true,
+
         // When an array inside the context is not typed, this produces an error.
         'missingType.iterableValue' => '/__twigstan_context/',
 
