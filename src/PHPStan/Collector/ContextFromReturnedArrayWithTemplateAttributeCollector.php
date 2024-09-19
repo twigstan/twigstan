@@ -6,7 +6,6 @@ namespace TwigStan\PHPStan\Collector;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
-use PHPStan\Collectors\Collector;
 use PHPStan\Node\MethodReturnStatementsNode;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Reflection\ClassReflection;

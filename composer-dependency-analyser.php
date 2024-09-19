@@ -8,7 +8,7 @@ $config = new Configuration();
 $config->ignoreErrorsOnPackageAndPaths(
     'symfony/framework-bundle',
     [
-        __DIR__ . '/src/PHPStan/Collector/ContextFromRenderMethodCallCollector.php',
+        __DIR__ . '/src/PHPStan/Collector/ContextFromControllerRenderMethodCallCollector.php',
     ],
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );

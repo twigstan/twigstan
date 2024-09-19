@@ -296,6 +296,21 @@ final class AnalyzeCommand extends Command
             }
         }
 
+        // Make sure the render points are sorted by file name and line number
+        $templateToRenderPoint = array_map(
+            function ($renderPoints) {
+                uksort($renderPoints, function ($a, $b) {
+                    return strnatcmp($a, $b);
+                });
+                foreach ($renderPoints as &$lineNumbers) {
+                    sort($lineNumbers);
+                }
+
+                return $renderPoints;
+            },
+            $templateToRenderPoint,
+        );
+
         $output->writeln('<info>Injecting scope into templates...</info>');
 
         $scopeInjectionResults = $this->twigScopeInjector->inject($analysisResult->collectedData, $flatteningResults, $scopeInjectionDirectory);

@@ -7,12 +7,13 @@ namespace TwigStan\PHPStan\Collector;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Type\Constant\ConstantArrayType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
  * @implements TemplateContextCollector<Node\Expr\MethodCall>
  */
-final readonly class ContextFromRenderMethodCallCollector implements TemplateContextCollector
+final readonly class ContextFromControllerRenderMethodCallCollector implements TemplateContextCollector
 {
     public function getNodeType(): string
     {
@@ -52,32 +53,32 @@ final readonly class ContextFromRenderMethodCallCollector implements TemplateCon
             return null;
         }
 
-        if (count($node->args) !== 2) {
+        $args = $node->getArgs();
+        if (!isset($args[0])) {
             return null;
         }
 
-        if (!$node->args[0] instanceof Node\Arg) {
+        $views = $scope->getType($args[0]->value)->getConstantStrings();
+        if (count($views) === 0) {
             return null;
         }
 
-        if (!$node->args[0]->value instanceof Node\Scalar\String_) {
-            return null;
+        if (isset($args[1])) {
+            $context = $scope->getType($args[1]->value);
+        } else {
+            $context = new ConstantArrayType([], []);
         }
 
-        if (!$node->args[1] instanceof Node\Arg) {
-            return null;
-        }
-
-        $template = $node->args[0]->value->value;
-        $context = $scope->getType($node->args[1]->value);
-
-        return [
-            [
+        $result = [];
+        foreach ($views as $view) {
+            $result[] = [
                 'startLine' => $node->getStartLine(),
                 'endLine' => $node->getEndLine(),
-                'template' => $template,
+                'template' => $view->getValue(),
                 'context' => (new Printer())->print($context->toPhpDocNode()),
-            ],
-        ];
+            ];
+        }
+
+        return $result;
     }
 }
