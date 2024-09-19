@@ -19,19 +19,19 @@ final class RemoveParentYieldVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (! $node->expr instanceof Node\Expr\YieldFrom) {
+        if (!$node->expr instanceof Node\Expr\YieldFrom) {
             return null;
         }
 
-        if (! $node->expr->expr instanceof Node\Expr\MethodCall) {
+        if (!$node->expr->expr instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (! $node->expr->expr->var instanceof Node\Expr\PropertyFetch) {
+        if (!$node->expr->expr->var instanceof Node\Expr\PropertyFetch) {
             return null;
         }
 
-        if (! $node->expr->expr->var->var instanceof Node\Expr\Variable) {
+        if (!$node->expr->expr->var->var instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -39,7 +39,7 @@ final class RemoveParentYieldVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (! $node->expr->expr->var->name instanceof Node\Identifier) {
+        if (!$node->expr->expr->var->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -47,7 +47,7 @@ final class RemoveParentYieldVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (! $node->expr->expr->name instanceof Node\Identifier) {
+        if (!$node->expr->expr->name instanceof Node\Identifier) {
             return null;
         }
 

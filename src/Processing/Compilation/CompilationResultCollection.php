@@ -34,7 +34,7 @@ final readonly class CompilationResultCollection implements IteratorAggregate
     public function with(CompilationResult ...$results): self
     {
         $data = $this->results;
-        foreach ($results as    $transformResult) {
+        foreach ($results as $transformResult) {
             $data[$transformResult->phpFile] = $transformResult;
         }
 

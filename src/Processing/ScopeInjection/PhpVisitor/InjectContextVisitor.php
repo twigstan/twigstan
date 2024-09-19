@@ -38,11 +38,11 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         //     */
         //    public function block_main(array $__twigstan_context) : iterable
 
-        if (! $node instanceof Node\Stmt\ClassMethod) {
+        if (!$node instanceof Node\Stmt\ClassMethod) {
             return null;
         }
 
-        if (! $node->name instanceof Node\Identifier) {
+        if (!$node->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -62,7 +62,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
                 $contextBeforeBlock,
                 true,
             );
-        } elseif($node->name->name === 'main') {
+        } elseif ($node->name->name === 'main') {
             $context = $this->contextFromTemplateRender;
         } else {
             return null;

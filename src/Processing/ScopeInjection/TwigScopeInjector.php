@@ -55,7 +55,7 @@ final readonly class TwigScopeInjector
                     '@var',
                 );
 
-                if (! $phpDocNode instanceof  VarTagValueNode) {
+                if (!$phpDocNode instanceof VarTagValueNode) {
                     throw new \LogicException('Invalid @var tag');
                 }
 

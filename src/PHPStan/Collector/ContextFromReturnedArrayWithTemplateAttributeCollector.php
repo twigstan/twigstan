@@ -38,7 +38,7 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
             return null;
         }
 
-        $template =  $this->getTemplateFromAttribute($node, $classReflection);
+        $template = $this->getTemplateFromAttribute($node, $classReflection);
         if ($template === null) {
             return null;
         }
@@ -57,7 +57,7 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
 
             $context = $returnStatement->getScope()->getType($returnNode->expr);
 
-            if (! $context->isArray()->yes()) {
+            if (!$context->isArray()->yes()) {
                 continue;
             }
 

@@ -41,15 +41,15 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
             return null;
         }
 
-        if (! $methodCall->args[2] instanceof Arg) {
+        if (!$methodCall->args[2] instanceof Arg) {
             return null;
         }
 
-        if (! $methodCall->args[3] instanceof Arg) {
+        if (!$methodCall->args[3] instanceof Arg) {
             return null;
         }
 
-        if (! $methodCall->args[5] instanceof Arg) {
+        if (!$methodCall->args[5] instanceof Arg) {
             return null;
         }
 
@@ -61,7 +61,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
 
         $propertyOrMethodType = $scope->getType($methodCall->args[3]->value);
 
-        if (! $propertyOrMethodType instanceof ConstantStringType && ! $propertyOrMethodType instanceof ConstantIntegerType) {
+        if (!$propertyOrMethodType instanceof ConstantStringType && !$propertyOrMethodType instanceof ConstantIntegerType) {
             return new MixedType();
         }
 
@@ -108,7 +108,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
 
         if (in_array($callType, [\Twig\Template::ANY_CALL, \Twig\Template::METHOD_CALL], true)) {
             foreach (['', 'get', 'is', 'has'] as $prefix) {
-                if (! $objectType->hasMethod($prefix . $propertyOrMethod)->yes()) {
+                if (!$objectType->hasMethod($prefix . $propertyOrMethod)->yes()) {
                     continue;
                 }
 

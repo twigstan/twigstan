@@ -19,7 +19,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node): Node | null
     {
-        if (! $node instanceof Node\Stmt\Class_) {
+        if (!$node instanceof Node\Stmt\Class_) {
             return null;
         }
 
