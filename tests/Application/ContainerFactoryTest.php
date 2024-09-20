@@ -5,10 +5,9 @@ namespace TwigStan\Application;
 use Nette\DI\Container;
 use PHPUnit\Framework\TestCase;
 
-//TODO Add more test for cover all needed parameters/services
 class ContainerFactoryTest extends TestCase
 {
-    private ?Container $container;
+    private Container $container;
 
     protected function setUp(): void
     {
@@ -18,13 +17,6 @@ class ContainerFactoryTest extends TestCase
         $this->container = $containerFactory->create(sys_get_temp_dir() . '/twigstan');
     }
 
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->container = null;
-    }
-
     public function testCreateContainerCorrectly(): void
     {
         self::assertInstanceOf(Container::class, $this->container);
@@ -32,10 +24,20 @@ class ContainerFactoryTest extends TestCase
 
     public function testDirectoriesHasBeenInjectedCorrectly(): void
     {
-        $directories = $this->container?->getParameter('twigstan')['directories'];
+        $phpSection = $this->container->getParameter('twigstan')['php'];
+        $twigSection = $this->container->getParameter('twigstan')['twig'];
 
-        self::assertIsArray($directories);
+        self::assertIsArray($phpSection);
+        self::assertIsArray($twigSection);
 
-        self::assertCount(4, $directories);
+        self::assertArrayHasKey('paths', $phpSection);
+        self::assertArrayHasKey('excludes', $phpSection);
+        self::assertArrayHasKey('paths', $twigSection);
+        self::assertArrayHasKey('excludes', $twigSection);
+
+        self::assertCount(2, $phpSection['paths']);
+        self::assertCount(0, $phpSection['excludes']);
+        self::assertCount(2, $twigSection['paths']);
+        self::assertCount(0, $twigSection['excludes']);
     }
 }

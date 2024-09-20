@@ -32,25 +32,27 @@ final readonly class ContainerFactory
         $filesystem->mkdir($tempDirectory);
 
         $configuration = Neon::decodeFile($this->configurationFile);
-        if (isset($configuration['parameters']['twigstan']['directories'])) {
-            $configuration['parameters']['twigstan']['directories']['twig'] = array_map(
+
+        if (isset($configuration['parameters']['twigstan']['twig'])) {
+            $configuration['parameters']['twigstan']['twig']['paths'] = array_map(
                 fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
-                $configuration['parameters']['twigstan']['directories']['twig'] ?? [],
-            );
-            $configuration['parameters']['twigstan']['directories']['php'] = array_map(
-                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
-                $configuration['parameters']['twigstan']['directories']['php'] ?? [],
+                $configuration['parameters']['twigstan']['twig']['paths'] ?? [],
             );
 
-            $configuration['parameters']['twigstan']['directories'] = array_merge(
-                $configuration['parameters']['twigstan']['directories']['twig'],
-                $configuration['parameters']['twigstan']['directories']['php'],
+            $configuration['parameters']['twigstan']['twig']['excludes'] = array_map(
+                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
+                $configuration['parameters']['twigstan']['twig']['excludes'] ?? [],
             );
         }
-        if (isset($configuration['parameters']['twigstan']['excludes'])) {
-            $configuration['parameters']['twigstan']['excludes'] = array_map(
+
+        if (isset($configuration['parameters']['twigstan']['php'])) {
+            $configuration['parameters']['twigstan']['php']['paths'] = array_map(
                 fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
-                $configuration['parameters']['twigstan']['excludes'],
+                $configuration['parameters']['twigstan']['php']['paths'] ?? [],
+            );
+            $configuration['parameters']['twigstan']['php']['excludes'] = array_map(
+                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
+                $configuration['parameters']['twigstan']['php']['excludes'] ?? [],
             );
         }
 

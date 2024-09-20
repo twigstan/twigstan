@@ -1,10 +1,13 @@
 parameters:
 	twigstan:
-		directories:
-			twig:
+		twig:
+			paths:
 				- templates
 				- src/Resources/views
-			php:
+			excludes: []
+		php:
+			paths:
 				- src/Controller
 				- src/Customer/Controller
+			excludes: []
 		environmentLoader: twig-loader.php

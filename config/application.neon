@@ -1,7 +1,11 @@
 parameters:
 	twigstan:
-		directories: []
-		excludes: []
+		php:
+			paths: []
+			excludes: []
+		twig:
+			paths: []
+			excludes: []
 		environmentLoader: null
 services:
 	-
@@ -10,11 +14,9 @@ services:
 	- Symfony\Component\Filesystem\Filesystem
 	- TwigStan\Application\AnalyzeCommand(
 		environmentLoader: %twigstan.environmentLoader%
-		directories: %twigstan.directories%
-		excludes: %twigstan.excludes%
 		tempDirectory: %tmpDir%
 		currentWorkingDirectory: %currentWorkingDirectory%
-	  )
+	)
 	- TwigStan\Application\PHPStanRunner(currentWorkingDirectory: %currentWorkingDirectory%)
 	- TwigStan\PHP\PrettyPrinter
 	- TwigStan\PHP\StrictPhpParser
@@ -44,4 +46,13 @@ services:
 	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
+	- TwigStan\Twig\TwigFileNormalizer
+	- TwigStan\Configuration\ExclusionProvider(
+		phpExcludes: %twigstan.php.excludes%
+		twigExcludes: %twigstan.twig.excludes%
+	)
+	- TwigStan\Configuration\PathProvider(
+		phpPaths: %twigstan.php.paths%
+		twigPaths: %twigstan.twig.paths%
+	)
 	- TwigStan\Twig\TwigFileCanonicalizer
