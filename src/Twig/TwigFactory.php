@@ -42,13 +42,13 @@ final readonly class TwigFactory
         unset($_ENV['SHELL_VERBOSITY']);
         unset($_SERVER['SHELL_VERBOSITY']);
 
-        if (! $twig instanceof Environment) {
+        if (!$twig instanceof Environment) {
             throw new InvalidArgumentException(sprintf('Environment loader "%s" must return an instance of %s, got: %s. ', $this->environmentLoader, Environment::class, get_debug_type($twig)));
         }
 
         $loader = $twig->getLoader();
 
-        if (! $loader instanceof FilesystemLoader) {
+        if (!$loader instanceof FilesystemLoader) {
             throw new InvalidArgumentException(sprintf('Loader must be an instance of %s', FilesystemLoader::class));
         }
 

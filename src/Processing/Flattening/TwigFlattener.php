@@ -59,7 +59,7 @@ final readonly class TwigFlattener
 
 
                     // Inline the body of the `main` function from the parent template
-                    if (! $results->hasTwigFileName($parent)) {
+                    if (!$results->hasTwigFileName($parent)) {
                         throw new RuntimeException(sprintf('Parent template %s not found in mapping', $parent));
                     }
 
@@ -81,7 +81,7 @@ final readonly class TwigFlattener
 
                     $blockMethods = [];
                     foreach ($blocksNeededFromParent as $alias => $block) {
-                        if (! isset($blockMethodFinderVisitor->blocks[$block])) {
+                        if (!isset($blockMethodFinderVisitor->blocks[$block])) {
                             continue;
                         }
 

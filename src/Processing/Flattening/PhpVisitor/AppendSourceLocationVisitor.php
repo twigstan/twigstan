@@ -17,7 +17,7 @@ final class AppendSourceLocationVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): ?Node
     {
-        if (! $node instanceof Stmt) {
+        if (!$node instanceof Stmt) {
             return null;
         }
 

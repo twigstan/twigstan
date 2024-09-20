@@ -36,7 +36,7 @@ final readonly class VarTypeSpecifyingExtension implements DynamicFunctionReturn
         FuncCall $functionCall,
         Scope $scope,
     ): ?Type {
-        if (! $functionCall->getArgs()[0]->value instanceof String_) {
+        if (!$functionCall->getArgs()[0]->value instanceof String_) {
             return new ErrorType();
         }
 
@@ -47,7 +47,7 @@ final readonly class VarTypeSpecifyingExtension implements DynamicFunctionReturn
             '@var',
         );
 
-        if (! $value instanceof VarTagValueNode) {
+        if (!$value instanceof VarTagValueNode) {
             return new ErrorType();
         }
 

@@ -33,11 +33,11 @@ final readonly class BlockContextCollector implements Collector
             return null;
         }
 
-        if (! $node->expr instanceof Node\Expr\MethodCall) {
+        if (!$node->expr instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (! $node->expr->name instanceof Node\Identifier) {
+        if (!$node->expr->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -49,15 +49,15 @@ final readonly class BlockContextCollector implements Collector
             return null;
         }
 
-        if (! $node->expr->args[0] instanceof Node\Arg) {
+        if (!$node->expr->args[0] instanceof Node\Arg) {
             return null;
         }
 
-        if (! $node->expr->args[0]->value instanceof Node\Scalar\String_) {
+        if (!$node->expr->args[0]->value instanceof Node\Scalar\String_) {
             return null;
         }
 
-        if (! $node->expr->args[1] instanceof Node\Arg) {
+        if (!$node->expr->args[1] instanceof Node\Arg) {
             return null;
         }
 

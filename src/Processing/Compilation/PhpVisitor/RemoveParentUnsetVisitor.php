@@ -12,7 +12,7 @@ final class RemoveParentUnsetVisitor extends NodeVisitorAbstract
 {
     public function enterNode(Node $node): Node | null
     {
-        if (! $node instanceof Node\Stmt\Unset_) {
+        if (!$node instanceof Node\Stmt\Unset_) {
             return null;
         }
 
@@ -21,11 +21,11 @@ final class RemoveParentUnsetVisitor extends NodeVisitorAbstract
             function ($var): bool {
                 // Filter: $context['_parent']
 
-                if (! $var instanceof Node\Expr\ArrayDimFetch) {
+                if (!$var instanceof Node\Expr\ArrayDimFetch) {
                     return true;
                 }
 
-                if (! $var->var instanceof Variable) {
+                if (!$var->var instanceof Variable) {
                     return true;
                 }
 
@@ -33,7 +33,7 @@ final class RemoveParentUnsetVisitor extends NodeVisitorAbstract
                     return true;
                 }
 
-                if (! $var->dim instanceof Node\Scalar\String_) {
+                if (!$var->dim instanceof Node\Scalar\String_) {
                     return true;
                 }
 

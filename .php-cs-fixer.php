@@ -16,9 +16,12 @@ return (new Config())
     ->setRules(
         [
             '@PER-CS2.0' => true,
+            'binary_operator_spaces' => ['default' => 'single_space'],
             'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => true],
+            'single_space_around_construct' => true,
             'type_declaration_spaces' => true,
             'types_spaces' => ['space' => 'single'],
+            'unary_operator_spaces' => true,
         ],
     )
     ->setFinder($finder);

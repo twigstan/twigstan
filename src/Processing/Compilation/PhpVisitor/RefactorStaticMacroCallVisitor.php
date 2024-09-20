@@ -15,11 +15,11 @@ final class RefactorStaticMacroCallVisitor extends NodeVisitorAbstract
         // Find: CoreExtension::callMacro($macros["layout"], "macro_hello", [$name], 9, $context, $this->getSourceContext());
         // Replace: self::callMacro("layout", "macro_hello", [$name], 9, get_defined_vars())
 
-        if (! $node instanceof Node\Expr\StaticCall) {
+        if (!$node instanceof Node\Expr\StaticCall) {
             return null;
         }
 
-        if (! $node->class instanceof Node\Name) {
+        if (!$node->class instanceof Node\Name) {
             return null;
         }
 
@@ -27,7 +27,7 @@ final class RefactorStaticMacroCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (! $node->name instanceof Node\Identifier) {
+        if (!$node->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -39,15 +39,15 @@ final class RefactorStaticMacroCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (! $node->args[0] instanceof Node\Arg) {
+        if (!$node->args[0] instanceof Node\Arg) {
             return null;
         }
 
-        if (! $node->args[0]->value instanceof Node\Expr\ArrayDimFetch) {
+        if (!$node->args[0]->value instanceof Node\Expr\ArrayDimFetch) {
             return null;
         }
 
-        if (! $node->args[0]->value->var instanceof Node\Expr\Variable) {
+        if (!$node->args[0]->value->var instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -61,7 +61,7 @@ final class RefactorStaticMacroCallVisitor extends NodeVisitorAbstract
 
         $node->args[0]->value = $node->args[0]->value->dim;
 
-        if (! $node->args[4] instanceof Node\Arg) {
+        if (!$node->args[4] instanceof Node\Arg) {
             return null;
         }
 

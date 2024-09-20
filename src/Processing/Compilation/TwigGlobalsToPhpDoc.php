@@ -32,7 +32,7 @@ final class TwigGlobalsToPhpDoc
             $globals[] = new ArrayShapeItemNode(
                 new ConstExprStringNode($name),
                 false,
-                match(true) {
+                match (true) {
                     is_object($value) => new IdentifierTypeNode($value::class),
                     is_float($value) => new IdentifierTypeNode('float'),
                     is_int($value) => new IdentifierTypeNode('int'),

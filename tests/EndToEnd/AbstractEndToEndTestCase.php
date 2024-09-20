@@ -65,7 +65,7 @@ abstract class AbstractEndToEndTestCase extends TestCase
 
         $expectedButNotActual = [];
         $actualErrorsNotExpected = $actual['errors'];
-        foreach ($expectedErrors['errors']  as $expectedError) {
+        foreach ($expectedErrors['errors'] as $expectedError) {
             $key = array_search($expectedError, $actualErrorsNotExpected, true);
             if ($key !== false) {
                 unset($actualErrorsNotExpected[$key]);

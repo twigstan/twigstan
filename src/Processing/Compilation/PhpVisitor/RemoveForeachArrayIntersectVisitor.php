@@ -22,11 +22,11 @@ final class RemoveForeachArrayIntersectVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (! $node->expr instanceof Node\Expr\Assign) {
+        if (!$node->expr instanceof Node\Expr\Assign) {
             return null;
         }
 
-        if (! $node->expr->var instanceof Variable) {
+        if (!$node->expr->var instanceof Variable) {
             return null;
         }
 
@@ -34,13 +34,13 @@ final class RemoveForeachArrayIntersectVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (! $node->expr->expr instanceof Node\Expr\BinaryOp\Plus) {
+        if (!$node->expr->expr instanceof Node\Expr\BinaryOp\Plus) {
             return null;
         }
 
         $binaryOp = $node->expr->expr;
 
-        if (! $binaryOp->left instanceof Node\Expr\FuncCall) {
+        if (!$binaryOp->left instanceof Node\Expr\FuncCall) {
             return null;
         }
 

@@ -34,7 +34,7 @@ final readonly class FlatteningResultCollection implements IteratorAggregate
     public function with(FlatteningResult ...$results): self
     {
         $data = $this->results;
-        foreach ($results as    $transformResult) {
+        foreach ($results as $transformResult) {
             $data[$transformResult->phpFile] = $transformResult;
         }
 

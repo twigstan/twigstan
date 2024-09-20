@@ -11,11 +11,11 @@ final class RemoveUnwrapVisitor extends NodeVisitorAbstract
 {
     public function enterNode(Node $node): Node | null
     {
-        if (! $node instanceof Node\Expr\MethodCall) {
+        if (!$node instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (! $node->name instanceof Node\Identifier) {
+        if (!$node->name instanceof Node\Identifier) {
             return null;
         }
 
