@@ -1,0 +1,16 @@
+parameters:
+	twigstan:
+		twig:
+			paths:
+				- templates
+				- src/Resources/views
+			excludes:
+				- templates/file.twig
+				- templates/folder/excluded
+		php:
+			paths:
+				- src/Controller
+				- src/Customer/Controller
+			excludes:
+				- src/Controller/ExcludedController.php
+				- src/Customer/Folder/Excluded
