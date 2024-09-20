@@ -62,7 +62,7 @@ services:
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer
-	- TwigStan\Application\Ignore\IgnoredErrorHelper(
+	- TwigStan\Application\Ignore\IgnoreErrorProcessor(
 		ignoreErrors: %twigstan.ignoreErrors%
 		reportUnmatchedIgnoredErrors: false
 		workingDirectory: %currentWorkingDirectory%
