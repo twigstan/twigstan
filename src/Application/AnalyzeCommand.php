@@ -186,7 +186,7 @@ final class AnalyzeCommand extends Command
                 continue;
             }
 
-            if ($file->getExtension() == 'twig') {
+            if ($file->getExtension() === 'twig') {
                 $twigFileNames[] = $this->twigFileCanonicalizer->canonicalize($file->getRealPath());
                 continue;
             }
