@@ -17,32 +17,12 @@ final class FilesFinder
         private array $exclusions,
     ) {}
 
-
     /**
      * @return array<string, SplFileInfo>
      */
     public function find(): array
     {
-        $finder = $this->getFinder();
-
-        $paths = iterator_to_array($finder);
-
-        $paths = array_unique($paths);
-
-        return $paths;
-    }
-
-    /**
-     * @return list<string>
-     */
-    public function getExcludes(): array
-    {
-        return $this->exclusions;
-    }
-
-    private function getFinder(): Finder
-    {
-        return Finder::create()
+        $finder = Finder::create()
             ->files()
             ->name([$this->namePattern])
             ->in($this->paths)
@@ -55,5 +35,7 @@ final class FilesFinder
 
                 return true;
             });
+
+        return iterator_to_array($finder);
     }
 }
