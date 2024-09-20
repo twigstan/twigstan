@@ -13,6 +13,8 @@ services:
 		factory: @TwigStan\Twig\TwigFactory::create
 	- Symfony\Component\Filesystem\Filesystem
 	- TwigStan\Application\AnalyzeCommand(
+		phpFilesFinder: @twigstan.files_finder.php
+		twigFilesFinder: @twigstan.files_finder.twig
 		environmentLoader: %twigstan.environmentLoader%
 		tempDirectory: %tmpDir%
 		currentWorkingDirectory: %currentWorkingDirectory%
@@ -47,12 +49,16 @@ services:
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
 	- TwigStan\Twig\TwigFileNormalizer
-	- TwigStan\Configuration\ExclusionProvider(
-		phpExcludes: %twigstan.php.excludes%
-		twigExcludes: %twigstan.twig.excludes%
-	)
-	- TwigStan\Configuration\PathProvider(
-		phpPaths: %twigstan.php.paths%
-		twigPaths: %twigstan.twig.paths%
-	)
 	- TwigStan\Twig\TwigFileCanonicalizer
+	twigstan.files_finder.php:
+		class: TwigStan\Finder\FilesFinder
+		arguments:
+			namePattern: *.php
+			paths: %twigstan.php.paths%
+			exclusions: %twigstan.php.excludes%
+	twigstan.files_finder.twig:
+		class: TwigStan\Finder\FilesFinder
+		arguments:
+			namePattern: *.twig
+			paths: %twigstan.twig.paths%
+			exclusions: %twigstan.twig.excludes%

@@ -1,0 +1,12 @@
+parameters:
+	twigstan:
+		twig:
+			paths:
+				- files
+			excludes:
+				- files/exclude.twig
+		php:
+			paths:
+				- files
+			excludes:
+				- files/exclude.php

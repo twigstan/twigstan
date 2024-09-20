@@ -20,6 +20,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
 use TwigStan\Configuration\ExclusionProvider;
 use TwigStan\Configuration\PathProvider;
+use TwigStan\Finder\FilesFinder;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
@@ -42,8 +43,8 @@ final class AnalyzeCommand extends Command
         private TwigFileCanonicalizer $twigFileCanonicalizer,
         private PHPStanRunner $phpStanRunner,
         private Filesystem $filesystem,
-        private PathProvider $pathProvider,
-        private ExclusionProvider $exclusionProvider,
+        private FilesFinder $phpFilesFinder,
+        private FilesFinder $twigFilesFinder,
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
@@ -395,56 +396,12 @@ final class AnalyzeCommand extends Command
 
             $paths = iterator_to_array($genericFinder);
         } else {
-            $twigFinder = $this->getTwigFinder();
-            $phpFinder = $this->getPhpFinder();
-
-            $paths = array_merge(iterator_to_array($twigFinder), iterator_to_array($phpFinder));
+            $paths = array_merge($this->phpFilesFinder->find(), $this->twigFilesFinder->find());
         }
 
         $paths = array_unique($paths);
 
         return $paths;
-    }
-
-
-    private function getTwigFinder(): Finder
-    {
-        $twigPaths = $this->pathProvider->getTwigPaths();
-        $twigExclusion = $this->exclusionProvider->getTwigExcludes();
-
-        return Finder::create()
-            ->files()
-            ->name(['*.twig'])
-            ->in($twigPaths)
-            ->filter(function (SplFileInfo $file) use ($twigExclusion) {
-                foreach ($twigExclusion as $exclude) {
-                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
-    }
-
-    private function getPhpFinder(): Finder
-    {
-        $phpPaths = $this->pathProvider->getTwigPaths();
-        $phpExclusion = $this->exclusionProvider->getTwigExcludes();
-
-        return Finder::create()
-            ->files()
-            ->name(['*.php'])
-            ->in($phpPaths)
-            ->filter(function (SplFileInfo $file) use ($phpExclusion) {
-                foreach ($phpExclusion as $exclude) {
-                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
     }
 
     /**
@@ -481,7 +438,7 @@ final class AnalyzeCommand extends Command
             return Finder::create()->append([]);
         }
 
-        $excludes = array_merge($this->exclusionProvider->getPhpExcludes(), $this->exclusionProvider->getTwigExcludes());
+        $excludes = array_merge($this->phpFilesFinder->getExcludes(), $this->twigFilesFinder->getExcludes());
 
         return Finder::create()
             ->files()
