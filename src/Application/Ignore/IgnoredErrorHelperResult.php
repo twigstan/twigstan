@@ -149,7 +149,7 @@ final class IgnoredErrorHelperResult
                 continue;
             }
 
-            $errors[] = (new TwigStanError(
+            $errors[] = new TwigStanError(
                 sprintf(
                     'Ignored error pattern %s is expected to occur %d %s, but occurred %d %s.',
                     IgnoredError::stringifyPattern($unmatchedIgnoredError),
@@ -164,7 +164,6 @@ final class IgnoredErrorHelperResult
                 $unmatchedIgnoredError['line'],
                 new SourceLocation($unmatchedIgnoredError['file'], $unmatchedIgnoredError['line']),
                 [],
-            )
             );
         }
 
