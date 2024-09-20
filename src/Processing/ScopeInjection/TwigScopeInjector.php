@@ -27,7 +27,7 @@ use TwigStan\Processing\Flattening\FlatteningResultCollection;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
 use TwigStan\Twig\SourceLocation;
-use TwigStan\Twig\TwigFileNormalizer;
+use TwigStan\Twig\TwigFileCanonicalizer;
 
 final readonly class TwigScopeInjector
 {
@@ -36,7 +36,7 @@ final readonly class TwigScopeInjector
         private Filesystem $filesystem,
         private StrictPhpParser $phpParser,
         private ArrayShapeMerger $arrayShapeMerger,
-        private TwigFileNormalizer $twigFileNormalizer,
+        private TwigFileCanonicalizer $twigFileCanonicalizer,
     ) {}
 
     /**
@@ -83,7 +83,7 @@ final readonly class TwigScopeInjector
         foreach ($collectedData as $data) {
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
-                    $template = $this->twigFileNormalizer->normalize($renderData['template']);
+                    $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
 
                     $templateRenderContexts[$template][] = $renderData['context'];
                 }

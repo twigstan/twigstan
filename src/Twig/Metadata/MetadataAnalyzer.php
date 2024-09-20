@@ -16,7 +16,7 @@ use Twig\Node\Node;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 use TwigStan\Processing\Compilation\TwigVisitor\SimpleNameExpression;
 use TwigStan\Twig\Node\NodeFinder;
-use TwigStan\Twig\TwigFileNormalizer;
+use TwigStan\Twig\TwigFileCanonicalizer;
 
 final readonly class MetadataAnalyzer
 {
@@ -24,7 +24,7 @@ final readonly class MetadataAnalyzer
         private Environment $twig,
         private TwigNodeParser $twigNodeParser,
         private NodeFinder $nodeFinder,
-        private TwigFileNormalizer $twigFileNormalizer,
+        private TwigFileCanonicalizer $twigFileCanonicalizer,
     ) {}
 
     ///**
@@ -74,7 +74,7 @@ final readonly class MetadataAnalyzer
         if ($template->hasNode('parent')) {
             $parentLineNumber = $template->getNode('parent')->getTemplateLine();
             $parents = array_map(
-                $this->twigFileNormalizer->normalize(...),
+                $this->twigFileCanonicalizer->canonicalize(...),
                 $this->getStringsFromExpression($template->getNode('parent')),
             );
         }
