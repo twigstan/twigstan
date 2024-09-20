@@ -17,6 +17,8 @@ return (new Config())
         [
             '@PER-CS2.0' => true,
             'binary_operator_spaces' => ['default' => 'single_space'],
+            'global_namespace_import' => ['import_classes' => true, 'import_constants' => false, 'import_functions' => false],
+            'ordered_imports' => ['imports_order' => ['class', 'function', 'const'], 'sort_algorithm' => 'alpha'],
             'no_superfluous_phpdoc_tags' => ['allow_mixed' => true, 'remove_inheritdoc' => true],
             'single_space_around_construct' => true,
             'type_declaration_spaces' => true,

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Processing\Compilation;
 
 use ArrayIterator;
+use InvalidArgumentException;
 use IteratorAggregate;
 
 /**
@@ -44,7 +45,7 @@ final readonly class CompilationResultCollection implements IteratorAggregate
     /**
      * @return ArrayIterator<string, CompilationResult>
      */
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->results);
     }
@@ -68,7 +69,7 @@ final readonly class CompilationResultCollection implements IteratorAggregate
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('No CompilationResult found for PHP file "%s"', $phpFile));
+        throw new InvalidArgumentException(sprintf('No CompilationResult found for PHP file "%s"', $phpFile));
     }
 
     public function hasTwigFileName(string $fileName): bool
@@ -78,6 +79,6 @@ final readonly class CompilationResultCollection implements IteratorAggregate
 
     public function getByTwigFileName(string $fileName): CompilationResult
     {
-        return $this->results[$fileName] ?? throw new \InvalidArgumentException(sprintf('No CompilationResult found for Twig file "%s"', $fileName));
+        return $this->results[$fileName] ?? throw new InvalidArgumentException(sprintf('No CompilationResult found for Twig file "%s"', $fileName));
     }
 }
