@@ -18,8 +18,6 @@ use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
-use TwigStan\Configuration\ExclusionProvider;
-use TwigStan\Configuration\PathProvider;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
