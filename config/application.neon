@@ -48,7 +48,6 @@ services:
 	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
-	- TwigStan\Twig\TwigFileNormalizer
 	- TwigStan\Twig\TwigFileCanonicalizer
 	twigstan.files_finder.php:
 		class: TwigStan\Finder\FilesFinder
