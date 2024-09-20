@@ -18,6 +18,8 @@ use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
+use TwigStan\Configuration\ExclusionProvider;
+use TwigStan\Configuration\PathProvider;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
@@ -31,10 +33,6 @@ use TwigStan\Twig\TwigFileCanonicalizer;
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
 {
-    /**
-     * @param list<string> $directories
-     * @param list<string> $excludes
-     */
     public function __construct(
         private TwigCompiler $twigCompiler,
         private TwigFlattener $twigFlattener,
@@ -44,11 +42,11 @@ final class AnalyzeCommand extends Command
         private TwigFileCanonicalizer $twigFileCanonicalizer,
         private PHPStanRunner $phpStanRunner,
         private Filesystem $filesystem,
+        private PathProvider $pathProvider,
+        private ExclusionProvider $exclusionProvider,
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
-        private array $directories,
-        private array $excludes,
     ) {
         parent::__construct();
     }
@@ -163,7 +161,6 @@ final class AnalyzeCommand extends Command
         bool $debugMode,
         bool $xdebugMode,
     ): TwigStanAnalysisResult {
-
         $compilationDirectory = Path::normalize($this->tempDirectory . '/compilation');
         $this->filesystem->remove($compilationDirectory);
         $this->filesystem->mkdir($compilationDirectory);
@@ -176,11 +173,11 @@ final class AnalyzeCommand extends Command
         $this->filesystem->remove($scopeInjectionDirectory);
         $this->filesystem->mkdir($scopeInjectionDirectory);
 
-        $finder = $this->getFinder($paths);
+        $files = $this->getFiles($paths);
 
         $twigFileNames = [];
         $phpFileNames = [];
-        foreach ($finder as $file) {
+        foreach ($files as $file) {
             if ($file->getExtension() === 'php') {
                 $phpFileNames[] = $file->getRealPath();
                 continue;
@@ -391,18 +388,74 @@ final class AnalyzeCommand extends Command
      *
      * @return array<SplFileInfo>
      */
-    private function getFinder(array $paths): array
+    private function getFiles(array $paths): array
     {
         if ($paths !== []) {
-            $paths = array_map(
-                fn($path) => Path::makeAbsolute($path, $this->currentWorkingDirectory),
-                $paths,
-            );
+            $genericFinder = $this->getGenericFinder($paths);
+
+            $paths = iterator_to_array($genericFinder);
         } else {
-            $paths = $this->directories;
+            $twigFinder = $this->getTwigFinder();
+            $phpFinder = $this->getPhpFinder();
+
+            $paths = array_merge(iterator_to_array($twigFinder), iterator_to_array($phpFinder));
         }
 
         $paths = array_unique($paths);
+
+        return $paths;
+    }
+
+
+    private function getTwigFinder(): Finder
+    {
+        $twigPaths = $this->pathProvider->getTwigPaths();
+        $twigExclusion = $this->exclusionProvider->getTwigExcludes();
+
+        return Finder::create()
+            ->files()
+            ->name(['*.twig'])
+            ->in($twigPaths)
+            ->filter(function (SplFileInfo $file) use ($twigExclusion) {
+                foreach ($twigExclusion as $exclude) {
+                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+    }
+
+    private function getPhpFinder(): Finder
+    {
+        $phpPaths = $this->pathProvider->getTwigPaths();
+        $phpExclusion = $this->exclusionProvider->getTwigExcludes();
+
+        return Finder::create()
+            ->files()
+            ->name(['*.php'])
+            ->in($phpPaths)
+            ->filter(function (SplFileInfo $file) use ($phpExclusion) {
+                foreach ($phpExclusion as $exclude) {
+                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+    }
+
+    /**
+     * @param list<string> $paths
+     */
+    private function getGenericFinder(array $paths): Finder
+    {
+        $paths = array_map(
+            fn($path) => Path::makeAbsolute($path, $this->currentWorkingDirectory),
+            $paths,
+        );
 
         $directories = [];
         $files = [];
@@ -425,17 +478,19 @@ final class AnalyzeCommand extends Command
         }
 
         if ($files === [] && $directories === []) {
-            return [];
+            return Finder::create()->append([]);
         }
 
-        $found = Finder::create()
+        $excludes = array_merge($this->exclusionProvider->getPhpExcludes(), $this->exclusionProvider->getTwigExcludes());
+
+        return Finder::create()
             ->files()
             ->name(['*.twig', '*.php'])
             ->notName('*.untrack.php') // @todo remove later
             ->in($directories)
             ->append($files)
-            ->filter(function (SplFileInfo $file) {
-                foreach ($this->excludes as $exclude) {
+            ->filter(function (SplFileInfo $file) use ($excludes) {
+                foreach ($excludes as $exclude) {
                     if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
                         return false;
                     }
@@ -443,8 +498,5 @@ final class AnalyzeCommand extends Command
 
                 return true;
             });
-
-
-        return iterator_to_array($found);
     }
 }
