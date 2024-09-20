@@ -13,7 +13,7 @@ class RenderFromAbstractController extends AbstractController
     {
         $response = new Response(status: Response::HTTP_CREATED);
 
-        return $this->render('EndToEnd/RenderPoints/render.html.twig', [
+        return $this->render('RenderPoints/render.html.twig', [
             'title' => 'RenderAction',
             'artists' => ['Adele', 'Kanye West'],
         ], $response);
@@ -21,7 +21,7 @@ class RenderFromAbstractController extends AbstractController
 
     public function renderViewAction(): Response
     {
-        return new Response($this->renderView('EndToEnd/RenderPoints/render.html.twig', [
+        return new Response($this->renderView('RenderPoints/render.html.twig', [
             'title' => 'RenderViewAction',
             'artists' => ['Adele', 'Kanye West'],
         ]));

@@ -291,7 +291,9 @@ final class AnalyzeCommand extends Command
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
                     $template = $this->twigFileNormalizer->normalize($renderData['template']);
-                    $templateToRenderPoint[$template][$data->filePath][] = $renderData['startLine'];
+                    $templatePath = $this->twigFileNormalizer->toAbsolute($template);
+
+                    $templateToRenderPoint[$templatePath][$data->filePath][] = $renderData['startLine'];
                 }
             }
         }
@@ -343,13 +345,11 @@ final class AnalyzeCommand extends Command
             $twigSourceLocation = null;
             $renderPoints = [];
             if ($error->sourceLocation !== null) {
-                $lastTwigFileName = null;
+                $twigFilePath = null;
                 foreach ($error->sourceLocation as $sourceLocation) {
                     $twigFilePath = $compilationResults
                         ->getByTwigFileName($sourceLocation->fileName)
                         ->twigFilePath;
-
-                    $lastTwigFileName = $sourceLocation->fileName;
 
                     $twigSourceLocation = SourceLocation::append(
                         $twigSourceLocation,
@@ -360,7 +360,7 @@ final class AnalyzeCommand extends Command
                     );
                 }
 
-                foreach ($templateToRenderPoint[$lastTwigFileName] ?? [] as $renderPointFileName => $lineNumbers) {
+                foreach ($templateToRenderPoint[$twigFilePath] ?? [] as $renderPointFileName => $lineNumbers) {
                     foreach ($lineNumbers as $lineNumber) {
                         $renderPoints[] = new SourceLocation(
                             $renderPointFileName,

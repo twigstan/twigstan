@@ -84,8 +84,9 @@ final readonly class TwigScopeInjector
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
                     $template = $this->twigFileNormalizer->normalize($renderData['template']);
+                    $templatePath = $this->twigFileNormalizer->toAbsolute($template);
 
-                    $templateRenderContexts[$template][] = $renderData['context'];
+                    $templateRenderContexts[$templatePath][] = $renderData['context'];
                 }
             }
         }
@@ -134,7 +135,7 @@ final readonly class TwigScopeInjector
                 $this->phpParser->parseFile($flatteningResult->phpFile),
                 new NameResolver(),
                 new InjectContextVisitor(
-                    $templateRenderContext[$flatteningResult->twigFileName] ?? new ArrayShapeNode([]),
+                    $templateRenderContext[$flatteningResult->twigFilePath] ?? new ArrayShapeNode([]),
                     $contextBeforeBlockRelatedToTemplate,
                     $this->arrayShapeMerger,
                 ),
