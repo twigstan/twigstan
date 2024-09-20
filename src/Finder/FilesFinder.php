@@ -5,7 +5,7 @@ namespace TwigStan\Finder;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
-class FilesFinder
+final class FilesFinder
 {
     /**
      * @param list<string> $paths
