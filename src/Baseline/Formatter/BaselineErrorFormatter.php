@@ -4,7 +4,7 @@ namespace TwigStan\Baseline\Formatter;
 
 use TwigStan\Application\TwigStanAnalysisResult;
 
-interface BaselineErrorFormattable
+interface BaselineErrorFormatter
 {
     public function format(
         TwigStanAnalysisResult $analysisResult,

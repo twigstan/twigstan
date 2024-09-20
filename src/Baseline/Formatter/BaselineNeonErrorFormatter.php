@@ -6,9 +6,8 @@ use Nette\DI\Helpers;
 use Nette\Neon\Neon;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Application\TwigStanAnalysisResult;
-use TwigStan\Application\TwigStanError;
 
-class BaselineNeonErrorFormatter implements BaselineErrorFormattable
+class BaselineNeonErrorFormatter implements BaselineErrorFormatter
 {
     public function __construct(
         private string $currentWorkingDirectory,
@@ -23,10 +22,9 @@ class BaselineNeonErrorFormatter implements BaselineErrorFormattable
         }
 
         $fileErrors = [];
-        /** @var TwigStanError $fileSpecificError */
         foreach ($analysisResult->errors as $fileSpecificError) {
             $twigFileName = $fileSpecificError->twigSourceLocation->fileName ?? $fileSpecificError->phpFile;
-            if(!$twigFileName) {
+            if (!$twigFileName) {
                 continue;
             }
             $fileErrors[Path::makeRelative($twigFileName, $this->currentWorkingDirectory)][] = $fileSpecificError->message;
@@ -75,11 +73,6 @@ class BaselineNeonErrorFormatter implements BaselineErrorFormattable
             return substr($neon, 0, -1);
         }
 
-        $existingBaselineContentEndOfFileNewlinesMatches = preg_match("~(\n)+$~", $existingBaselineContent, $matches);
-        $existingBaselineContentEndOfFileNewlines = $existingBaselineContentEndOfFileNewlinesMatches !== false
-            ? $matches[0] ?? ''
-            : '';
-
-        return substr($neon, 0, -2) . $existingBaselineContentEndOfFileNewlines;
+        return substr($neon, 0, -2) . $existingBaselineContent;
     }
 }
