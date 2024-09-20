@@ -71,7 +71,7 @@ final class IgnoredError
             $errorMessage = str_replace(['\r\n', '\r'], '\n', $errorMessage);
             $ignoredErrorPattern = str_replace([preg_quote('\r\n'), preg_quote('\r')], preg_quote('\n'), $ignoredErrorPattern);
 
-            if ((int) preg_match($ignoredErrorPattern, $errorMessage) === 0) {
+            if (preg_match($ignoredErrorPattern, $errorMessage) !== 1) {
                 return false;
             }
         }
