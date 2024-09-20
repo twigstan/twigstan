@@ -77,7 +77,9 @@ final class IgnoredError
         }
 
         if ($path !== null) {
-            return (new FileExcluder($workingDirectory, [$path]))->isExcludedFromAnalysing($error->twigSourceLocation->fileName ?? $error->phpFile);
+            $excluder = new FileExcluder($workingDirectory, [$path]);
+
+            return $excluder->isExcludedFromAnalysing($error->twigSourceLocation->fileName ?? $error->phpFile);
         }
 
         return true;
