@@ -1,37 +1,32 @@
 <?php
 
-declare(strict_types=1);
-
 namespace TwigStan\Application\Ignore;
 
+use RuntimeException;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Application\TwigStanError;
 use TwigStan\Twig\SourceLocation;
 
-final class IgnoredErrorHelperResult
+final class IgnoreErrorProcessor
 {
     /**
-     * @param list<string> $errors
-     * @param array<array<mixed>> $otherIgnoreErrors
-     * @param array<string, array<array<mixed>>> $ignoreErrorsByFile
+     * @var array<array<mixed>> $otherIgnoreErrors
+     */
+    private array $otherIgnoreErrors;
+
+    /**
+     * @var array<string, array<array<mixed>>> $ignoreErrorsByFile
+     */
+    private array $ignoreErrorsByFile;
+
+    /**
      * @param (string|mixed[])[] $ignoreErrors
      */
     public function __construct(
-        private array $errors,
-        private array $otherIgnoreErrors,
-        private array $ignoreErrorsByFile,
         private array $ignoreErrors,
         private bool $reportUnmatchedIgnoredErrors,
         private string $workingDirectory,
     ) {}
-
-    /**
-     * @return list<string>
-     */
-    public function getErrors(): array
-    {
-        return $this->errors;
-    }
 
     /**
      * @param TwigStanError[] $errors
@@ -39,10 +34,10 @@ final class IgnoredErrorHelperResult
      */
     public function process(
         array $errors,
-        bool $onlyFiles,
         array $analysedFiles,
-        bool $hasInternalErrors,
     ): IgnoredErrorHelperProcessedResult {
+        $this->initialize();
+
         $unmatchedIgnoredErrors = $this->ignoreErrors;
 
         $processIgnoreError = function (TwigStanError $error, int $i, $ignore) use (&$unmatchedIgnoredErrors): bool {
@@ -83,7 +78,7 @@ final class IgnoredErrorHelperResult
 
                         if (isset($unmatchedIgnoredErrors[$i])) {
                             if (!is_array($unmatchedIgnoredErrors[$i])) {
-                                throw new \RuntimeException('Internal Error.');
+                                throw new RuntimeException('Internal Error.');
                             }
                             unset($unmatchedIgnoredErrors[$i]['paths'][$j]);
                             if (isset($unmatchedIgnoredErrors[$i]['paths']) && count($unmatchedIgnoredErrors[$i]['paths']) === 0) {
@@ -169,59 +164,151 @@ final class IgnoredErrorHelperResult
 
         $analysedFilesKeys = array_fill_keys($analysedFiles, true);
 
-        if (!$hasInternalErrors) {
-            foreach ($unmatchedIgnoredErrors as $unmatchedIgnoredError) {
-                $reportUnmatched = $unmatchedIgnoredError['reportUnmatched'] ?? $this->reportUnmatchedIgnoredErrors;
-                if ($reportUnmatched === false) {
-                    continue;
-                }
-                if (
-                    isset($unmatchedIgnoredError['count'])
-                    && isset($unmatchedIgnoredError['realCount'])
-                    && (isset($unmatchedIgnoredError['realPath']) || !$onlyFiles)
-                ) {
-                    if ($unmatchedIgnoredError['realCount'] < $unmatchedIgnoredError['count']) {
-                        $errors[] = (new TwigStanError(
-                            sprintf(
-                                'Ignored error pattern %s is expected to occur %d %s, but occurred %d %s.',
-                                IgnoredError::stringifyPattern($unmatchedIgnoredError),
-                                $unmatchedIgnoredError['count'],
-                                $unmatchedIgnoredError['count'] === 1 ? 'time' : 'times',
-                                $unmatchedIgnoredError['realCount'],
-                                $unmatchedIgnoredError['realCount'] === 1 ? 'time' : 'times',
-                            ),
-                            'ignore.count',
-                            null,
-                            $unmatchedIgnoredError['file'],
-                            $unmatchedIgnoredError['line'],
-                            new SourceLocation($unmatchedIgnoredError['file'], $unmatchedIgnoredError['line']),
-                            [],
-                        )
-                        );
-                    }
-                } elseif (isset($unmatchedIgnoredError['realPath'])) {
-                    if (!array_key_exists($unmatchedIgnoredError['realPath'], $analysedFilesKeys)) {
-                        continue;
-                    }
 
+        foreach ($unmatchedIgnoredErrors as $unmatchedIgnoredError) {
+            $reportUnmatched = $unmatchedIgnoredError['reportUnmatched'] ?? $this->reportUnmatchedIgnoredErrors;
+            if ($reportUnmatched === false) {
+                continue;
+            }
+            if (
+                isset($unmatchedIgnoredError['count'])
+                && isset($unmatchedIgnoredError['realCount'])
+                && isset($unmatchedIgnoredError['realPath'])
+            ) {
+                if ($unmatchedIgnoredError['realCount'] < $unmatchedIgnoredError['count']) {
                     $errors[] = (new TwigStanError(
                         sprintf(
-                            'Ignored error pattern %s was not matched in reported errors.',
+                            'Ignored error pattern %s is expected to occur %d %s, but occurred %d %s.',
                             IgnoredError::stringifyPattern($unmatchedIgnoredError),
+                            $unmatchedIgnoredError['count'],
+                            $unmatchedIgnoredError['count'] === 1 ? 'time' : 'times',
+                            $unmatchedIgnoredError['realCount'],
+                            $unmatchedIgnoredError['realCount'] === 1 ? 'time' : 'times',
                         ),
-                        'ignore.unmatched',
+                        'ignore.count',
                         null,
-                        $unmatchedIgnoredError['realPath'],
+                        $unmatchedIgnoredError['file'],
                         $unmatchedIgnoredError['line'],
-                        new SourceLocation($unmatchedIgnoredError['realPath'], $unmatchedIgnoredError['line']),
+                        new SourceLocation($unmatchedIgnoredError['file'], $unmatchedIgnoredError['line']),
                         [],
                     )
                     );
                 }
+            } elseif (isset($unmatchedIgnoredError['realPath'])) {
+                if (!array_key_exists($unmatchedIgnoredError['realPath'], $analysedFilesKeys)) {
+                    continue;
+                }
+
+                $errors[] = (new TwigStanError(
+                    sprintf(
+                        'Ignored error pattern %s was not matched in reported errors.',
+                        IgnoredError::stringifyPattern($unmatchedIgnoredError),
+                    ),
+                    'ignore.unmatched',
+                    null,
+                    $unmatchedIgnoredError['realPath'],
+                    $unmatchedIgnoredError['line'],
+                    new SourceLocation($unmatchedIgnoredError['realPath'], $unmatchedIgnoredError['line']),
+                    [],
+                )
+                );
             }
         }
 
         return new IgnoredErrorHelperProcessedResult($errors, $ignoredErrors);
     }
 
+    private function initialize(): void
+    {
+        $otherIgnoreErrors = [];
+        $ignoreErrorsByFile = [];
+
+        $expandedIgnoreErrors = [];
+        foreach ($this->ignoreErrors as $ignoreError) {
+            if (is_array($ignoreError)) {
+                if (!isset($ignoreError['message']) && !isset($ignoreError['messages']) && !isset($ignoreError['identifier'])) {
+                    continue;
+                }
+                if (isset($ignoreError['messages'])) {
+                    foreach ($ignoreError['messages'] as $message) {
+                        $expandedIgnoreError = $ignoreError;
+                        unset($expandedIgnoreError['messages']);
+                        $expandedIgnoreError['message'] = $message;
+                        $expandedIgnoreErrors[] = $expandedIgnoreError;
+                    }
+                } else {
+                    $expandedIgnoreErrors[] = $ignoreError;
+                }
+            } else {
+                $expandedIgnoreErrors[] = $ignoreError;
+            }
+        }
+
+        $uniquedExpandedIgnoreErrors = [];
+        foreach ($expandedIgnoreErrors as $ignoreError) {
+            if (!isset($ignoreError['message']) && !isset($ignoreError['identifier'])) {
+                $uniquedExpandedIgnoreErrors[] = $ignoreError;
+                continue;
+            }
+            if (!isset($ignoreError['path'])) {
+                $uniquedExpandedIgnoreErrors[] = $ignoreError;
+                continue;
+            }
+
+            $key = $ignoreError['path'];
+            if (isset($ignoreError['message'])) {
+                $key = sprintf("%s\n%s", $key, $ignoreError['message']);
+            }
+            if (isset($ignoreError['identifier'])) {
+                $key = sprintf("%s\n%s", $key, $ignoreError['identifier']);
+            }
+            if ($key === '') {
+                throw new RuntimeException('Internal Error.');
+            }
+
+            if (!array_key_exists($key, $uniquedExpandedIgnoreErrors)) {
+                $uniquedExpandedIgnoreErrors[$key] = $ignoreError;
+                continue;
+            }
+
+            $uniquedExpandedIgnoreErrors[$key] = [
+                'message' => $ignoreError['message'] ?? null,
+                'path' => $ignoreError['path'],
+                'identifier' => $ignoreError['identifier'] ?? null,
+                'count' => ($uniquedExpandedIgnoreErrors[$key]['count'] ?? 1) + ($ignoreError['count'] ?? 1),
+                'reportUnmatched' => ($uniquedExpandedIgnoreErrors[$key]['reportUnmatched'] ?? $this->reportUnmatchedIgnoredErrors) || ($ignoreError['reportUnmatched'] ?? $this->reportUnmatchedIgnoredErrors),
+            ];
+        }
+
+        $expandedIgnoreErrors = array_values($uniquedExpandedIgnoreErrors);
+
+        foreach ($expandedIgnoreErrors as $i => $ignoreError) {
+            $ignoreErrorEntry = [
+                'index' => $i,
+                'ignoreError' => $ignoreError,
+            ];
+
+            if (is_array($ignoreError)) {
+                if (!isset($ignoreError['message']) && !isset($ignoreError['identifier'])) {
+                    continue;
+                }
+                if (!isset($ignoreError['path'])) {
+                    $otherIgnoreErrors[] = $ignoreErrorEntry;
+                } elseif (@is_file($ignoreError['path'])) {
+                    $normalizedPath = Path::normalize($ignoreError['path']);
+                    $ignoreError['path'] = $normalizedPath;
+                    $ignoreErrorsByFile[$normalizedPath][] = $ignoreErrorEntry;
+                    $ignoreError['realPath'] = $normalizedPath;
+                    $expandedIgnoreErrors[$i] = $ignoreError;
+                } else {
+                    $otherIgnoreErrors[] = $ignoreErrorEntry;
+                }
+            } else {
+                $otherIgnoreErrors[] = $ignoreErrorEntry;
+            }
+        }
+
+        $this->otherIgnoreErrors = $otherIgnoreErrors;
+        $this->ignoreErrorsByFile = $ignoreErrorsByFile;
+    }
 }
