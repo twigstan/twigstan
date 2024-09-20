@@ -6,12 +6,6 @@ namespace TwigStan\Application\Ignore;
 
 use Symfony\Component\Filesystem\Path;
 
-use function array_key_exists;
-use function array_values;
-use function is_array;
-use function is_file;
-use function sprintf;
-
 final class IgnoredErrorHelper
 {
     /**

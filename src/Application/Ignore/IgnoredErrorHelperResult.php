@@ -8,14 +8,6 @@ use Symfony\Component\Filesystem\Path;
 use TwigStan\Application\TwigStanError;
 use TwigStan\Twig\SourceLocation;
 
-use function array_fill_keys;
-use function array_key_exists;
-use function array_values;
-use function count;
-use function is_array;
-use function is_string;
-use function sprintf;
-
 final class IgnoredErrorHelperResult
 {
     /**

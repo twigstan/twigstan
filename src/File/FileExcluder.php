@@ -6,17 +6,6 @@ namespace TwigStan\File;
 
 use Symfony\Component\Filesystem\Path;
 
-use function fnmatch;
-use function in_array;
-use function preg_match;
-use function str_starts_with;
-use function strlen;
-use function substr;
-
-use const DIRECTORY_SEPARATOR;
-use const FNM_CASEFOLD;
-use const FNM_NOESCAPE;
-
 final class FileExcluder
 {
     /**

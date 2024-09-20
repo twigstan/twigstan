@@ -7,13 +7,6 @@ namespace TwigStan\Application\Ignore;
 use TwigStan\Application\TwigStanError;
 use TwigStan\File\FileExcluder;
 
-use function count;
-use function implode;
-use function is_array;
-use function preg_quote;
-use function sprintf;
-use function str_replace;
-
 final class IgnoredError
 {
     /**
