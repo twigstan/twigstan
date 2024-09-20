@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Processing\ScopeInjection;
 
+use LogicException;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
@@ -56,7 +57,7 @@ final readonly class TwigScopeInjector
                 );
 
                 if (!$phpDocNode instanceof VarTagValueNode) {
-                    throw new \LogicException('Invalid @var tag');
+                    throw new LogicException('Invalid @var tag');
                 }
 
                 $context = $phpDocNode->type;

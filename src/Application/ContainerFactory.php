@@ -7,6 +7,7 @@ namespace TwigStan\Application;
 use Nette\Bootstrap\Configurator;
 use Nette\DI\Container;
 use Nette\Neon\Neon;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 
@@ -70,7 +71,7 @@ final readonly class ContainerFactory
         $container = new $class();
 
         if (!$container instanceof Container) {
-            throw new \RuntimeException('Container is not an instance of Nette\DI\Container');
+            throw new RuntimeException('Container is not an instance of Nette\DI\Container');
         }
 
         return $container;

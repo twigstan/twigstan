@@ -7,6 +7,7 @@ namespace TwigStan\PHP;
 use PhpParser\Node\Stmt;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
+use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 
 final readonly class StrictPhpParser
@@ -27,7 +28,7 @@ final readonly class StrictPhpParser
         $stmts = $this->phpParser->parse($code);
 
         if ($stmts === null) {
-            throw new \RuntimeException('Failed to parse PHP code');
+            throw new RuntimeException('Failed to parse PHP code');
         }
 
         return $stmts;

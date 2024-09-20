@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Processing\Flattening;
 
 use ArrayIterator;
+use InvalidArgumentException;
 use IteratorAggregate;
 
 /**
@@ -44,7 +45,7 @@ final readonly class FlatteningResultCollection implements IteratorAggregate
     /**
      * @return ArrayIterator<string, FlatteningResult>
      */
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->results);
     }
@@ -68,7 +69,7 @@ final readonly class FlatteningResultCollection implements IteratorAggregate
             }
         }
 
-        throw new \InvalidArgumentException(sprintf('No FlatteningResult found for PHP file "%s"', $phpFile));
+        throw new InvalidArgumentException(sprintf('No FlatteningResult found for PHP file "%s"', $phpFile));
     }
 
     public function hasTwigFileName(string $fileName): bool
@@ -78,6 +79,6 @@ final readonly class FlatteningResultCollection implements IteratorAggregate
 
     public function getByTwigFileName(string $fileName): FlatteningResult
     {
-        return $this->results[$fileName] ?? throw new \InvalidArgumentException(sprintf('No FlatteningResult found for Twig file "%s"', $fileName));
+        return $this->results[$fileName] ?? throw new InvalidArgumentException(sprintf('No FlatteningResult found for Twig file "%s"', $fileName));
     }
 }
