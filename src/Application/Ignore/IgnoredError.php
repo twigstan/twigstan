@@ -50,8 +50,6 @@ final class IgnoredError
         return $message;
     }
 
-    /**
-     */
     public static function shouldIgnore(
         TwigStanError $error,
         ?string $ignoredErrorPattern,
