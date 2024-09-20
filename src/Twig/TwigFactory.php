@@ -8,10 +8,8 @@ use InvalidArgumentException;
 use Twig\Environment;
 use Twig\Extension\EscaperExtension;
 use Twig\Loader\ArrayLoader;
-use Twig\Loader\FilesystemLoader;
 use Twig\NodeVisitor\NodeVisitorInterface;
 use Twig\TokenParser\AbstractTokenParser;
-use TwigStan\Twig\Loader\AbsolutePathLoader;
 
 final readonly class TwigFactory
 {
@@ -44,14 +42,6 @@ final readonly class TwigFactory
         if (!$twig instanceof Environment) {
             throw new InvalidArgumentException(sprintf('Environment loader "%s" must return an instance of %s, got: %s. ', $this->environmentLoader, Environment::class, get_debug_type($twig)));
         }
-
-        $loader = $twig->getLoader();
-
-        if (!$loader instanceof FilesystemLoader) {
-            throw new InvalidArgumentException(sprintf('Loader must be an instance of %s', FilesystemLoader::class));
-        }
-
-        $twig->setLoader(new AbsolutePathLoader($loader));
 
         $twig->getExtension(EscaperExtension::class)->setDefaultStrategy(false);
 

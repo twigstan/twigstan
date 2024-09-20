@@ -26,7 +26,7 @@ use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
 use TwigStan\Twig\DependencyFinder;
 use TwigStan\Twig\DependencySorter;
 use TwigStan\Twig\SourceLocation;
-use TwigStan\Twig\TwigFileNormalizer;
+use TwigStan\Twig\TwigFileCanonicalizer;
 
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
@@ -41,7 +41,7 @@ final class AnalyzeCommand extends Command
         private TwigScopeInjector $twigScopeInjector,
         private DependencyFinder $dependencyFinder,
         private DependencySorter $dependencySorter,
-        private TwigFileNormalizer $twigFileNormalizer,
+        private TwigFileCanonicalizer $twigFileCanonicalizer,
         private PHPStanRunner $phpStanRunner,
         private Filesystem $filesystem,
         private string $environmentLoader,
@@ -187,7 +187,7 @@ final class AnalyzeCommand extends Command
             }
 
             if ($file->getExtension() == 'twig') {
-                $twigFileNames[] = $this->twigFileNormalizer->normalize($file->getRealPath());
+                $twigFileNames[] = $this->twigFileCanonicalizer->canonicalize($file->getRealPath());
                 continue;
             }
 
@@ -290,7 +290,7 @@ final class AnalyzeCommand extends Command
         foreach ($analysisResult->collectedData as $data) {
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
-                    $template = $this->twigFileNormalizer->normalize($renderData['template']);
+                    $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
                     $templateToRenderPoint[$template][$data->filePath][] = $renderData['startLine'];
                 }
             }

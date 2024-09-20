@@ -4,3 +4,8 @@ parameters:
 			message: "#^Method TwigStan\\\\Twig\\\\Node\\\\NodeFinder\\:\\:findInstanceOf\\(\\) should return Twig\\\\Node\\\\Node\\|null but returns class\\-string\\<Twig\\\\Node\\\\Node\\>\\|Twig\\\\Node\\\\Node\\.$#"
 			count: 1
 			path: src/Twig/Node/NodeFinder.php
+
+		-
+			message: "#^Method TwigStan\\\\Twig\\\\TwigFileCanonicalizer\\:\\:findNamespacesWithinMainNamespace\\(\\) should return array\\<string, array\\<int, string\\>\\> but returns array\\<int\\|string, array\\<int, string\\>\\>\\.$#"
+			count: 1
+			path: src/Twig/TwigFileCanonicalizer.php
