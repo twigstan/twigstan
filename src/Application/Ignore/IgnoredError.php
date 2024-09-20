@@ -11,7 +11,6 @@ final class IgnoredError
 {
     /**
      * @param string|mixed[] $ignoredError
-     * @return string Representation of the ignored error
      */
     public static function stringifyPattern(array | string $ignoredError): string
     {
@@ -52,7 +51,6 @@ final class IgnoredError
     }
 
     /**
-     * @return bool To ignore or not to ignore?
      */
     public static function shouldIgnore(
         TwigStanError $error,
