@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TwigStan\Twig;
 
 use InvalidArgumentException;
-use Symfony\Bundle\WebProfilerBundle\Twig\WebProfilerExtension;
 use Twig\Environment;
 use Twig\Extension\EscaperExtension;
 use Twig\Loader\ArrayLoader;
