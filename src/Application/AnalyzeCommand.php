@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TwigStan\Application;
 
+use InvalidArgumentException;
+use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -16,6 +18,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
+use TwigStan\Application\Ignore\IgnoreErrorProcessor;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
 use TwigStan\Application\Ignore\IgnoredErrorHelper;
@@ -50,7 +53,7 @@ final class AnalyzeCommand extends Command
         private string $currentWorkingDirectory,
         private array $directories,
         private array $excludes,
-        private IgnoredErrorHelper $ignoredErrorHelper,
+        private IgnoreErrorProcessor $ignoreErrorProcessor,
     ) {
         parent::__construct();
     }
@@ -395,9 +398,7 @@ final class AnalyzeCommand extends Command
             $this->generateBaseline($result, $output, $generateBaselineFile);
         }
 
-        $ignoredErrorHelperResult = $this->ignoredErrorHelper->initialize();
-
-        $ignoredErrorHelperProcessedResult = $ignoredErrorHelperResult->process($result->errors, true, $twigFileNames, false);
+        $ignoredErrorHelperProcessedResult = $this->ignoreErrorProcessor->process($result->errors, $twigFileNames);
 
         return new TwigStanAnalysisResult($ignoredErrorHelperProcessedResult->getNotIgnoredErrors());
     }
@@ -437,7 +438,7 @@ final class AnalyzeCommand extends Command
                 continue;
             }
 
-            throw new \InvalidArgumentException(sprintf('Path %s is not a file or directory', $path));
+            throw new InvalidArgumentException(sprintf('Path %s is not a file or directory', $path));
         }
 
         if ($files === [] && $directories === []) {
@@ -477,7 +478,7 @@ final class AnalyzeCommand extends Command
         $extension = Path::getExtension($generateBaselineFile);
 
         if ($extension !== 'neon') {
-            throw new \RuntimeException("$extension extension is not supported yet.");
+            throw new RuntimeException("$extension extension is not supported yet.");
         }
 
         $baselineFileDirectory = dirname($generateBaselineFile);
