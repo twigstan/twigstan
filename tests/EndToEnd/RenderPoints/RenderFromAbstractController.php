@@ -19,11 +19,12 @@ class RenderFromAbstractController extends AbstractController
         ], $response);
     }
 
-    public function renderViewAction(): Response
+    public function renderViewAction(?string $optional): Response
     {
         return new Response($this->renderView('EndToEnd/RenderPoints/render.html.twig', [
             'title' => 'RenderViewAction',
             'artists' => ['Adele', 'Kanye West'],
+            'optional' => $optional,
         ]));
     }
 }

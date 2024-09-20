@@ -5,3 +5,18 @@
 {% endfor %}
 
 {{ error }}
+
+{#
+    Twigstan compile this to if (isset($optional) && !(\null === $optional)) {
+    instead of if (array_key_exists($optional, $context) && !(\null === $optional)) {
+#}
+{% if optional is defined and optional is not null %}
+{% endif %}
+
+{% for artist in artists %}
+    {% for artist2 in artists %} {# The same _parent variable is used for the two for loop #}
+        {% set foo = artist %}
+    {% endfor %}
+
+    {{ artist }}
+{% endfor %}

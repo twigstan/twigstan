@@ -1,0 +1,7 @@
+{% if foo is defined %}{{ foo }}{% endif %}
+
+{% set languagesTo = ''|split(',')|filter(v => v != null) %}
+
+{% macro _display(data) %}
+    {{ data }}
+{% endmacro %}
