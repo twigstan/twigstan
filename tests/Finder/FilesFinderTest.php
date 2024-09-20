@@ -19,10 +19,14 @@ class FilesFinderTest extends TestCase
         $containerFactory = new ContainerFactory(__DIR__, __DIR__ . '/twigstan.neon');
         $container = $containerFactory->create(sys_get_temp_dir() . '/twigstan');
 
-        /** @var FilesFinder $phpFilesFinderService */
+        /**
+         * @var FilesFinder $phpFilesFinderService
+         */
         $phpFilesFinderService = $container->getService('twigstan.files_finder.php');
 
-        /** @var FilesFinder $twigFilesFinderService */
+        /**
+         * @var FilesFinder $twigFilesFinderService
+         */
         $twigFilesFinderService = $container->getService('twigstan.files_finder.twig');
 
         $this->phpFileFinder = $phpFilesFinderService;
@@ -37,7 +41,9 @@ class FilesFinderTest extends TestCase
 
         self::assertCount(1, $files);
 
-        /** @var SplFileInfo $firstFile */
+        /**
+         * @var SplFileInfo $firstFile
+         */
         $firstFile = $files[__DIR__ . '/files/file.php'];
 
         self::assertSame($firstFile->getFilename(), 'file.php');
@@ -51,7 +57,9 @@ class FilesFinderTest extends TestCase
 
         self::assertCount(1, $files);
 
-        /** @var SplFileInfo $firstFile */
+        /**
+         * @var SplFileInfo $firstFile
+         */
         $firstFile = $files[__DIR__ . '/files/template.twig'];
 
         self::assertSame($firstFile->getFilename(), 'template.twig');
