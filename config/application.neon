@@ -49,6 +49,13 @@ services:
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer
+	- TwigStan\Finder\GivenFilesFinder(
+		exclusions: [
+			php: %twigstan.php.excludes%
+			twig:  %twigstan.twig.excludes%
+		],
+		currentWorkingDirectory: %currentWorkingDirectory%
+	)
 	twigstan.files_finder.php:
 		class: TwigStan\Finder\FilesFinder
 		arguments:
@@ -61,3 +68,9 @@ services:
 			namePattern: *.twig
 			paths: %twigstan.twig.paths%
 			exclusions: %twigstan.twig.excludes%
+	twigstan.files_finder.generic:
+			class: TwigStan\Finder\FilesFinder
+			arguments:
+				namePattern: *.twig
+				paths: []
+				exclusions: %twigstan.twig.excludes%

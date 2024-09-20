@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TwigStan\Application;
 
-use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -15,10 +14,10 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
 use TwigStan\Finder\FilesFinder;
+use TwigStan\Finder\GivenFilesFinder;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
@@ -43,6 +42,7 @@ final class AnalyzeCommand extends Command
         private Filesystem $filesystem,
         private FilesFinder $phpFilesFinder,
         private FilesFinder $twigFilesFinder,
+        private GivenFilesFinder $givenFilesFinder,
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
@@ -390,68 +390,11 @@ final class AnalyzeCommand extends Command
     private function getFiles(array $paths): array
     {
         if ($paths !== []) {
-            $genericFinder = $this->getGenericFinder($paths);
-
-            $paths = iterator_to_array($genericFinder);
+            $paths = $this->givenFilesFinder->find($paths);
         } else {
             $paths = array_merge($this->phpFilesFinder->find(), $this->twigFilesFinder->find());
         }
 
-        $paths = array_unique($paths);
-
         return $paths;
-    }
-
-    /**
-     * @param list<string> $paths
-     */
-    private function getGenericFinder(array $paths): Finder
-    {
-        $paths = array_map(
-            fn($path) => Path::makeAbsolute($path, $this->currentWorkingDirectory),
-            $paths,
-        );
-
-        $directories = [];
-        $files = [];
-        foreach ($paths as $path) {
-            if (is_dir($path)) {
-                $directories[] = $path;
-                continue;
-            }
-
-            if (is_file($path)) {
-                $files[] = new SplFileInfo(
-                    $path,
-                    basename(Path::makeRelative($path, $this->currentWorkingDirectory)),
-                    Path::makeRelative($path, $this->currentWorkingDirectory),
-                );
-                continue;
-            }
-
-            throw new InvalidArgumentException(sprintf('Path %s is not a file or directory', $path));
-        }
-
-        if ($files === [] && $directories === []) {
-            return Finder::create()->append([]);
-        }
-
-        $excludes = array_merge($this->phpFilesFinder->getExcludes(), $this->twigFilesFinder->getExcludes());
-
-        return Finder::create()
-            ->files()
-            ->name(['*.twig', '*.php'])
-            ->notName('*.untrack.php') // @todo remove later
-            ->in($directories)
-            ->append($files)
-            ->filter(function (SplFileInfo $file) use ($excludes) {
-                foreach ($excludes as $exclude) {
-                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
     }
 }
