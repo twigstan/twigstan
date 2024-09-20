@@ -3,12 +3,9 @@
 namespace TwigStan\EndToEnd\Baseline;
 
 use Nette\Neon\Neon;
-use Symfony\Component\Console\Tester\CommandTester;
-use TwigStan\Application\AnalyzeCommand;
-use TwigStan\Application\ContainerFactory;
-use TwigStan\EndToEnd\AbstractEndToEndTestCase;
+use RuntimeException;
 
-use function PHPUnit\Framework\assertStringContainsString;
+use TwigStan\EndToEnd\AbstractEndToEndTestCase;
 
 class GenerationBaselineTest extends AbstractEndToEndTestCase
 {
@@ -23,11 +20,11 @@ class GenerationBaselineTest extends AbstractEndToEndTestCase
     {
         parent::tearDown();
 
-        if(is_file(self::BASELINE_PATH)) {
+        if (is_file(self::BASELINE_PATH)) {
             unlink(self::BASELINE_PATH);
         }
 
-        if(is_file(self::ALTER_BASELINE_PATH)) {
+        if (is_file(self::ALTER_BASELINE_PATH)) {
             unlink(self::ALTER_BASELINE_PATH);
         }
     }
@@ -63,7 +60,7 @@ class GenerationBaselineTest extends AbstractEndToEndTestCase
 
     public function testCustomBaselineFilenameNotSupported(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('xyz extension is not supported yet.');
 
         parent::runTests(__DIR__ . '/NotEmpty', self::ALTER_BASELINE_PATH_NOT_SUPPORTED);

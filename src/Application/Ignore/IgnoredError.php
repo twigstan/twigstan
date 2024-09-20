@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Application\Ignore;
 
+use RuntimeException;
 use TwigStan\Application\TwigStanError;
 use TwigStan\File\FileExcluder;
 
@@ -31,7 +32,7 @@ final class IgnoredError
         }
 
         if ($message === '') {
-            throw new \RuntimeException('Internal Error.');
+            throw new RuntimeException('Internal Error.');
         }
 
         // ignore by path
