@@ -33,9 +33,18 @@ final readonly class ContainerFactory
 
         $configuration = Neon::decodeFile($this->configurationFile);
         if (isset($configuration['parameters']['twigstan']['directories'])) {
-            $configuration['parameters']['twigstan']['directories'] = array_map(
+            $configuration['parameters']['twigstan']['directories']['twig'] = array_map(
                 fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
-                $configuration['parameters']['twigstan']['directories'],
+                $configuration['parameters']['twigstan']['directories']['twig'] ?? [],
+            );
+            $configuration['parameters']['twigstan']['directories']['php'] = array_map(
+                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
+                $configuration['parameters']['twigstan']['directories']['php'] ?? [],
+            );
+
+            $configuration['parameters']['twigstan']['directories'] = array_merge(
+                $configuration['parameters']['twigstan']['directories']['twig'],
+                $configuration['parameters']['twigstan']['directories']['php'],
             );
         }
         if (isset($configuration['parameters']['twigstan']['excludes'])) {
