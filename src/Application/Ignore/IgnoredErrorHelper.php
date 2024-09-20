@@ -108,6 +108,13 @@ final class IgnoredErrorHelper
             }
         }
 
-        return new IgnoredErrorHelperResult($errors, $otherIgnoreErrors, $ignoreErrorsByFile, $expandedIgnoreErrors, $this->reportUnmatchedIgnoredErrors, $this->workingDirectory);
+        return new IgnoredErrorHelperResult(
+            $errors,
+            $otherIgnoreErrors,
+            $ignoreErrorsByFile,
+            $expandedIgnoreErrors,
+            $this->reportUnmatchedIgnoredErrors,
+            $this->workingDirectory,
+        );
     }
 }
