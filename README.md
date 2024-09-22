@@ -140,17 +140,6 @@ If you want to dump the types for the whole context (everything that's available
 {% dump_type %}
 ```
 
-## Known issues / todo
-
-* [Macros](https://twig.symfony.com/doc/3.x/tags/macro.html) are not yet supported
-* [Horizontal reuse](https://twig.symfony.com/doc/3.x/tags/use.html) is not yet supported
-* [Dynamic inheritance](https://twig.symfony.com/doc/3.x/tags/extends.html#dynamic-inheritance) is not supported
-* [Conditional inheritence](https://twig.symfony.com/doc/3.x/tags/extends.html#conditional-inheritance) is not yet supported
-* Not all render points are detected (currently only supports Symfony controllers)
-* Performance (PHPStan's cache misses all the time, should be fixed to speed things up significantly)
-* Baseline is missing
-* PHPStan extension installer is not yet supported
-
 ## Credits & Inspiration
 
 * [Ondřej Mirtes](https://github.com/ondrejmirtes) for creating PHPStan and providing guidance to create TwigStan.
