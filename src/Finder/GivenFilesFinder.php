@@ -52,7 +52,8 @@ final class GivenFilesFinder
             ->files()
             ->name(['*.twig', '*.php'])
             ->in($directories)
-            ->append($files);
+            ->append($files)
+            ->sortByName();
 
         return iterator_to_array($finder);
     }
