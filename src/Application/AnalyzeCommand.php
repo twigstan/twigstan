@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TwigStan\Application;
 
-use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -15,9 +14,9 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
+use TwigStan\Finder\FilesFinder;
+use TwigStan\Finder\GivenFilesFinder;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
@@ -31,10 +30,6 @@ use TwigStan\Twig\TwigFileCanonicalizer;
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
 {
-    /**
-     * @param list<string> $directories
-     * @param list<string> $excludes
-     */
     public function __construct(
         private TwigCompiler $twigCompiler,
         private TwigFlattener $twigFlattener,
@@ -44,11 +39,12 @@ final class AnalyzeCommand extends Command
         private TwigFileCanonicalizer $twigFileCanonicalizer,
         private PHPStanRunner $phpStanRunner,
         private Filesystem $filesystem,
+        private FilesFinder $phpFilesFinder,
+        private FilesFinder $twigFilesFinder,
+        private GivenFilesFinder $givenFilesFinder,
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
-        private array $directories,
-        private array $excludes,
     ) {
         parent::__construct();
     }
@@ -163,7 +159,6 @@ final class AnalyzeCommand extends Command
         bool $debugMode,
         bool $xdebugMode,
     ): TwigStanAnalysisResult {
-
         $compilationDirectory = Path::normalize($this->tempDirectory . '/compilation');
         $this->filesystem->remove($compilationDirectory);
         $this->filesystem->mkdir($compilationDirectory);
@@ -176,17 +171,21 @@ final class AnalyzeCommand extends Command
         $this->filesystem->remove($scopeInjectionDirectory);
         $this->filesystem->mkdir($scopeInjectionDirectory);
 
-        $finder = $this->getFinder($paths);
+        if ($paths !== []) {
+            $files = $this->givenFilesFinder->find($paths);
+        } else {
+            $files = [...$this->phpFilesFinder->find(), ...$this->twigFilesFinder->find()];
+        }
 
         $twigFileNames = [];
         $phpFileNames = [];
-        foreach ($finder as $file) {
+        foreach ($files as $file) {
             if ($file->getExtension() === 'php') {
                 $phpFileNames[] = $file->getRealPath();
                 continue;
             }
 
-            if ($file->getExtension() == 'twig') {
+            if ($file->getExtension() === 'twig') {
                 $twigFileNames[] = $this->twigFileCanonicalizer->canonicalize($file->getRealPath());
                 continue;
             }
@@ -386,65 +385,4 @@ final class AnalyzeCommand extends Command
         return $result;
     }
 
-    /**
-     * @param list<string> $paths
-     *
-     * @return array<SplFileInfo>
-     */
-    private function getFinder(array $paths): array
-    {
-        if ($paths !== []) {
-            $paths = array_map(
-                fn($path) => Path::makeAbsolute($path, $this->currentWorkingDirectory),
-                $paths,
-            );
-        } else {
-            $paths = $this->directories;
-        }
-
-        $paths = array_unique($paths);
-
-        $directories = [];
-        $files = [];
-        foreach ($paths as $path) {
-            if (is_dir($path)) {
-                $directories[] = $path;
-                continue;
-            }
-
-            if (is_file($path)) {
-                $files[] = new SplFileInfo(
-                    $path,
-                    basename(Path::makeRelative($path, $this->currentWorkingDirectory)),
-                    Path::makeRelative($path, $this->currentWorkingDirectory),
-                );
-                continue;
-            }
-
-            throw new InvalidArgumentException(sprintf('Path %s is not a file or directory', $path));
-        }
-
-        if ($files === [] && $directories === []) {
-            return [];
-        }
-
-        $found = Finder::create()
-            ->files()
-            ->name(['*.twig', '*.php'])
-            ->notName('*.untrack.php') // @todo remove later
-            ->in($directories)
-            ->append($files)
-            ->filter(function (SplFileInfo $file) {
-                foreach ($this->excludes as $exclude) {
-                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
-
-
-        return iterator_to_array($found);
-    }
 }

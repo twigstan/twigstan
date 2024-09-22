@@ -1,14 +1,22 @@
 parameters:
     twigstan:
-        # Used to scan for Twig templates
-        # Used to scan for PHP controllers that render Twig templates
-        directories:
-            - src/Controller
-            - templates
-
-        # If you want to exclude certain directories/files from scanning, you can define them below.
-        # You can use * as a wildcard.
-        excludes: []
-
         # TwigStan needs access to your Twig environment to analyze your templates.
         environmentLoader: twig-loader.php
+
+        # Used to scan for PHP controllers that render Twig templates
+        php:
+            paths:
+                - src/Controller
+
+            # If you want to exclude certain directories/files from scanning, you can define them below.
+            # You can use * as a wildcard.
+            excludes: []
+
+        # Used to scan for Twig templates
+        twig:
+            paths:
+                - templates
+
+            # If you want to exclude certain directories/files from scanning, you can define them below.
+            # You can use * as a wildcard.
+            excludes: []

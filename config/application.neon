@@ -1,7 +1,11 @@
 parameters:
 	twigstan:
-		directories: []
-		excludes: []
+		php:
+			paths: []
+			excludes: []
+		twig:
+			paths: []
+			excludes: []
 		environmentLoader: null
 services:
 	-
@@ -10,11 +14,22 @@ services:
 	- Symfony\Component\Filesystem\Filesystem
 	- TwigStan\Application\AnalyzeCommand(
 		environmentLoader: %twigstan.environmentLoader%
-		directories: %twigstan.directories%
-		excludes: %twigstan.excludes%
 		tempDirectory: %tmpDir%
 		currentWorkingDirectory: %currentWorkingDirectory%
-	  )
+		phpFilesFinder: TwigStan\Finder\FilesFinder(
+			namePattern: *.php
+			paths: %twigstan.php.paths%
+			exclusions: %twigstan.php.excludes%
+		)
+        twigFilesFinder: TwigStan\Finder\FilesFinder(
+			namePattern: *.twig
+			paths: %twigstan.twig.paths%
+			exclusions: %twigstan.twig.excludes%
+		)
+		givenFilesFinder: TwigStan\Finder\GivenFilesFinder(
+			currentWorkingDirectory: %currentWorkingDirectory%
+		)
+	)
 	- TwigStan\Application\PHPStanRunner(currentWorkingDirectory: %currentWorkingDirectory%)
 	- TwigStan\PHP\PrettyPrinter
 	- TwigStan\PHP\StrictPhpParser
