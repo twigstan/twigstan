@@ -14,7 +14,6 @@ use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
-use Symfony\Component\Finder\SplFileInfo;
 use Throwable;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
@@ -172,7 +171,11 @@ final class AnalyzeCommand extends Command
         $this->filesystem->remove($scopeInjectionDirectory);
         $this->filesystem->mkdir($scopeInjectionDirectory);
 
-        $files = $this->getFiles($paths);
+        if ($paths !== []) {
+            $files = $this->givenFilesFinder->find($paths);
+        } else {
+            $files = [...$this->phpFilesFinder->find(), ...$this->twigFilesFinder->find()];
+        }
 
         $twigFileNames = [];
         $phpFileNames = [];
@@ -382,19 +385,4 @@ final class AnalyzeCommand extends Command
         return $result;
     }
 
-    /**
-     * @param list<string> $paths
-     *
-     * @return array<SplFileInfo>
-     */
-    private function getFiles(array $paths): array
-    {
-        if ($paths !== []) {
-            $paths = $this->givenFilesFinder->find($paths);
-        } else {
-            $paths = array_merge($this->phpFilesFinder->find(), $this->twigFilesFinder->find());
-        }
-
-        return $paths;
-    }
 }
