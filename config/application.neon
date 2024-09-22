@@ -68,9 +68,3 @@ services:
 			namePattern: *.twig
 			paths: %twigstan.twig.paths%
 			exclusions: %twigstan.twig.excludes%
-	twigstan.files_finder.generic:
-			class: TwigStan\Finder\FilesFinder
-			arguments:
-				namePattern: *.twig
-				paths: []
-				exclusions: %twigstan.twig.excludes%
