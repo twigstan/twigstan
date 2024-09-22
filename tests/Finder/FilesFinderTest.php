@@ -43,4 +43,17 @@ final class FilesFinderTest extends TestCase
             __DIR__ . '/files/template.twig',
         ], array_keys($files));
     }
+
+    public function testFindWithNoPaths(): void
+    {
+        $finder = new FilesFinder(
+            '*.twig',
+            [],
+            [],
+        );
+
+        $files = $finder->find();
+
+        self::assertSame([], array_keys($files));
+    }
 }

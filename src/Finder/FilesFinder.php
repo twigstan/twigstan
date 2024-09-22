@@ -22,6 +22,10 @@ final class FilesFinder
      */
     public function find(): array
     {
+        if ($this->paths === []) {
+            return [];
+        }
+
         $finder = Finder::create()
             ->files()
             ->name([$this->namePattern])
