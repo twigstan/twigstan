@@ -27,10 +27,6 @@ services:
 			exclusions: %twigstan.twig.excludes%
 		)
 		givenFilesFinder: TwigStan\Finder\GivenFilesFinder(
-			exclusions: [
-				php: %twigstan.php.excludes%
-				twig:  %twigstan.twig.excludes%
-			],
 			currentWorkingDirectory: %currentWorkingDirectory%
 		)
 	)

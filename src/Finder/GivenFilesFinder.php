@@ -9,11 +9,7 @@ use Symfony\Component\Finder\SplFileInfo;
 
 final class GivenFilesFinder
 {
-    /**
-     * @param list{php?: string[], twig?: string[]} $exclusions
-     */
     public function __construct(
-        private array $exclusions,
         private string $currentWorkingDirectory,
     ) {}
 
@@ -52,26 +48,11 @@ final class GivenFilesFinder
             return [];
         }
 
-        $exclusions = array_merge(
-            $this->exclusions['php'] ?? [],
-            $this->exclusions['twig'] ?? [],
-        );
-
         $finder = Finder::create()
             ->files()
             ->name(['*.twig', '*.php'])
-            ->notName('*.untrack.php') // @todo remove later
             ->in($directories)
-            ->append($files)
-            ->filter(function (SplFileInfo $file) use ($exclusions) {
-                foreach ($exclusions as $exclude) {
-                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
+            ->append($files);
 
         return iterator_to_array($finder);
     }
