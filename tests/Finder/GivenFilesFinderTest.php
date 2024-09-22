@@ -3,10 +3,8 @@
 namespace TwigStan\Finder;
 
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Finder\SplFileInfo;
-use TwigStan\Application\ContainerFactory;
 
-class GivenFilesFinderTest extends TestCase
+final class GivenFilesFinderTest extends TestCase
 {
     private GivenFilesFinder $givenFilesFinder;
 
@@ -14,40 +12,35 @@ class GivenFilesFinderTest extends TestCase
     {
         parent::setUp();
 
-        $containerFactory = new ContainerFactory(__DIR__, __DIR__ . '/twigstan.neon');
-        $container = $containerFactory->create(sys_get_temp_dir() . '/twigstan');
-
-        /**
-         * @var GivenFilesFinder $givenFilesFinder
-         */
-        $givenFilesFinder = $container->getByType(GivenFilesFinder::class);
-
-        $this->givenFilesFinder = $givenFilesFinder;
+        $this->givenFilesFinder = new GivenFilesFinder(
+            __DIR__,
+        );
     }
 
     public function testFindFiles(): void
     {
         $files = $this->givenFilesFinder->find([
-            'files',
             'files/file.php',
             'files/template.twig',
         ]);
 
-        self::assertIsArray($files);
+        self::assertSame([
+            __DIR__ . '/files/file.php',
+            __DIR__ . '/files/template.twig',
+        ], array_keys($files));
+    }
 
-        self::assertCount(2, $files);
+    public function testFindDirectory(): void
+    {
+        $files = $this->givenFilesFinder->find([
+            'files',
+        ]);
 
-        /**
-         * @var SplFileInfo $phpFile
-         */
-        $phpFile = $files[__DIR__ . '/files/file.php'];
-
-        /**
-         * @var SplFileInfo $twigFile
-         */
-        $twigFile = $files[__DIR__ . '/files/template.twig'];
-
-        self::assertSame($phpFile->getFilename(), 'file.php');
-        self::assertSame($twigFile->getFilename(), 'template.twig');
+        self::assertSame([
+            __DIR__ . '/files/exclude.php',
+            __DIR__ . '/files/exclude.twig',
+            __DIR__ . '/files/file.php',
+            __DIR__ . '/files/template.twig',
+        ], array_keys($files));
     }
 }
