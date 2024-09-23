@@ -21,7 +21,7 @@ services:
 		tags:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
 	-
-		class: TwigStan\PHPStan\TypeSpecifying\VarTypeSpecifyingExtension
+		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
 		tags:
 			- phpstan.broker.dynamicFunctionReturnTypeExtension
 	-
