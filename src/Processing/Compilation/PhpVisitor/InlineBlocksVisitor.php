@@ -17,7 +17,10 @@ final class InlineBlocksVisitor extends NodeVisitorAbstract
         private array $blocks = [],
     ) {}
 
-    public function leaveNode(Node $node)
+    /**
+     * @return array<Node\Stmt\Expression>|null
+     */
+    public function leaveNode(Node $node): ?array
     {
         if (!$node instanceof Node\Stmt\Expression) {
             return null;

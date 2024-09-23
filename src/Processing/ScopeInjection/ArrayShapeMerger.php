@@ -55,7 +55,7 @@ final readonly class ArrayShapeMerger
                 continue;
             }
 
-            if ($leftItem->valueType == $rightItem->valueType) {
+            if ((string) $leftItem->valueType === (string) $rightItem->valueType) {
                 $valueType = $leftItem->valueType;
             } else {
                 $valueType = new UnionTypeNode([$leftItem->valueType, $rightItem->valueType]);

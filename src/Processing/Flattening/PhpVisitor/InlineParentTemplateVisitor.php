@@ -18,7 +18,10 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         private array $stmts,
     ) {}
 
-    public function leaveNode(Node $node)
+    /**
+     * @return array<Node\Stmt\Expression>|null
+     */
+    public function leaveNode(Node $node): ?array
     {
         // Find: yield from $this->yieldTemplate(get_defined_vars(), "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1);
 

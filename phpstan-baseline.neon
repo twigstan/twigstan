@@ -6,6 +6,6 @@ parameters:
 			path: src/Twig/Node/NodeFinder.php
 
 		-
-			message: "#^Method TwigStan\\\\Twig\\\\TwigFileCanonicalizer\\:\\:findNamespacesWithinMainNamespace\\(\\) should return array\\<string, array\\<int, string\\>\\> but returns array\\<int\\|string, array\\<int, string\\>\\>\\.$#"
+			message: "#^Method TwigStan\\\\Twig\\\\TwigFileCanonicalizer\\:\\:findNamespacesWithinMainNamespace\\(\\) should return array\\<string, list\\<string\\>\\> but returns array\\<int\\|string, non\\-empty\\-list\\<string\\>\\>\\.$#"
 			count: 1
 			path: src/Twig/TwigFileCanonicalizer.php

@@ -31,7 +31,7 @@ final class MainMethodFinderVisitor extends NodeVisitorAbstract
         // Take the statements, but skip the first two:
         // extract($__twigstan_globals);
         // unset($__twigstan_context);
-        $this->stmts = array_slice($node->stmts, 2);
+        $this->stmts = array_values(array_slice($node->stmts, 2));
 
         return null;
     }

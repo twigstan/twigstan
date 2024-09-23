@@ -35,7 +35,7 @@ final readonly class VarTypeSpecifyingExtension implements DynamicFunctionReturn
         FunctionReflection $functionReflection,
         FuncCall $functionCall,
         Scope $scope,
-    ): ?Type {
+    ): Type {
         if (!$functionCall->getArgs()[0]->value instanceof String_) {
             return new ErrorType();
         }

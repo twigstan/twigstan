@@ -32,7 +32,7 @@ final readonly class ErrorFilter
      */
     public function filter(array $errors): array
     {
-        return array_filter(
+        return array_values(array_filter(
             $errors,
             function ($error) {
                 if ($error->identifier === null) {
@@ -51,6 +51,6 @@ final readonly class ErrorFilter
 
                 return preg_match($pattern, $error->message) !== 1;
             },
-        );
+        ));
     }
 }

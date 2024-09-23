@@ -31,7 +31,7 @@ final readonly class StrictPhpParser
             throw new RuntimeException('Failed to parse PHP code');
         }
 
-        return $stmts;
+        return array_values($stmts);
     }
 
     /**

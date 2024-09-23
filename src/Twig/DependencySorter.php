@@ -48,6 +48,6 @@ final readonly class DependencySorter
             $visit($file);
         }
 
-        return array_values($sorted);
+        return $sorted;
     }
 }

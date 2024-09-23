@@ -25,7 +25,7 @@ final readonly class GetDefinedVarsReturnType implements DynamicFunctionReturnTy
         FunctionReflection $functionReflection,
         FuncCall $functionCall,
         Scope $scope,
-    ): ?Type {
+    ): Type {
         if ($scope->canAnyVariableExist()) {
             return new ArrayType(
                 new MixedType(),

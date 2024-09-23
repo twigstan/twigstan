@@ -26,7 +26,7 @@ final readonly class DependencyFinder
             );
         }
 
-        return array_values($dependencies);
+        return $dependencies;
     }
 
     /**

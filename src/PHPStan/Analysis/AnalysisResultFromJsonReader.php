@@ -39,10 +39,10 @@ final readonly class AnalysisResultFromJsonReader
 
         $result = json_decode($content, true);
 
-        $errors = array_map(
+        $errors = array_values(array_map(
             Error::decode(...),
             $result['fileSpecificErrors'],
-        );
+        ));
 
         if ($mapping instanceof ScopeInjectionResultCollection) {
             $errors = $this->errorToSourceFileMapper->map(
@@ -56,10 +56,10 @@ final readonly class AnalysisResultFromJsonReader
 
         return new PHPStanAnalysisResult(
             $this->errorTransformer->transform($errors),
-            array_map(
+            array_values(array_map(
                 CollectedData::decode(...),
                 $result['collectedData'],
-            ),
+            )),
             $result['notFileSpecificErrors'],
         );
     }

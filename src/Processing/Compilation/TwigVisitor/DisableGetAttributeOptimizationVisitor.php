@@ -22,7 +22,7 @@ final readonly class DisableGetAttributeOptimizationVisitor implements NodeVisit
         return $node;
     }
 
-    public function leaveNode(Node $node, Environment $env): ?Node
+    public function leaveNode(Node $node, Environment $env): Node
     {
         return $node;
     }

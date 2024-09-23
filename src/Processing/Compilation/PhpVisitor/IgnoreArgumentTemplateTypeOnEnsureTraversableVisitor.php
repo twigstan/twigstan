@@ -11,7 +11,7 @@ use Twig\Extension\CoreExtension;
 
 final class IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node)
+    public function enterNode(Node $node): ?Node\Expr\StaticCall
     {
         if (!$node instanceof Node\Expr\StaticCall) {
             return null;

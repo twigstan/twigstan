@@ -68,25 +68,30 @@ final readonly class PHPStanRunner
         //], $this->currentWorkingDirectory);
         //$process->run();
 
-        $process = new Process(array_filter([
-            PHP_BINARY,
-            $xdebugMode ? '-dzend_extension=xdebug.so' : null,
-            'vendor/bin/phpstan',
-            'analyse',
-            sprintf('--configuration=%s', $tempConfigFile),
-            sprintf(
-                '--error-format=%s',
-                'analysisResultToJson',
-            ),
-            $debugMode ? '-v' : null,
-            $debugMode ? '--debug' : null,
-            $xdebugMode ? '--xdebug' : null,
-            '--ansi',
-            ...$pathsToAnalyze,
-        ]), $this->currentWorkingDirectory, array_filter([
-            'XDEBUG_MODE' => $xdebugMode ? 'debug' : null,
-            'XDEBUG_TRIGGER' => $xdebugMode ? '1' : null,
-        ]), timeout: null);
+        $process = new Process(
+            array_filter([
+                PHP_BINARY,
+                $xdebugMode ? '-dzend_extension=xdebug.so' : null,
+                'vendor/bin/phpstan',
+                'analyse',
+                sprintf('--configuration=%s', $tempConfigFile),
+                sprintf(
+                    '--error-format=%s',
+                    'analysisResultToJson',
+                ),
+                $debugMode ? '-v' : null,
+                $debugMode ? '--debug' : null,
+                $xdebugMode ? '--xdebug' : null,
+                '--ansi',
+                ...$pathsToAnalyze,
+            ], fn($value) => !is_null($value)),
+            $this->currentWorkingDirectory,
+            array_filter([
+                'XDEBUG_MODE' => $xdebugMode ? 'debug' : null,
+                'XDEBUG_TRIGGER' => $xdebugMode ? '1' : null,
+            ], fn($value) => !is_null($value)),
+            timeout: null,
+        );
 
         $output->writeln($process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
 
