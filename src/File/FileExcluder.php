@@ -71,19 +71,6 @@ final class FileExcluder
         return false;
     }
 
-    public static function isAbsolutePath(string $path): bool
-    {
-        if (DIRECTORY_SEPARATOR === '/') {
-            if (str_starts_with($path, '/')) {
-                return true;
-            }
-        } elseif (substr($path, 1, 1) === ':') {
-            return true;
-        }
-
-        return false;
-    }
-
     public static function isFnmatchPattern(string $path): bool
     {
         return preg_match('~[*?[\]]~', $path) > 0;

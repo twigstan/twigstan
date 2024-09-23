@@ -63,19 +63,20 @@ final readonly class ContainerFactory
             );
         }
 
+        $configurator = new Configurator();
+
+        $configurator->addStaticParameters(['ignoreErrors' => []]); // Prevent Missing parameter Exceptions if ignoreErrors parameter not defined
+
         if (isset($configuration['includes'])) {
             foreach ($configuration['includes'] as $include) {
                 if (pathinfo($include, PATHINFO_EXTENSION) === 'neon') {
                     $content = Neon::decodeFile(Path::makeAbsolute($include, Path::getDirectory($this->configurationFile)));
-                    $ignoreErrors = $content['parameters']['twigstan']['ignoreErrors'];
-                    $configuration['parameters']['twigstan']['ignoreErrors'][] = $ignoreErrors;
+
+                    $configurator->addStaticParameters($content['parameters']);
                 }
             }
-
-            $configuration['parameters']['twigstan']['ignoreErrors'] = array_merge(...$configuration['parameters']['twigstan']['ignoreErrors']);
         }
 
-        $configurator = new Configurator();
         $configurator->addConfig(Path::join($this->rootDirectory, 'config/application.neon'));
         $configurator->addStaticParameters($configuration['parameters']);
         $configurator->setTempDirectory($tempDirectory);

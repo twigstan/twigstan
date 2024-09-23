@@ -105,7 +105,8 @@ final class IgnoreErrorProcessor
         $ignoredErrors = [];
 
         foreach ($errors as $errorIndex => $error) {
-            $filePath = Path::normalize($error->twigSourceLocation->fileName ?? $error->phpFile);
+            $normalized = Path::normalize($error->twigSourceLocation->fileName ?? $error->phpFile);
+            $filePath = Path::makeRelative($normalized, $this->workingDirectory);
             if (isset($this->ignoreErrorsByFile[$filePath])) {
                 foreach ($this->ignoreErrorsByFile[$filePath] as $ignoreError) {
                     $i = $ignoreError['index'];

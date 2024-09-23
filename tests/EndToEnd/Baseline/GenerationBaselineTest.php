@@ -48,7 +48,7 @@ final class GenerationBaselineTest extends AbstractEndToEndTestCase
 
         $contentDecode = Neon::decode($content);
 
-        self::assertCount(2, $contentDecode['parameters']['twigstan']['ignoreErrors']);
+        self::assertCount(2, $contentDecode['parameters']['ignoreErrors']);
     }
 
     public function testCustomBaselineFilename(): void

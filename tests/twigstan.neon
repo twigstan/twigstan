@@ -9,3 +9,6 @@ parameters:
 			paths: []
 			excludes: []
 		environmentLoader: twig-loader.php
+	ignoreErrors:
+		-
+			message: "#Undefined variable: context#"

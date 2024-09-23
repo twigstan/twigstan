@@ -63,9 +63,7 @@ final class BaselineNeonErrorFormatter implements BaselineErrorFormatter
     {
         $neon = Neon::encode([
             'parameters' => [
-                'twigstan' => [
-                    'ignoreErrors' => $ignoreErrors,
-                ],
+                'ignoreErrors' => $ignoreErrors,
             ],
         ], true);
 
