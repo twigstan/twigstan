@@ -77,6 +77,10 @@ final class TwigFileCanonicalizer
      */
     private function findNamespacesWithinMainNamespace(): array
     {
+        if ($this->loader->getNamespaces() === []) {
+            throw new RuntimeException('No namespaces found in the Twig loader.');
+        }
+
         $mainPaths = $this->loader->getPaths();
 
         $namespacesWithinMainNamespace = [];
