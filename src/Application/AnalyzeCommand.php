@@ -285,7 +285,6 @@ final class AnalyzeCommand extends Command
             $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
         }
 
-
         if ($analysisResult->notFileSpecificErrors !== []) {
             return $result;
         }
@@ -392,6 +391,8 @@ final class AnalyzeCommand extends Command
 
         if ($generateBaselineFile) {
             $this->generateBaseline($result, $output, $generateBaselineFile);
+
+            return new TwigStanAnalysisResult();
         }
 
         $ignoredErrorHelperProcessedResult = $this->ignoreErrorProcessor->process($result->errors, $twigFileNames);
