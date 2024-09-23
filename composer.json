@@ -49,10 +49,6 @@
         "bin/twigstan"
     ],
     "config": {
-        "preferred-install": {
-            "twig/twig": "source",
-            "*": "dist"
-        },
         "allow-plugins": {
             "phpstan/extension-installer": true
         }
