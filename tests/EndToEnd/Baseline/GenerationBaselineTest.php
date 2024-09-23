@@ -9,7 +9,7 @@ use TwigStan\EndToEnd\AbstractEndToEndTestCase;
 
 final class GenerationBaselineTest extends AbstractEndToEndTestCase
 {
-    private const string BASELINE_PATH = __DIR__ . '/../../../twigstan-baseline.neon';
+    public const string BASELINE_PATH = __DIR__ . '/../../../twigstan-baseline.neon';
     private const string ALTER_BASELINE_PATH = __DIR__ . '/../../another-baseline.neon';
     private const string ALTER_BASELINE_PATH_NOT_SUPPORTED = __DIR__ . '/../../another-baseline.xyz';
     public const string TWIGSTAN_CONFIG_PATH = __DIR__ . '/../../twigstan.neon';
