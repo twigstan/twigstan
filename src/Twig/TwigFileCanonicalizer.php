@@ -107,9 +107,9 @@ final class TwigFileCanonicalizer
         }
 
         if ($loader instanceof ChainLoader) {
-            foreach ($loader->getLoaders() as $loader) {
-                if ($loader instanceof FilesystemLoader) {
-                    return $loader;
+            foreach ($loader->getLoaders() as $innerLoader) {
+                if ($innerLoader instanceof FilesystemLoader) {
+                    return $innerLoader;
                 }
             }
         }

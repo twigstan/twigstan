@@ -42,10 +42,6 @@ final class InjectContextVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->name instanceof Node\Identifier) {
-            return null;
-        }
-
         $phpDoc = $node->getDocComment();
         if ($phpDoc === null) {
             return null;

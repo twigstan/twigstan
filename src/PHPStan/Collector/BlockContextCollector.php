@@ -29,10 +29,6 @@ final readonly class BlockContextCollector implements Collector
 
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if (!$node instanceof Node\Expr\YieldFrom) {
-            return null;
-        }
-
         if (!$node->expr instanceof Node\Expr\MethodCall) {
             return null;
         }

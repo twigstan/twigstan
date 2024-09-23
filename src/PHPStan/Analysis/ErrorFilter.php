@@ -7,11 +7,17 @@ namespace TwigStan\PHPStan\Analysis;
 final readonly class ErrorFilter
 {
     private const array IDENTIFIERS_TO_IGNORE = [
-        'isset.variable' => true,
+        'isset.variable',
 
         // It's perfectly fine to do `a == b ? 'yes' : 'no'` in Twig.
-        'equal.notAllowed' => true,
+        'equal.notAllowed',
 
+        // The context is backed up before a loop and restored after it.
+        // Therefore this is a non-issue in Twig templates.
+        'foreach.valueOverwrite',
+    ];
+
+    private const array IDENTIFIERS_ERROR_PATTERNS_TO_IGNORE = [
         // When an array inside the context is not typed, this produces an error.
         'missingType.iterableValue' => '/__twigstan_context/',
 
@@ -33,17 +39,17 @@ final readonly class ErrorFilter
                     return true;
                 }
 
-                $ignore = self::IDENTIFIERS_TO_IGNORE[$error->identifier] ?? null;
-
-                if ($ignore === null) {
-                    return true;
-                }
-
-                if ($ignore === true) {
+                if (in_array($error->identifier, self::IDENTIFIERS_TO_IGNORE, true)) {
                     return false;
                 }
 
-                return preg_match($ignore, $error->message) !== 1;
+                $pattern = self::IDENTIFIERS_ERROR_PATTERNS_TO_IGNORE[$error->identifier] ?? null;
+
+                if ($pattern === null) {
+                    return true;
+                }
+
+                return preg_match($pattern, $error->message) !== 1;
             },
         );
     }

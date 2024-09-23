@@ -73,12 +73,12 @@ final class AnalyzeCommand extends Command
 
             if ($error->tip !== null) {
                 foreach (explode("\n", $error->tip) as $line) {
-                    $errorOutput->writeLn(sprintf("💡 <fg=blue>%s</>", ltrim($line, ' •')));
+                    $errorOutput->writeln(sprintf("💡 <fg=blue>%s</>", ltrim($line, ' •')));
                 }
             }
 
             if ($error->identifier !== null) {
-                $errorOutput->writeLn(sprintf("🔖 <fg=blue>%s</>", $error->identifier));
+                $errorOutput->writeln(sprintf("🔖 <fg=blue>%s</>", $error->identifier));
             }
 
             $errorOutput->writeln(

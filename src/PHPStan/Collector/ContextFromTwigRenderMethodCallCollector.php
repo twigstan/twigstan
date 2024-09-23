@@ -23,10 +23,6 @@ final readonly class ContextFromTwigRenderMethodCallCollector implements Templat
 
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if (!$node instanceof Node\Expr\MethodCall) {
-            return null;
-        }
-
         if (!$node->var instanceof Node\Expr\Variable) {
             return null;
         }

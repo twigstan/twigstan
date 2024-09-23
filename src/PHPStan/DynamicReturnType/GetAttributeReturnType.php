@@ -11,7 +11,6 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantIntegerType;
-use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
@@ -61,8 +60,16 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
 
         $propertyOrMethodType = $scope->getType($methodCall->args[3]->value);
 
-        if (!$propertyOrMethodType instanceof ConstantStringType && !$propertyOrMethodType instanceof ConstantIntegerType) {
-            return new MixedType();
+
+        if ($propertyOrMethodType instanceof ConstantIntegerType) {
+            $propertyOrMethod = $propertyOrMethodType->getValue();
+        } else {
+            $constantStringTypes = $propertyOrMethodType->getConstantStrings();
+            if ($constantStringTypes === []) {
+                return new MixedType();
+            }
+
+            $propertyOrMethod = $constantStringTypes[0]->getValue();
         }
 
         if (!$methodCall->args[5]->value instanceof String_) {
@@ -76,8 +83,6 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
                 return $objectType->getOffsetValueType($propertyOrMethodType);
             }
         }
-
-        $propertyOrMethod = $propertyOrMethodType->getValue();
 
         $nullable = false;
         if ($objectType->isNull()->maybe()) {

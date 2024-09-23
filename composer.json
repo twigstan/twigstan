@@ -27,7 +27,9 @@
         "symfony/twig-bridge": "^7.1",
         "symfony/framework-bundle": "^7.1",
         "shipmonk/composer-dependency-analyser": "^1.7",
-        "symfony/http-foundation": "^7.1"
+        "symfony/http-foundation": "^7.1",
+        "phpstan/phpstan-strict-rules": "^1.6",
+        "phpstan/phpstan-deprecation-rules": "^1.2"
     },
     "license": "MIT",
     "autoload": {

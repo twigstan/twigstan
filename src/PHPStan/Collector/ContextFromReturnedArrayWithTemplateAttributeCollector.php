@@ -25,9 +25,6 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
 
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if (!$node instanceof MethodReturnStatementsNode) {
-            return null;
-        }
         $classReflection = $scope->getClassReflection();
 
         if ($classReflection === null) {
@@ -94,8 +91,20 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
 
     private function getTemplateFromAttribute(MethodReturnStatementsNode $node, ClassReflection $classReflection): ?string
     {
-        foreach ($classReflection->getNativeReflection()->getMethod($node->getMethodName())->getAttributes(Template::class) as $attribute) {
-            return $attribute->getArguments()[0];
+        $methodReflection = $classReflection->getNativeReflection()->getMethod($node->getMethodName());
+
+        foreach ($methodReflection->getAttributes(Template::class) as $attribute) {
+            $args = $attribute->getArgumentsExpressions();
+
+            if ($args === []) {
+                continue;
+            }
+
+            if (!$args[0] instanceof Node\Scalar\String_) {
+                continue;
+            }
+
+            return $args[0]->value;
         }
 
         return null;

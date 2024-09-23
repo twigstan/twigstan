@@ -20,7 +20,7 @@ final class ComplexTemplateAttributeController
     #[Template('@EndToEnd/RenderPoints/complex.html.twig')]
     public function listAction(Request $request): array | RedirectResponse
     {
-        if (mt_rand(0, 1)) {
+        if (mt_rand(0, 1) === 1) {
             return new RedirectResponse('https://www.example.com');
         }
 
