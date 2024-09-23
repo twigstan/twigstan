@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d7db8e0db25dfc784ed563865db0aa84",
+    "content-hash": "64746fdf5ca039514dc8cd899d70a73c",
     "packages": [
         {
             "name": "nette/bootstrap",
