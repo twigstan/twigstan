@@ -12,6 +12,9 @@ final readonly class ErrorFilter
         // It's perfectly fine to do `a == b ? 'yes' : 'no'` in Twig.
         'equal.notAllowed',
 
+        // It's perfectly fine to do `a != b ? 'no' : 'yes'` in Twig.
+        'notEqual.notAllowed',
+
         // The context is backed up before a loop and restored after it.
         // Therefore this is a non-issue in Twig templates.
         'foreach.valueOverwrite',
