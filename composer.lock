@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f780562fba42affc17dfad36870c86cd",
+    "content-hash": "da573fa59ed3bd0431f60731c705580e",
     "packages": [
         {
             "name": "nette/bootstrap",
@@ -6288,20 +6288,20 @@
         },
         {
             "name": "ticketswap/phpstan-error-formatter",
-            "version": "1.0.0",
+            "version": "1.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TicketSwap/phpstan-error-formatter.git",
-                "reference": "e57cc1bb83ed29b74d4caae1548ec97a9541ebc1"
+                "reference": "cee5a2b89e236a21a8bb7e94eded021d8fc3f63e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TicketSwap/phpstan-error-formatter/zipball/e57cc1bb83ed29b74d4caae1548ec97a9541ebc1",
-                "reference": "e57cc1bb83ed29b74d4caae1548ec97a9541ebc1",
+                "url": "https://api.github.com/repos/TicketSwap/phpstan-error-formatter/zipball/cee5a2b89e236a21a8bb7e94eded021d8fc3f63e",
+                "reference": "cee5a2b89e236a21a8bb7e94eded021d8fc3f63e",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.3",
+                "php": "^8.2",
                 "phpstan/phpstan": "^1.11"
             },
             "type": "phpstan-extension",
@@ -6328,9 +6328,9 @@
             ],
             "support": {
                 "issues": "https://github.com/TicketSwap/phpstan-error-formatter/issues",
-                "source": "https://github.com/TicketSwap/phpstan-error-formatter/tree/1.0.0"
+                "source": "https://github.com/TicketSwap/phpstan-error-formatter/tree/1.0.3"
             },
-            "time": "2024-08-26T07:47:21+00:00"
+            "time": "2024-09-10T17:23:30+00:00"
         }
     ],
     "aliases": [],
