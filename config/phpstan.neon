@@ -29,6 +29,10 @@ services:
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
+		class: TwigStan\PHPStan\TypeSpecifying\VariableExistsExtension
+		tags:
+			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
+	-
 		class: TwigStan\PHPStan\Collector\BlockContextCollector
 		tags:
 			- phpstan.collector

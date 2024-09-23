@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Creating new PHPStan\\\\Node\\\\IssetExpr is not covered by backward compatibility promise\\. The class might change in a minor PHPStan version\\.$#"
+			count: 1
+			path: src/PHPStan/TypeSpecifying/VariableExistsExtension.php
+
+		-
 			message: "#^Method TwigStan\\\\Twig\\\\Node\\\\NodeFinder\\:\\:findInstanceOf\\(\\) should return Twig\\\\Node\\\\Node\\|null but returns class\\-string\\<Twig\\\\Node\\\\Node\\>\\|Twig\\\\Node\\\\Node\\.$#"
 			count: 1
 			path: src/Twig/Node/NodeFinder.php
