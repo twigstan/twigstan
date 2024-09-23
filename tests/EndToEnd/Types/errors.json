@@ -4,14 +4,14 @@
             "message": "Undefined variable: name",
             "identifier": "variable.undefined",
             "tip": null,
-            "twigSourceLocation": "certainty.twig:4",
+            "twigSourceLocation": "optionality.twig:4",
             "renderPoints": []
         },
         {
             "message": "Variable name might not be defined.",
             "identifier": "variable.undefined",
             "tip": null,
-            "twigSourceLocation": "certainty.twig:10",
+            "twigSourceLocation": "optionality.twig:10",
             "renderPoints": []
         },
         {
