@@ -35,8 +35,8 @@ final class SimpleNameExpression extends NameExpression
                 $compiler->repr(true);
             } else {
                 $compiler
-                    ->raw('isset($')
-                    ->raw($name)
+                    ->raw('twigstan_variable_exists(')
+                    ->string($name)
                     ->raw(')')
                 ;
             }

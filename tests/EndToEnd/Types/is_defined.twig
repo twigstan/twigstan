@@ -1,0 +1,33 @@
+{% types {
+    name?: 'string|null',
+} %}
+
+{% assert_variable_exists name maybe %}
+{% assert_type name 'string|null' %}
+
+{% if not name is defined %}
+    {% assert_variable_exists name no %}
+    {% assert_type name '*ERROR*' %}
+{% else %}
+    {% assert_variable_exists name yes %}
+    {% assert_type name 'string|null' %}
+    {{ name }}
+{% endif %}
+
+{% if name is defined %}
+    {% assert_variable_exists name yes %}
+    {% assert_type name 'string|null' %}
+    {{ name }}
+{% else %}
+    {% assert_variable_exists name no %}
+    {% assert_type name '*ERROR*' %}
+{% endif %}
+
+ {% if name is defined and name is not null %}
+     {% assert_variable_exists name yes %}
+     {% assert_type name 'string' %}
+     {{ name }}
+ {% else %}
+     {% assert_variable_exists name maybe %}
+     {% assert_type name 'string|null' %}
+ {% endif %}

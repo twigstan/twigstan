@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace TwigStan\PHPStan\TypeSpecifying;
+namespace TwigStan\PHPStan\DynamicReturnType;
 
 use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Scalar\String_;
@@ -18,7 +18,7 @@ use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\Type;
 
-final readonly class VarTypeSpecifyingExtension implements DynamicFunctionReturnTypeExtension
+final readonly class TypeHintReturnType implements DynamicFunctionReturnTypeExtension
 {
     public function __construct(
         private PhpDocParser $phpDocParser,

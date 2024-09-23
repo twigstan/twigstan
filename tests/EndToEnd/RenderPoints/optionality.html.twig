@@ -1,5 +1,8 @@
 {% assert_variable_exists name maybe %}
+{% assert_type name 'string|null' %}
 
 {% if name is defined %}
+    {% assert_variable_exists name yes %}
+    {% assert_type name 'string|null' %}
     {{ name }}
 {% endif %}
