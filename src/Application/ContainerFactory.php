@@ -7,6 +7,8 @@ namespace TwigStan\Application;
 use Nette\Bootstrap\Configurator;
 use Nette\DI\Container;
 use Nette\Neon\Neon;
+use Nette\Schema\Expect;
+use Nette\Schema\Processor;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -33,35 +35,34 @@ final readonly class ContainerFactory
 
         $configuration = Neon::decodeFile($this->configurationFile);
 
-        if (isset($configuration['parameters']['twigstan']['twig'])) {
-            $configuration['parameters']['twigstan']['twig']['paths'] = array_map(
-                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
-                $configuration['parameters']['twigstan']['twig']['paths'] ?? [],
-            );
+        $schema = Expect::structure([
+            'includes' => Expect::listOf('string')->transform(
+                fn(array $files) => array_map($this->makeAbsolute(...), $files),
+            ),
+            'parameters' => Expect::structure([
+                'twigstan' => Expect::structure([
+                    'php' => Expect::structure([
+                        'paths' => Expect::listOf('string')->transform(
+                            fn(array $directories) => array_map($this->makeAbsolute(...), $directories),
+                        ),
+                        'excludes' => Expect::listOf('string'),
+                    ]),
+                    'twig' => Expect::structure([
+                        'paths' => Expect::listOf('string')->transform(
+                            fn(array $directories) => array_map($this->makeAbsolute(...), $directories),
+                        ),
+                        'excludes' => Expect::listOf('string'),
+                    ]),
+                    'environmentLoader' => Expect::string()->transform($this->makeAbsolute(...)),
+                ]),
+            ]),
+        ]);
 
-            $configuration['parameters']['twigstan']['twig']['excludes'] = array_map(
-                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
-                $configuration['parameters']['twigstan']['twig']['excludes'] ?? [],
-            );
-        }
+        $processor = new Processor();
+        $configuration = $processor->process($schema, $configuration);
 
-        if (isset($configuration['parameters']['twigstan']['php'])) {
-            $configuration['parameters']['twigstan']['php']['paths'] = array_map(
-                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
-                $configuration['parameters']['twigstan']['php']['paths'] ?? [],
-            );
-            $configuration['parameters']['twigstan']['php']['excludes'] = array_map(
-                fn(string $directory) => Path::makeAbsolute($directory, Path::getDirectory($this->configurationFile)),
-                $configuration['parameters']['twigstan']['php']['excludes'] ?? [],
-            );
-        }
-
-        if (isset($configuration['parameters']['twigstan']['environmentLoader'])) {
-            $configuration['parameters']['twigstan']['environmentLoader'] = Path::makeAbsolute(
-                $configuration['parameters']['twigstan']['environmentLoader'],
-                Path::getDirectory($this->configurationFile),
-            );
-        }
+        // See https://github.com/orgs/nette/discussions/1568
+        $configuration = json_decode(json_encode($configuration, flags: JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR);
 
         $configurator = new Configurator();
         $configurator->addConfig(Path::join($this->rootDirectory, 'config/application.neon'));
@@ -86,5 +87,10 @@ final readonly class ContainerFactory
         }
 
         return $container;
+    }
+
+    private function makeAbsolute(string $path): string
+    {
+        return Path::makeAbsolute($path, Path::getDirectory($this->configurationFile));
     }
 }
