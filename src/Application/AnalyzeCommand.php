@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TwigStan\Application;
 
-use InvalidArgumentException;
 use RuntimeException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -19,10 +18,9 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
 use TwigStan\Application\Ignore\IgnoreErrorProcessor;
+use TwigStan\Baseline\Formatter\BaselineNeonErrorFormatter;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
-use TwigStan\Application\Ignore\IgnoredErrorHelper;
-use TwigStan\Baseline\Formatter\BaselineNeonErrorFormatter;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
@@ -48,12 +46,10 @@ final class AnalyzeCommand extends Command
         private FilesFinder $phpFilesFinder,
         private FilesFinder $twigFilesFinder,
         private GivenFilesFinder $givenFilesFinder,
+        private IgnoreErrorProcessor $ignoreErrorProcessor,
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
-        private array $directories,
-        private array $excludes,
-        private IgnoreErrorProcessor $ignoreErrorProcessor,
     ) {
         parent::__construct();
     }
@@ -401,68 +397,6 @@ final class AnalyzeCommand extends Command
         $ignoredErrorHelperProcessedResult = $this->ignoreErrorProcessor->process($result->errors, $twigFileNames);
 
         return new TwigStanAnalysisResult($ignoredErrorHelperProcessedResult->getNotIgnoredErrors());
-    }
-
-    /**
-     * @param list<string> $paths
-     *
-     * @return array<SplFileInfo>
-     */
-    private function getFinder(array $paths): array
-    {
-        if ($paths !== []) {
-            $paths = array_map(
-                fn($path) => Path::makeAbsolute($path, $this->currentWorkingDirectory),
-                $paths,
-            );
-        } else {
-            $paths = $this->directories;
-        }
-
-        $paths = array_unique($paths);
-
-        $directories = [];
-        $files = [];
-        foreach ($paths as $path) {
-            if (is_dir($path)) {
-                $directories[] = $path;
-                continue;
-            }
-
-            if (is_file($path)) {
-                $files[] = new SplFileInfo(
-                    $path,
-                    basename(Path::makeRelative($path, $this->currentWorkingDirectory)),
-                    Path::makeRelative($path, $this->currentWorkingDirectory),
-                );
-                continue;
-            }
-
-            throw new InvalidArgumentException(sprintf('Path %s is not a file or directory', $path));
-        }
-
-        if ($files === [] && $directories === []) {
-            return [];
-        }
-
-        $found = Finder::create()
-            ->files()
-            ->name(['*.twig', '*.php'])
-            ->notName('*.untrack.php') // @todo remove later
-            ->in($directories)
-            ->append($files)
-            ->filter(function (SplFileInfo $file) {
-                foreach ($this->excludes as $exclude) {
-                    if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
-
-
-        return iterator_to_array($found);
     }
 
     private function generateBaseline(TwigStanAnalysisResult $result, OutputInterface $output, bool | string $generateBaselineFile): void

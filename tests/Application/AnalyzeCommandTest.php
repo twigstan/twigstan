@@ -5,7 +5,7 @@ namespace TwigStan\Application;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class AnalyzeCommandTest extends TestCase
+final class AnalyzeCommandTest extends TestCase
 {
     private CommandTester $commandTester;
 

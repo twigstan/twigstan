@@ -7,7 +7,7 @@ use Nette\Neon\Neon;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Application\TwigStanAnalysisResult;
 
-class BaselineNeonErrorFormatter implements BaselineErrorFormatter
+final class BaselineNeonErrorFormatter implements BaselineErrorFormatter
 {
     public function __construct(
         private string $currentWorkingDirectory,

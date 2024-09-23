@@ -7,7 +7,7 @@ use RuntimeException;
 
 use TwigStan\EndToEnd\AbstractEndToEndTestCase;
 
-class GenerationBaselineTest extends AbstractEndToEndTestCase
+final class GenerationBaselineTest extends AbstractEndToEndTestCase
 {
     private const string BASELINE_PATH = __DIR__ . '/../../../twigstan-baseline.neon';
     private const string ALTER_BASELINE_PATH = __DIR__ . '/../../another-baseline.neon';

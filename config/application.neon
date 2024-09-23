@@ -30,7 +30,6 @@ services:
 		givenFilesFinder: TwigStan\Finder\GivenFilesFinder(
 			currentWorkingDirectory: %currentWorkingDirectory%
 		)
-		ignoredErrorHelper: @TwigStan\Application\Ignore\IgnoredErrorHelper
 	)
 	- TwigStan\Application\PHPStanRunner(currentWorkingDirectory: %currentWorkingDirectory%)
 	- TwigStan\PHP\PrettyPrinter

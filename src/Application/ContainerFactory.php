@@ -65,7 +65,7 @@ final readonly class ContainerFactory
 
         if (isset($configuration['includes'])) {
             foreach ($configuration['includes'] as $include) {
-                if(pathinfo($include, PATHINFO_EXTENSION) === 'neon') {
+                if (pathinfo($include, PATHINFO_EXTENSION) === 'neon') {
                     $content = Neon::decodeFile(Path::makeAbsolute($include, Path::getDirectory($this->configurationFile)));
                     $ignoreErrors = $content['parameters']['twigstan']['ignoreErrors'];
                     $configuration['parameters']['twigstan']['ignoreErrors'][] = $ignoreErrors;

@@ -1,0 +1,15 @@
+parameters:
+	twigstan:
+		twig:
+			paths:
+				- ../EndToEnd/Inheritance
+			excludes:
+				- ../EndToEnd/Inheritance/_random_footer.twig
+				- ../EndToEnd/Inheritance/_other.twig
+				- ../EndToEnd/Inheritance/_layout.twig
+		php:
+			paths:
+				- ../EndToEnd/RenderPoints
+			excludes:
+				- ../EndToEnd/RenderPoints/RenderPointsTest.php
+		environmentLoader: ../twig-loader.php
