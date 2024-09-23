@@ -1,6 +1,10 @@
 {
     "name": "twigstan/twigstan",
     "description": "TwigStan is a static analyzer for Twig templates powered by PHPStan",
+    "license": "MIT",
+    "keywords": [
+        "static analysis"
+    ],
     "require": {
         "php": "^8.3",
         "composer-runtime-api": "^2.2",
@@ -17,6 +21,7 @@
         "twig/twig": "^3.13"
     },
     "require-dev": {
+        "ergebnis/composer-normalize": "^2.43",
         "friendsofphp/php-cs-fixer": "^3.59",
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^1.2",
@@ -31,7 +36,6 @@
         "symfony/var-dumper": "^7.1",
         "ticketswap/phpstan-error-formatter": "^1.0.3"
     },
-    "license": "MIT",
     "autoload": {
         "psr-4": {
             "TwigStan\\": "src/"
@@ -42,17 +46,15 @@
             "TwigStan\\": "tests/"
         }
     },
-    "keywords": [
-        "static analysis"
-    ],
     "bin": [
         "bin/twigstan"
     ],
     "config": {
-        "sort-packages": true,
         "allow-plugins": {
+            "ergebnis/composer-normalize": true,
             "phpstan/extension-installer": true
-        }
+        },
+        "sort-packages": true
     },
     "scripts": {
         "cs": "vendor/bin/php-cs-fixer fix --diff --ansi",

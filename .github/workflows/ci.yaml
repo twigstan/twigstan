@@ -65,7 +65,7 @@ jobs:
             -   name: Run PHPStan
                 run: vendor/bin/phpstan --ansi
 
-    composer-dependency-analyser:
+    composer:
         runs-on: ubuntu-latest
 
         steps:
@@ -80,6 +80,9 @@ jobs:
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
+
+            -   name: Normalize Composer file
+                run: composer normalize --dry-run
 
             -   name: Analyze Composer dependencies
                 run: vendor/bin/composer-dependency-analyser
