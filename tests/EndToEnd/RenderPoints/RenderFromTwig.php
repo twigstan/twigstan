@@ -6,7 +6,7 @@ namespace TwigStan\EndToEnd\RenderPoints;
 
 use Twig\Environment;
 
-class RenderFromTwig
+final class RenderFromTwig
 {
     public function generateContent(Environment $environment): string
     {

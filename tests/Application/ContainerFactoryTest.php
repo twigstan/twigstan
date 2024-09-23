@@ -5,7 +5,7 @@ namespace TwigStan\Application;
 use Nette\DI\Container;
 use PHPUnit\Framework\TestCase;
 
-class ContainerFactoryTest extends TestCase
+final class ContainerFactoryTest extends TestCase
 {
     private Container $container;
 

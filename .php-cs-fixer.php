@@ -25,6 +25,7 @@ return (new Config())
             'types_spaces' => ['space' => 'single'],
             'unary_operator_spaces' => true,
             'no_unused_imports' => true,
+            'final_class' => true,
         ],
     )
     ->setFinder($finder);

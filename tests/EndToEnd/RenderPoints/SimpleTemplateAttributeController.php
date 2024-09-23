@@ -9,7 +9,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-class SimpleTemplateAttributeController
+final class SimpleTemplateAttributeController
 {
     /**
      * @return array<mixed>

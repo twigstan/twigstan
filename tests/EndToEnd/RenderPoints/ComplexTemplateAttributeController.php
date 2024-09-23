@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[AsController]
-class ComplexTemplateAttributeController
+final class ComplexTemplateAttributeController
 {
     /**
      * @return array<mixed>|RedirectResponse

@@ -7,7 +7,7 @@ namespace TwigStan\EndToEnd\RenderPoints;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
-class RenderFromAbstractController extends AbstractController
+final class RenderFromAbstractController extends AbstractController
 {
     public function renderAction(): Response
     {
