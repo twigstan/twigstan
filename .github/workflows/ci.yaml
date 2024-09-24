@@ -27,7 +27,7 @@ jobs:
             -   name: Run tests
                 run: vendor/bin/phpunit --colors=always
 
-    php-cs-fixer:
+    code-style:
         runs-on: ubuntu-latest
 
         steps:
