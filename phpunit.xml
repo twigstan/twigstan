@@ -1,9 +1,18 @@
 <?xml version="1.0"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="tests/bootstrap.php" colors="true"
-         backupGlobals="false" beStrictAboutChangesToGlobalState="true" beStrictAboutOutputDuringTests="true"
-         beStrictAboutTestsThatDoNotTestAnything="true" failOnRisky="true" failOnWarning="true"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache"
-         backupStaticProperties="false">
+<phpunit
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    bootstrap="tests/bootstrap.php"
+    colors="true"
+    backupGlobals="false"
+    beStrictAboutChangesToGlobalState="true"
+    beStrictAboutOutputDuringTests="true"
+    beStrictAboutTestsThatDoNotTestAnything="true"
+    failOnRisky="true"
+    failOnWarning="true"
+    cacheDirectory=".phpunit.cache"
+    backupStaticProperties="false"
+>
     <testsuites>
         <testsuite name="TwigStan">
             <directory suffix="Test.php">tests</directory>

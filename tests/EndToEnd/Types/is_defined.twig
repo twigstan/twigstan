@@ -23,11 +23,11 @@
     {% assert_type name '*ERROR*' %}
 {% endif %}
 
- {% if name is defined and name is not null %}
-     {% assert_variable_exists name yes %}
-     {% assert_type name 'string' %}
-     {{ name }}
- {% else %}
-     {% assert_variable_exists name maybe %}
-     {% assert_type name 'string|null' %}
- {% endif %}
+{% if name is defined and name is not null %}
+    {% assert_variable_exists name yes %}
+    {% assert_type name 'string' %}
+    {{ name }}
+{% else %}
+    {% assert_variable_exists name maybe %}
+    {% assert_type name 'string|null' %}
+{% endif %}
