@@ -21,7 +21,7 @@ services:
 			paths: %twigstan.php.paths%
 			exclusions: %twigstan.php.excludes%
 		)
-        twigFilesFinder: TwigStan\Finder\FilesFinder(
+		twigFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.twig
 			paths: %twigstan.twig.paths%
 			exclusions: %twigstan.twig.excludes%
