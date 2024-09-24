@@ -46,23 +46,21 @@ final readonly class ContainerFactory
                             fn(array $directories) => array_map($this->makeAbsolute(...), $directories),
                         ),
                         'excludes' => Expect::listOf('string'),
-                    ]),
+                    ])->castTo('array'),
                     'twig' => Expect::structure([
                         'paths' => Expect::listOf('string')->transform(
                             fn(array $directories) => array_map($this->makeAbsolute(...), $directories),
                         ),
                         'excludes' => Expect::listOf('string'),
-                    ]),
+                    ])->castTo('array'),
                     'environmentLoader' => Expect::string()->transform($this->makeAbsolute(...)),
-                ]),
-            ]),
-        ]);
+                ])->castTo('array'),
+            ])->castTo('array'),
+        ])->castTo('array');
 
         $processor = new Processor();
         $configuration = $processor->process($schema, $configuration);
 
-        // See https://github.com/orgs/nette/discussions/1568
-        $configuration = json_decode(json_encode($configuration, flags: JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR);
 
         $configurator = new Configurator();
         $configurator->addConfig(Path::join($this->rootDirectory, 'config/application.neon'));
