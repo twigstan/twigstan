@@ -57,11 +57,6 @@ final readonly class TwigCompiler
 
         $phpSource = $this->compiler->compile($template)->getSource();
 
-        //$this->filesystem->dumpFile(
-        //    Path::join(dirname($twigFilePath), basename($twigFilePath) . '.original.untrack.php'),
-        //    $phpSource,
-        //);
-
         $stmts = $this->phpParser->parse($phpSource);
 
         $stmts = $this->applyVisitors(
@@ -95,10 +90,6 @@ final readonly class TwigCompiler
             hash('crc32', $twigFilePath),
         ));
 
-        //$this->filesystem->dumpFile(
-        //    Path::join(dirname($twigFilePath), basename($twigFilePath) . '.compiled.untrack.php'),
-        //    $phpSource,
-        //);
         $this->filesystem->dumpFile(
             $phpFile,
             $phpSource,

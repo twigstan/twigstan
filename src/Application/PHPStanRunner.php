@@ -59,15 +59,6 @@ final readonly class PHPStanRunner
             ]),
         );
 
-        // @todo While developing TwigStan this is handy to have
-        //$process = new Process([
-        //    PHP_BINARY,
-        //    'vendor/bin/phpstan',
-        //    'clear-result-cache',
-        //    sprintf('--configuration=%s', $tempConfigFile),
-        //], $this->currentWorkingDirectory);
-        //$process->run();
-
         $process = new Process(
             array_filter([
                 PHP_BINARY,
