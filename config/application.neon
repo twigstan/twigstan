@@ -6,7 +6,6 @@ parameters:
 		twig:
 			paths: []
 			excludes: []
-		environmentLoader: null
 services:
 	-
 		class: Twig\Environment
