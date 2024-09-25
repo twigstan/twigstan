@@ -49,6 +49,18 @@ abstract class SimplifiedTwigTemplate
      * @param array<mixed> $blocks
      * @return iterable<null|scalar|Stringable>
      */
+    public function yield(
+        array $context,
+        array $blocks = [],
+    ): iterable {
+        yield from [];
+    }
+
+    /**
+     * @param array<mixed> $context
+     * @param array<mixed> $blocks
+     * @return iterable<null|scalar|Stringable>
+     */
     public function yieldParentBlock(
         string $name,
         array $context,
@@ -84,5 +96,14 @@ abstract class SimplifiedTwigTemplate
         bool $sandboxed = false,
     ): string {
         return '';
+    }
+
+    public function loadTemplate(
+        string $template,
+        string $templateName = null,
+        int $line = null,
+        int $index = null,
+    ): self {
+        return $this;
     }
 }
