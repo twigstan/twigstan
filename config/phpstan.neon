@@ -1,5 +1,3 @@
-includes:
-	- phar://phpstan.phar/conf/bleedingEdge.neon
 parameters:
 	reportUnmatchedIgnoredErrors: false
 	treatPhpDocTypesAsCertain: false

@@ -18,6 +18,8 @@ final readonly class PHPStanRunner
     public function __construct(
         private Filesystem $filesystem,
         private AnalysisResultFromJsonReader $analysisResultFromJsonReader,
+        private string $phpstanConfigurationFile,
+        private ?string $phpstanMemoryLimit,
         private string $currentWorkingDirectory,
     ) {}
 
@@ -27,7 +29,6 @@ final readonly class PHPStanRunner
     public function run(
         OutputInterface $output,
         OutputInterface $errorOutput,
-        string $phpstanConfigurationFile,
         string $environmentLoader,
         array $pathsToAnalyze,
         bool $debugMode,
@@ -42,27 +43,34 @@ final readonly class PHPStanRunner
         $analysisResultJsonFile = tempnam(sys_get_temp_dir(), 'twigstan-');
         $this->filesystem->remove($analysisResultJsonFile);
 
+        $parameters = [
+            'twigstan' => [
+                'environmentLoader' => $environmentLoader,
+                'analysisResultJsonFile' => $analysisResultJsonFile,
+            ],
+        ];
+
+        if ($collectOnly) {
+            $parameters['level'] = null;
+            $parameters['customRulesetUsed'] = true;
+        }
+
         $this->filesystem->dumpFile(
             $tempConfigFile,
             Neon::encode([
                 'includes' => [
-                    $phpstanConfigurationFile,
+                    $this->phpstanConfigurationFile,
+                    __DIR__ . '/../../config/phpstan.neon',
                 ],
-                'parameters' => [
-                    'level' => $collectOnly ? null : 8,
-                    'customRulesetUsed' => $collectOnly,
-                    'twigstan' => [
-                        'environmentLoader' => $environmentLoader,
-                        'analysisResultJsonFile' => $analysisResultJsonFile,
-                    ],
-                ],
+                'parameters' => $parameters,
             ]),
         );
 
         $process = new Process(
             array_filter([
                 PHP_BINARY,
-                $xdebugMode ? '-dzend_extension=xdebug.so' : null,
+                $xdebugMode ? '-d zend_extension=xdebug.so' : null,
+                $this->phpstanMemoryLimit !== null ? sprintf('-d memory_limit=%s', $this->phpstanMemoryLimit) : null,
                 'vendor/bin/phpstan',
                 'analyse',
                 sprintf('--configuration=%s', $tempConfigFile),

@@ -257,7 +257,6 @@ final class AnalyzeCommand extends Command
         $analysisResult = $this->phpStanRunner->run(
             $output,
             $errorOutput,
-            __DIR__ . '/../../config/phpstan.neon',
             $this->environmentLoader,
             [
                 ...$phpFileNames,
@@ -324,7 +323,6 @@ final class AnalyzeCommand extends Command
         $analysisResult = $this->phpStanRunner->run(
             $output,
             $errorOutput,
-            __DIR__ . '/../../config/phpstan.neon',
             $this->environmentLoader,
             $phpFileNamesToAnalyze,
             $debugMode,

@@ -1,4 +1,6 @@
 parameters:
+	phpstan:
+		configurationFile: phpstan.neon
 	php:
 		paths: []
 		excludes: []
@@ -54,7 +56,11 @@ services:
 			currentWorkingDirectory: %currentWorkingDirectory%
 		)
 	)
-	- TwigStan\Application\PHPStanRunner(currentWorkingDirectory: %currentWorkingDirectory%)
+	- TwigStan\Application\PHPStanRunner(
+		phpstanConfigurationFile: %phpstan.configurationFile%
+		phpstanMemoryLimit: %phpstan.memoryLimit%
+		currentWorkingDirectory: %currentWorkingDirectory%
+	)
 	- TwigStan\PHP\PrettyPrinter
 	- TwigStan\PHP\StrictPhpParser
 	- TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader
