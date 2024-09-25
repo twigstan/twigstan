@@ -10,9 +10,9 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
 use TwigStan\Application\AnalyzeCommand;
-use TwigStan\Application\ContainerFactory;
 use TwigStan\Application\TwigStanAnalysisResult;
 use TwigStan\Application\TwigStanError;
+use TwigStan\DependencyInjection\ContainerFactory;
 
 abstract class AbstractEndToEndTestCase extends TestCase
 {

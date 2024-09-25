@@ -8,7 +8,7 @@ use TwigStan\Twig\SourceLocation;
 
 final readonly class Error
 {
-    private function __construct(
+    public function __construct(
         public string $message,
         public string $phpFile,
         public int $phpLine,

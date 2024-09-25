@@ -8,11 +8,9 @@ include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Application\AnalyzeCommand;
-use TwigStan\Application\ContainerFactory;
+use TwigStan\DependencyInjection\ContainerFactory;
 
 $currentWorkingDirectory = getcwd();
 
@@ -52,7 +50,10 @@ if (!file_exists($configurationFile)) {
 
 $tmpDir = sys_get_temp_dir() . '/twigstan';
 
-$factory = new ContainerFactory(getcwd(), $configurationFile);
+$factory = new ContainerFactory(
+    getcwd(),
+    $configurationFile,
+);
 $container = $factory->create($tmpDir);
 
 $application->add($container->getByType(AnalyzeCommand::class));
