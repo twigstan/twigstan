@@ -11,3 +11,6 @@ indent_size = 4
 [*.neon]
 indent_style = tab
 
+[twigstan.neon.dist]
+indent_style = tab
+
