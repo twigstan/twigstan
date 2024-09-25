@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use ShipMonk\ComposerDependencyAnalyser\Config\Configuration;
 use ShipMonk\ComposerDependencyAnalyser\Config\ErrorType;
 
@@ -24,5 +26,7 @@ $config->ignoreErrorsOnPackagesAndPaths(
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );
 
+$config->addPathToExclude('.twigstan');
+$config->addPathToExclude('tests/.twigstan');
 
 return $config;
