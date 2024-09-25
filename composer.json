@@ -58,7 +58,16 @@
         "sort-packages": true
     },
     "scripts": {
-        "cs": "vendor/bin/php-cs-fixer fix --diff --ansi",
+        "qa": [
+            "@php-cs-fixer",
+            "@phpstan",
+            "@phpunit",
+            "@dependencies"
+        ],
+        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --ansi",
+        "cs": "@php-cs-fixer",
+        "phpunit": "vendor/bin/phpunit",
+        "phpstan": "vendor/bin/phpstan",
         "dependencies": "vendor/bin/composer-dependency-analyser"
     }
 }
