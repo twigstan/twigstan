@@ -6,12 +6,13 @@ namespace TwigStan\Error;
 
 use TwigStan\PHPStan\Analysis\Error;
 
-final readonly class IgnoreError
+final class IgnoreError
 {
     public function __construct(
         public ?string $message = null,
         public ?string $identifier = null,
         public ?string $path = null,
+        public int $hits = 0,
     ) {}
 
     public function shouldIgnore(Error $error): bool
@@ -27,6 +28,8 @@ final readonly class IgnoreError
         if ($this->path !== null && ($error->sourceLocation === null || !fnmatch($this->path, $error->sourceLocation->fileName, FNM_NOESCAPE))) {
             return false;
         }
+
+        $this->hits++;
 
         return true;
     }

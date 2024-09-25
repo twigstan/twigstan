@@ -1,4 +1,5 @@
 parameters:
+	tempDir: .twigstan
 	phpstan:
 		configurationFile: ../phpstan.neon
 	environmentLoader: twig-loader.php

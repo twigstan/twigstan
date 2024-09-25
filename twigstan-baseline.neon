@@ -1,0 +1,26 @@
+parameters:
+	baselineErrors:
+		-
+			message: If condition is always false.
+			identifier: if.alwaysFalse
+			path: tests/EndToEnd/Baseline/homepage.html.twig
+			count: 1
+
+		-
+			message: 'Undefined variable: name'
+			identifier: variable.undefined
+			path: tests/EndToEnd/Baseline/layout.html.twig
+			count: 3
+
+		-
+			message: 'Undefined variable: email'
+			identifier: variable.undefined
+			path: tests/EndToEnd/Baseline/layout.html.twig
+			count: 2
+
+		-
+			message: 'Undefined variable: userId'
+			identifier: variable.undefined
+			path: tests/EndToEnd/Baseline/layout.html.twig
+			count: 1
+

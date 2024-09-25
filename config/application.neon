@@ -1,4 +1,5 @@
 parameters:
+	reportUnmatchedIgnoredErrors: true
 	phpstan:
 		configurationFile: phpstan.neon
 		memoryLimit: null
@@ -8,6 +9,7 @@ parameters:
 	twig:
 		paths: []
 		excludes: []
+	baselineErrors: []
 	ignoreErrors:
 		-
 			identifier: isset.variable
@@ -65,12 +67,16 @@ services:
 	- TwigStan\PHP\PrettyPrinter
 	- TwigStan\PHP\StrictPhpParser
 	- TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader
-	- TwigStan\PHPStan\Analysis\ErrorCollapser
-	- TwigStan\PHPStan\Analysis\ErrorFilter(
+	- TwigStan\Error\ErrorCollapser
+	- TwigStan\Error\ErrorFilter(
 		ignoreErrors: %ignoreErrors%
 	)
-	- TwigStan\PHPStan\Analysis\ErrorToSourceFileMapper
-	- TwigStan\PHPStan\Analysis\ErrorTransformer
+	- TwigStan\Error\BaselineErrorFilter(
+		baselineErrors: %baselineErrors%
+		reportUnmatchedIgnoredErrors: %reportUnmatchedIgnoredErrors%
+	)
+	- TwigStan\Error\ErrorToSourceFileMapper
+	- TwigStan\Error\ErrorTransformer
 	- TwigStan\Processing\Compilation\ModifiedCompiler
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
 	- TwigStan\Processing\Compilation\TwigCompiler

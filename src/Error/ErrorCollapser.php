@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TwigStan\PHPStan\Analysis;
+namespace TwigStan\Error;
+
+use TwigStan\PHPStan\Analysis\Error;
 
 final readonly class ErrorCollapser
 {

@@ -6,13 +6,11 @@ namespace TwigStan\EndToEnd;
 
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
 use TwigStan\Application\AnalyzeCommand;
-use TwigStan\Application\TwigStanAnalysisResult;
-use TwigStan\Application\TwigStanError;
 use TwigStan\DependencyInjection\ContainerFactory;
+use TwigStan\ErrorHelper;
 
 abstract class AbstractEndToEndTestCase extends TestCase
 {
@@ -43,106 +41,16 @@ abstract class AbstractEndToEndTestCase extends TestCase
 
     protected function runTests(string $directory): void
     {
-        $filesystem = new Filesystem();
-        $expectedErrors = json_decode(
-            $filesystem->readFile(Path::join($directory, 'errors.json')),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
-        );
-
         $result = $this->command->analyze(
             [Path::makeRelative($directory, dirname(__DIR__, 2))],
             $this->output,
             $this->errorOutput,
             extension_loaded('xdebug') ? true : false,
             extension_loaded('xdebug') ? true : false,
+            null,
         );
 
-        $actual = $this->toArray($result, $directory);
-
-        $expectedButNotActual = [];
-        $actualErrorsNotExpected = $actual['errors'];
-        foreach ($expectedErrors['errors'] as $expectedError) {
-            $key = array_search($expectedError, $actualErrorsNotExpected, true);
-            if ($key !== false) {
-                unset($actualErrorsNotExpected[$key]);
-                continue;
-            }
-
-            $expectedButNotActual[] = $expectedError;
-        }
-        $actualErrorsNotExpected = array_values($actualErrorsNotExpected);
-
-        self::assertTrue(
-            $expectedButNotActual === [] && $actualErrorsNotExpected === [],
-            sprintf(
-                "The following errors were expected but not found: %s\n\nThe following errors were found but not expected: %s",
-                json_encode(
-                    $expectedButNotActual,
-                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT,
-                ),
-                json_encode(
-                    $actualErrorsNotExpected,
-                    JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT,
-                ),
-            ),
-        );
-
-        self::assertEqualsCanonicalizing(
-            $expectedErrors['fileSpecificErrors'],
-            $actual['fileSpecificErrors'],
-            sprintf(
-                'FileSpecificErrors do not match with expectations. The full actual result is: %s',
-                json_encode($actual, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT),
-            ),
-        );
+        ErrorHelper::assertAnalysisResultMatchesJsonFile($result, $directory);
     }
 
-    /**
-     *
-     * @return array{
-     *     errors: list<array{
-     *          message: string,
-     *          identifier: string|null,
-     *          tip: string|null,
-     *          twigSourceLocation: string|null,
-     *          renderPoints: array<string>,
-     *     }>,
-     *     fileSpecificErrors: list<string>,
-     * }
-     */
-    private function toArray(TwigStanAnalysisResult $result, string $directory): array
-    {
-        return [
-            'errors' => array_map(
-                fn($error) => $this->errorToArray($error, $directory),
-                $result->errors,
-            ),
-            'fileSpecificErrors' => $result->fileSpecificErrors,
-        ];
-    }
-
-    /**
-     * @return array{
-     *      message: string,
-     *      identifier: string|null,
-     *      tip: string|null,
-     *      twigSourceLocation: string|null,
-     *      renderPoints: array<string>,
-     * }
-     */
-    private function errorToArray(TwigStanError $error, string $directory): array
-    {
-        return [
-            'message' => $error->message,
-            'identifier' => $error->identifier,
-            'tip' => $error->tip,
-            'twigSourceLocation' => $error->twigSourceLocation?->toString($directory),
-            'renderPoints' => array_map(
-                fn($sourceLocation) => $sourceLocation->toString($directory),
-                $error->renderPoints,
-            ),
-        ];
-    }
 }
