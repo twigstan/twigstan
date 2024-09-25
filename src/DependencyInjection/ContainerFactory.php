@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace TwigStan\DependencyInjection;
 
+use Nette\DI\Config\Adapters\NeonAdapter;
+use Nette\DI\Config\Loader;
 use Nette\DI\Container;
+use Nette\Schema\Processor;
 use RuntimeException;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 
 final readonly class ContainerFactory
@@ -24,25 +26,33 @@ final readonly class ContainerFactory
         $this->configurationFile = Path::makeAbsolute($configurationFile, $this->currentWorkingDirectory);
     }
 
-    public function create(string $tempDirectory): Container
+    public function create(): Container
     {
-        $filesystem = new Filesystem();
-        $filesystem->mkdir($tempDirectory);
-
-        $configurator = new Configurator(
-            new LoaderFactory(
-                $this->rootDirectory,
-                $this->currentWorkingDirectory,
-            ),
+        $adapter = new RelativePathSupportingNeonAdapter(
+            new NeonAdapter(),
+            new SchemaFactory(),
+            new Processor(),
         );
+
+        $loader = new Loader();
+        $loader->addAdapter('dist', $adapter);
+        $loader->addAdapter('neon', $adapter);
+        $loader->setParameters([
+            'rootDir' => $this->rootDirectory,
+            'currentWorkingDirectory' => $this->currentWorkingDirectory,
+            'env' => getenv(),
+        ]);
+
+        $projectConfig = $loader->load($this->configurationFile);
+
+        $configurator = new Configurator($loader);
+        $configurator->setTempDirectory($projectConfig['parameters']['tempDir'] ?? Path::join(Path::getDirectory($this->configurationFile), '.twigstan'));
         $configurator->addConfig(Path::join($this->rootDirectory, 'config/application.neon'));
-        $configurator->addConfig($this->configurationFile);
-        $configurator->setTempDirectory($tempDirectory);
+        $configurator->addConfig($projectConfig);
         $configurator->addStaticParameters([
             'debugMode' => true,
             'rootDir' => $this->rootDirectory,
             'currentWorkingDirectory' => $this->currentWorkingDirectory,
-            'tmpDir' => $tempDirectory,
         ]);
         $configurator->addDynamicParameters([
             'env' => getenv(),

@@ -16,8 +16,6 @@ use TwigStan\DependencyInjection\ContainerFactory;
 
 abstract class AbstractEndToEndTestCase extends TestCase
 {
-    private const string tempDirectory = __DIR__ . '/../../.twigstan';
-
     private AnalyzeCommand $command;
     private BufferedOutput $output;
     private BufferedOutput $errorOutput;
@@ -28,7 +26,7 @@ abstract class AbstractEndToEndTestCase extends TestCase
             dirname(__DIR__, 2),
             __DIR__ . '/../twigstan.neon',
         );
-        $container = $containerFactory->create(self::tempDirectory);
+        $container = $containerFactory->create();
         $this->command = $container->getByType(AnalyzeCommand::class);
 
         $this->output = new BufferedOutput();

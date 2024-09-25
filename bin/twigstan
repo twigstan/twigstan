@@ -48,13 +48,11 @@ if (!file_exists($configurationFile)) {
     exit(1);
 }
 
-$tmpDir = sys_get_temp_dir() . '/twigstan';
-
 $factory = new ContainerFactory(
     getcwd(),
     $configurationFile,
 );
-$container = $factory->create($tmpDir);
+$container = $factory->create();
 
 $application->add($container->getByType(AnalyzeCommand::class));
 

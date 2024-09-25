@@ -1,6 +1,7 @@
 parameters:
 	phpstan:
 		configurationFile: phpstan.neon
+		memoryLimit: null
 	php:
 		paths: []
 		excludes: []
@@ -40,7 +41,7 @@ services:
 	- Symfony\Component\Filesystem\Filesystem
 	- TwigStan\Application\AnalyzeCommand(
 		environmentLoader: %environmentLoader%
-		tempDirectory: %tmpDir%
+		tempDirectory: %tempDir%
 		currentWorkingDirectory: %currentWorkingDirectory%
 		phpFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.php
