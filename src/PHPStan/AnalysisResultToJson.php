@@ -8,6 +8,7 @@ use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\ErrorFormatter\ErrorFormatter;
 use PHPStan\Command\ErrorFormatter\JsonErrorFormatter;
 use PHPStan\Command\Output;
+use TwigStan\PHPStan\Collector\ExportingCollector;
 
 /**
  * This is abusing the ErrorFormatter to write the AnalysisResult to a JSON file.
@@ -42,15 +43,11 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
             json_encode([
                 'fileSpecificErrors' => $analysisResult->getFileSpecificErrors(),
                 'notFileSpecificErrors' => $analysisResult->getNotFileSpecificErrors(),
-                'internalErrors' => $analysisResult->getInternalErrorObjects(),
-                'warnings' => $analysisResult->getWarnings(),
-                'collectedData' => $analysisResult->getCollectedData(),
-                'defaultLevelUsed' => $analysisResult->isDefaultLevelUsed(),
-                'projectConfigFile' => $analysisResult->getProjectConfigFile(),
-                'savedResultCache' => $analysisResult->isResultCacheSaved(),
-                'peakMemoryUsageBytes' => $analysisResult->getPeakMemoryUsageBytes(),
-                'isResultCacheUsed' => $analysisResult->isResultCacheUsed(),
-                'changedProjectExtensionFilesOutsideOfAnalysedPaths' => $analysisResult->getChangedProjectExtensionFilesOutsideOfAnalysedPaths(),
+                'collectedData' => array_filter(
+                    $analysisResult->getCollectedData(),
+                    // @phpstan-ignore phpstanApi.runtimeReflection
+                    fn($collectedData) => is_a($collectedData->getCollectorType(), ExportingCollector::class, true),
+                ),
             ]),
         );
 

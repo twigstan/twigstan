@@ -20,7 +20,7 @@ use TwigStan\Twig\SourceLocation;
  *     parent: bool,
  * }>
  */
-final readonly class BlockContextCollector implements Collector
+final readonly class BlockContextCollector implements Collector, ExportingCollector
 {
     public function getNodeType(): string
     {
