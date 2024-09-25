@@ -42,6 +42,16 @@ final readonly class SchemaFactory
                     ),
                     'excludes' => Expect::listOf('string'),
                 ])->castTo('array'),
+                'phpstan' => Expect::structure([
+                    'configurationFile' => Expect::string()->transform(
+                        fn(string $path) => Path::makeAbsolute($path, $basePath),
+                    ),
+                    'memoryLimit' => Expect::anyOf(
+                        Expect::string(),
+                        Expect::bool()->assert(fn($value) => $value === false, 'Only false is accepted')->transform(fn() => '-1'),
+                        Expect::null(),
+                    ),
+                ])->castTo('array'),
                 'environmentLoader' => Expect::string()->transform(
                     fn(string $path) => Path::makeAbsolute($path, $basePath),
                 ),

@@ -1,4 +1,12 @@
 parameters:
+	phpstan:
+		# Path to PHPStan configuration file
+		configurationFile: phpstan.neon
+
+		# Memory limit for when running PHPStan. Should be a value accepted by PHP (e.g. 512M)
+		# Use false for no limit
+		#memoryLimit: null
+
 	# TwigStan needs access to your Twig environment to analyze your templates.
 	environmentLoader: twig-loader.php
 
