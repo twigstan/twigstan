@@ -1,55 +1,54 @@
 parameters:
-	twigstan:
-		php:
-			paths: []
-			excludes: []
-		twig:
-			paths: []
-			excludes: []
-		ignoreErrors:
-			-
-				identifier: isset.variable
+	php:
+		paths: []
+		excludes: []
+	twig:
+		paths: []
+		excludes: []
+	ignoreErrors:
+		-
+			identifier: isset.variable
 
-			-
-				# It's perfectly fine to do `a == b ? 'yes' : 'no'` in Twig.
-				identifier: equal.notAllowed
+		-
+			# It's perfectly fine to do `a == b ? 'yes' : 'no'` in Twig.
+			identifier: equal.notAllowed
 
-			-
-				# It's perfectly fine to do `a != b ? 'no' : 'yes'` in Twig.
-				identifier: notEqual.notAllowed
+		-
+			# It's perfectly fine to do `a != b ? 'no' : 'yes'` in Twig.
+			identifier: notEqual.notAllowed
 
-			-
-				# The context is backed up before a loop and restored after it.
-				# Therefore this is a non-issue in Twig templates.
-				identifier: foreach.valueOverwrite
+		-
+			# The context is backed up before a loop and restored after it.
+			# Therefore this is a non-issue in Twig templates.
+			identifier: foreach.valueOverwrite
 
-			-
-				# When an array inside the context is not typed, this produces an error.
-				message: '#__twigstan_context#'
-				identifier: missingType.iterableValue
+		-
+			# When an array inside the context is not typed, this produces an error.
+			message: '#__twigstan_context#'
+			identifier: missingType.iterableValue
 
-			-
-				# When the variable that is passed does not exist, this produces an error.
-				message: '#CoreExtension::ensureTraversable#'
-				identifier: argument.templateType
+		-
+			# When the variable that is passed does not exist, this produces an error.
+			message: '#CoreExtension::ensureTraversable#'
+			identifier: argument.templateType
 services:
 	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
 	- Symfony\Component\Filesystem\Filesystem
 	- TwigStan\Application\AnalyzeCommand(
-		environmentLoader: %twigstan.environmentLoader%
+		environmentLoader: %environmentLoader%
 		tempDirectory: %tmpDir%
 		currentWorkingDirectory: %currentWorkingDirectory%
 		phpFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.php
-			paths: %twigstan.php.paths%
-			exclusions: %twigstan.php.excludes%
+			paths: %php.paths%
+			exclusions: %php.excludes%
 		)
 		twigFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.twig
-			paths: %twigstan.twig.paths%
-			exclusions: %twigstan.twig.excludes%
+			paths: %twig.paths%
+			exclusions: %twig.excludes%
 		)
 		givenFilesFinder: TwigStan\Finder\GivenFilesFinder(
 			currentWorkingDirectory: %currentWorkingDirectory%
@@ -61,7 +60,7 @@ services:
 	- TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader
 	- TwigStan\PHPStan\Analysis\ErrorCollapser
 	- TwigStan\PHPStan\Analysis\ErrorFilter(
-		ignoreErrors: %twigstan.ignoreErrors%
+		ignoreErrors: %ignoreErrors%
 	)
 	- TwigStan\PHPStan\Analysis\ErrorToSourceFileMapper
 	- TwigStan\PHPStan\Analysis\ErrorTransformer
@@ -85,5 +84,5 @@ services:
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
-	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
+	- TwigStan\Twig\TwigFactory(environmentLoader: %environmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer

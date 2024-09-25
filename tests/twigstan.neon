@@ -1,9 +1,8 @@
 parameters:
-	twigstan:
-		twig:
-			paths: []
-			excludes: []
-		php:
-			paths: []
-			excludes: []
-		environmentLoader: twig-loader.php
+	twig:
+		paths: []
+		excludes: []
+	php:
+		paths: []
+		excludes: []
+	environmentLoader: twig-loader.php
