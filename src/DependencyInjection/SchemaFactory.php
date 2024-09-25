@@ -7,6 +7,7 @@ namespace TwigStan\DependencyInjection;
 use Nette\Schema\Elements\Structure;
 use Nette\Schema\Expect;
 use Symfony\Component\Filesystem\Path;
+use TwigStan\Error\IgnoreError;
 
 final readonly class SchemaFactory
 {
@@ -45,6 +46,16 @@ final readonly class SchemaFactory
                     'environmentLoader' => Expect::string()->transform(
                         fn(string $path) => Path::makeAbsolute($path, $basePath),
                     ),
+                    'ignoreErrors' => Expect::listOf(Expect::structure([
+                        'message' => Expect::anyOf(Expect::string(), Expect::null()),
+                        'identifier' => Expect::anyOf(Expect::string(), Expect::null()),
+                        'path' => Expect::anyOf(
+                            Expect::string()->transform(
+                                fn(string $path) => str_contains($path, '*') ? $path : Path::makeAbsolute($path, $basePath),
+                            ),
+                            Expect::null(),
+                        ),
+                    ])->castTo(IgnoreError::class)),
                 ])->castTo('array'),
             ])->castTo('array'),
         ])->castTo('array');
