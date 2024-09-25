@@ -13,7 +13,6 @@ final readonly class ErrorFilter
      */
     public function __construct(private array $ignoreErrors) {}
 
-
     /**
      * @param list<Error> $errors
      *

@@ -17,7 +17,7 @@ final readonly class ErrorTransformer
     {
         return array_map(
             function ($error) {
-                if (!str_contains($error->message, '$')) {
+                if ( ! str_contains($error->message, '$')) {
                     return $error;
                 }
 

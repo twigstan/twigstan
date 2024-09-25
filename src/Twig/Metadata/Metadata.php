@@ -23,7 +23,6 @@ final readonly class Metadata
         public array $parentBlocks,
     ) {}
 
-
     public function hasParents(): bool
     {
         return $this->parents !== [];
@@ -37,10 +36,9 @@ final readonly class Metadata
 
         return array_filter(
             $this->parents,
-            fn($parent) => !str_starts_with($parent, '$'),
+            fn($parent) => ! str_starts_with($parent, '$'),
         ) !== [];
     }
-
 
     public function hasTraits(): bool
     {

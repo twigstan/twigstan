@@ -19,7 +19,7 @@ final readonly class ReplaceNameExpressionNodeVisitor implements NodeVisitorInte
 
     public function leaveNode(Node $node, Environment $env): Node
     {
-        if (!$node instanceof NameExpression) {
+        if ( ! $node instanceof NameExpression) {
             return $node;
         }
 

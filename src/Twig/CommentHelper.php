@@ -10,7 +10,7 @@ final readonly class CommentHelper
 {
     public static function getSourceLocationFromComment(string $comment): ?SourceLocation
     {
-        if (!str_starts_with($comment, '// line ')) {
+        if ( ! str_starts_with($comment, '// line ')) {
             return null;
         }
 

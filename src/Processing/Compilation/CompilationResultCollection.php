@@ -29,7 +29,6 @@ final readonly class CompilationResultCollection implements IteratorAggregate
             ),
             $results,
         );
-
     }
 
     public function with(CompilationResult ...$results): self

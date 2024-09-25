@@ -31,7 +31,7 @@ final class VariableExistsExtension implements FunctionTypeSpecifyingExtension, 
         FuncCall $node,
         TypeSpecifierContext $context,
     ): bool {
-        return $functionReflection->getName() === 'twigstan_variable_exists' && !$context->null();
+        return $functionReflection->getName() === 'twigstan_variable_exists' && ! $context->null();
     }
 
     public function specifyTypes(
@@ -40,7 +40,7 @@ final class VariableExistsExtension implements FunctionTypeSpecifyingExtension, 
         Scope $scope,
         TypeSpecifierContext $context,
     ): SpecifiedTypes {
-        if (!isset($node->getArgs()[0])) {
+        if ( ! isset($node->getArgs()[0])) {
             return new SpecifiedTypes();
         }
 
@@ -48,7 +48,7 @@ final class VariableExistsExtension implements FunctionTypeSpecifyingExtension, 
             throw new ShouldNotHappenException();
         }
 
-        if (!$node->getArgs()[0]->value instanceof String_) {
+        if ( ! $node->getArgs()[0]->value instanceof String_) {
             return new SpecifiedTypes();
         }
 
@@ -70,5 +70,4 @@ final class VariableExistsExtension implements FunctionTypeSpecifyingExtension, 
             $context,
         );
     }
-
 }

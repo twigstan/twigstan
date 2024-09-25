@@ -25,7 +25,7 @@ final class IgnoreError
             return false;
         }
 
-        if ($this->path !== null && ($error->sourceLocation === null || !fnmatch($this->path, $error->sourceLocation->fileName, FNM_NOESCAPE))) {
+        if ($this->path !== null && ($error->sourceLocation === null || ! fnmatch($this->path, $error->sourceLocation->fileName, FNM_NOESCAPE))) {
             return false;
         }
 

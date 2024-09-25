@@ -30,5 +30,4 @@ final readonly class TwigStanAnalysisResult
             $this->fileSpecificErrors,
         );
     }
-
 }

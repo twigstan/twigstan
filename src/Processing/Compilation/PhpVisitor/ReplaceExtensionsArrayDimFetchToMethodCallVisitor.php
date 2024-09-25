@@ -9,20 +9,20 @@ use PhpParser\NodeVisitorAbstract;
 
 final class ReplaceExtensionsArrayDimFetchToMethodCallVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node | null
+    public function enterNode(Node $node): ?Node
     {
         // Find: $this->extensions['Symfony\\Bridge\\Twig\\Extension\\AssetExtension']
         // Replace: $this->env->getExtension('Symfony\\Bridge\\Twig\\Extension\\AssetExtension')
 
-        if (!$node instanceof Node\Expr\ArrayDimFetch) {
+        if ( ! $node instanceof Node\Expr\ArrayDimFetch) {
             return null;
         }
 
-        if (!$node->var instanceof Node\Expr\PropertyFetch) {
+        if ( ! $node->var instanceof Node\Expr\PropertyFetch) {
             return null;
         }
 
-        if (!$node->var->var instanceof Node\Expr\Variable) {
+        if ( ! $node->var->var instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -30,7 +30,7 @@ final class ReplaceExtensionsArrayDimFetchToMethodCallVisitor extends NodeVisito
             return null;
         }
 
-        if (!$node->var->name instanceof Node\Identifier) {
+        if ( ! $node->var->name instanceof Node\Identifier) {
             return null;
         }
 

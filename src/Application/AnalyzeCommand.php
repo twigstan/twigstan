@@ -105,12 +105,12 @@ final class AnalyzeCommand extends Command
 
             if ($error->tip !== null) {
                 foreach (explode("\n", $error->tip) as $line) {
-                    $errorOutput->writeln(sprintf("💡 <fg=blue>%s</>", ltrim($line, ' •')));
+                    $errorOutput->writeln(sprintf('💡 <fg=blue>%s</>', ltrim($line, ' •')));
                 }
             }
 
             if ($error->identifier !== null) {
-                $errorOutput->writeln(sprintf("🔖 <fg=blue>%s</>", $error->identifier));
+                $errorOutput->writeln(sprintf('🔖 <fg=blue>%s</>', $error->identifier));
             }
 
             if ($error->phpFile !== null && $error->phpLine !== null) {
@@ -120,7 +120,7 @@ final class AnalyzeCommand extends Command
                         str_replace(
                             ['%file%', '%line%'],
                             [$error->phpFile, $error->phpLine],
-                            "phpstorm://open?file=%file%&line=%line%",
+                            'phpstorm://open?file=%file%&line=%line%',
                         ),
                         sprintf(
                             'compiled_%s.php',
@@ -143,7 +143,7 @@ final class AnalyzeCommand extends Command
                             str_replace(
                                 ['%file%', '%line%'],
                                 [$sourceLocation->fileName, $sourceLocation->lineNumber],
-                                "phpstorm://open?file=%file%&line=%line%",
+                                'phpstorm://open?file=%file%&line=%line%',
                             ),
                             Path::makeRelative($sourceLocation->fileName, $this->currentWorkingDirectory),
                             $sourceLocation->lineNumber,
@@ -159,7 +159,7 @@ final class AnalyzeCommand extends Command
                         str_replace(
                             ['%file%', '%line%'],
                             [$renderPoint->fileName, $renderPoint->lineNumber],
-                            "phpstorm://open?file=%file%&line=%line%",
+                            'phpstorm://open?file=%file%&line=%line%',
                         ),
                         Path::makeRelative($renderPoint->fileName, $this->currentWorkingDirectory),
                         $renderPoint->lineNumber,
@@ -192,7 +192,7 @@ final class AnalyzeCommand extends Command
         OutputInterface $errorOutput,
         bool $debugMode,
         bool $xdebugMode,
-        null | string $generateBaselineFile,
+        ?string $generateBaselineFile,
     ): TwigStanAnalysisResult {
         $compilationDirectory = Path::normalize($this->tempDirectory . '/compilation');
         $this->filesystem->remove($compilationDirectory);
@@ -310,7 +310,6 @@ final class AnalyzeCommand extends Command
             $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
         }
 
-
         if ($analysisResult->notFileSpecificErrors !== []) {
             return $result;
         }
@@ -387,7 +386,7 @@ final class AnalyzeCommand extends Command
              */
             $baselineErrors = [];
             foreach ($errors as $error) {
-                if (!$error->canBeIgnored) {
+                if ( ! $error->canBeIgnored) {
                     continue;
                 }
 
@@ -482,5 +481,4 @@ final class AnalyzeCommand extends Command
 
         return $result;
     }
-
 }

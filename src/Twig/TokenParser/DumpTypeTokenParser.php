@@ -14,7 +14,7 @@ final class DumpTypeTokenParser extends AbstractTokenParser
         $stream = $this->parser->getStream();
 
         $expr = null;
-        if (!$stream->test(Token::BLOCK_END_TYPE)) {
+        if ( ! $stream->test(Token::BLOCK_END_TYPE)) {
             $expr = $this->parser->getExpressionParser()->parseExpression();
         }
 
@@ -27,5 +27,4 @@ final class DumpTypeTokenParser extends AbstractTokenParser
     {
         return 'dump_type';
     }
-
 }

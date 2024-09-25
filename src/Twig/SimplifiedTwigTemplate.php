@@ -21,9 +21,9 @@ abstract class SimplifiedTwigTemplate
     public function yieldTemplate(
         array $context,
         string $template,
-        string $templateName = null,
-        int $line = null,
-        int $index = null,
+        ?string $templateName = null,
+        ?int $line = null,
+        ?int $index = null,
         array $blocks = [],
     ): iterable {
         yield from [];
@@ -85,5 +85,4 @@ abstract class SimplifiedTwigTemplate
     ): string {
         return '';
     }
-
 }

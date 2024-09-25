@@ -11,22 +11,22 @@ use PhpParser\NodeVisitorAbstract;
 final class RemoveForeachArrayIntersectVisitor extends NodeVisitorAbstract
 {
     /**
-     * @return list<Node\Stmt>|null
+     * @return null|list<Node\Stmt>
      */
-    public function leaveNode(Node $node): array | null
+    public function leaveNode(Node $node): ?array
     {
         // Find: $context = array_intersect_key($context, $_parent) + $_parent;
         // Replace with: extract($_parent); unset($_parent);
 
-        if (!$node instanceof Node\Stmt\Expression) {
+        if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
         }
 
-        if (!$node->expr instanceof Node\Expr\Assign) {
+        if ( ! $node->expr instanceof Node\Expr\Assign) {
             return null;
         }
 
-        if (!$node->expr->var instanceof Variable) {
+        if ( ! $node->expr->var instanceof Variable) {
             return null;
         }
 
@@ -34,19 +34,19 @@ final class RemoveForeachArrayIntersectVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->expr->expr instanceof Node\Expr\BinaryOp\Plus) {
+        if ( ! $node->expr->expr instanceof Node\Expr\BinaryOp\Plus) {
             return null;
         }
 
         $binaryOp = $node->expr->expr;
 
-        if (!$binaryOp->left instanceof Node\Expr\FuncCall) {
+        if ( ! $binaryOp->left instanceof Node\Expr\FuncCall) {
             return null;
         }
 
         $funcCall = $binaryOp->left;
 
-        if (!$funcCall->name instanceof Node\Name) {
+        if ( ! $funcCall->name instanceof Node\Name) {
             return null;
         }
 
@@ -69,7 +69,7 @@ final class RemoveForeachArrayIntersectVisitor extends NodeVisitorAbstract
 
             // Add: unset($_parent);
             new Node\Stmt\Unset_(
-                [new Node\Expr\Variable('_parent')],
+                [new Variable('_parent')],
             ),
         ];
     }

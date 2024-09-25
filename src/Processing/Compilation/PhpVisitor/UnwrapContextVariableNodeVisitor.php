@@ -12,13 +12,13 @@ use PhpParser\NodeVisitorAbstract;
 
 final class UnwrapContextVariableNodeVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Variable | null
+    public function enterNode(Node $node): ?Variable
     {
-        if (!$node instanceof ArrayDimFetch) {
+        if ( ! $node instanceof ArrayDimFetch) {
             return null;
         }
 
-        if (!$node->var instanceof Variable) {
+        if ( ! $node->var instanceof Variable) {
             return null;
         }
 
@@ -26,15 +26,14 @@ final class UnwrapContextVariableNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->dim instanceof String_) {
+        if ( ! $node->dim instanceof String_) {
             return null;
         }
 
         $string = $node->dim;
-        //if (str_starts_with($string->value, '_')) {
+        // if (str_starts_with($string->value, '_')) {
         //    return null;
-        //}
-
+        // }
 
         return new Variable($string->value);
     }

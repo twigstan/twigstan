@@ -19,27 +19,27 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
     ) {}
 
     /**
-     * @return array<Node\Stmt\Expression>|null
+     * @return null|array<Node\Stmt\Expression>
      */
     public function leaveNode(Node $node): ?array
     {
         // Find: yield from $this->yieldTemplate(get_defined_vars(), "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1);
 
-        if (!$node instanceof Node\Stmt\Expression) {
+        if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
         }
 
         $node = $node->expr;
-        if (!$node instanceof Node\Expr\YieldFrom) {
+        if ( ! $node instanceof Node\Expr\YieldFrom) {
             return null;
         }
 
         $expr = $node->expr;
-        if (!$expr instanceof Node\Expr\MethodCall) {
+        if ( ! $expr instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (!$expr->name instanceof Node\Identifier) {
+        if ( ! $expr->name instanceof Node\Identifier) {
             return null;
         }
 

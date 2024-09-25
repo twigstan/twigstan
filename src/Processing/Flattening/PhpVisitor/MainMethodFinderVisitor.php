@@ -16,7 +16,7 @@ final class MainMethodFinderVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        if (!$node instanceof Node\Stmt\ClassMethod) {
+        if ( ! $node instanceof Node\Stmt\ClassMethod) {
             return null;
         }
 

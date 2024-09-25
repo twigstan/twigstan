@@ -16,11 +16,11 @@ final class BlockMethodFindingVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        if (!$node instanceof Node\Stmt\ClassMethod) {
+        if ( ! $node instanceof Node\Stmt\ClassMethod) {
             return null;
         }
 
-        if (!str_starts_with($node->name->name, 'block_')) {
+        if ( ! str_starts_with($node->name->name, 'block_')) {
             return null;
         }
 

@@ -41,5 +41,4 @@ final readonly class StrictPhpParser
     {
         return $this->parse($this->filesystem->readFile($phpFile));
     }
-
 }

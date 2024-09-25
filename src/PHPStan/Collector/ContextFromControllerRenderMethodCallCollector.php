@@ -22,7 +22,7 @@ final readonly class ContextFromControllerRenderMethodCallCollector implements T
 
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if (!$node->var instanceof Node\Expr\Variable) {
+        if ( ! $node->var instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -30,11 +30,11 @@ final readonly class ContextFromControllerRenderMethodCallCollector implements T
             return null;
         }
 
-        if (!$node->name instanceof Node\Identifier) {
+        if ( ! $node->name instanceof Node\Identifier) {
             return null;
         }
 
-        if (!\in_array($node->name->name, ['render', 'renderView'], true)) {
+        if ( ! \in_array($node->name->name, ['render', 'renderView'], true)) {
             return null;
         }
 
@@ -50,7 +50,7 @@ final readonly class ContextFromControllerRenderMethodCallCollector implements T
         }
 
         $args = $node->getArgs();
-        if (!isset($args[0])) {
+        if ( ! isset($args[0])) {
             return null;
         }
 

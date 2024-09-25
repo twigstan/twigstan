@@ -26,5 +26,4 @@ final readonly class RelativePathSupportingNeonAdapter implements Adapter
             $this->neonAdapter->load($file),
         );
     }
-
 }

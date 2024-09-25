@@ -19,7 +19,7 @@ final readonly class TwigNodeParser
      * @throws SyntaxError
      * @throws LoaderError
      */
-    public function parse(string | ModuleNode $template): ModuleNode
+    public function parse(ModuleNode | string $template): ModuleNode
     {
         if ($template instanceof ModuleNode) {
             return $template;

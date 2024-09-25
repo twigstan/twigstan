@@ -27,15 +27,15 @@ final readonly class DependencySorter
             $metadata = $this->metadataRegistry->getMetadata($twigFileName);
             $dependants[$twigFileName] = array_filter(
                 $metadata->parents,
-                fn($parent) => !str_starts_with($parent, '$'),
+                fn($parent) => ! str_starts_with($parent, '$'),
             );
         }
 
         $sorted = [];
         $visited = [];
 
-        $visit = function ($file) use (&$visit, &$sorted, &$visited, $dependants) {
-            if (!isset($visited[$file])) {
+        $visit = function ($file) use (&$visit, &$sorted, &$visited, $dependants): void {
+            if ( ! isset($visited[$file])) {
                 $visited[$file] = true;
                 foreach ($dependants[$file] as $dependency) {
                     $visit($dependency);

@@ -22,7 +22,7 @@ final readonly class ErrorToSourceFileMapper
                     return $error;
                 }
 
-                if (!$mapping->hasPhpFile($error->phpFile)) {
+                if ( ! $mapping->hasPhpFile($error->phpFile)) {
                     return $error;
                 }
 

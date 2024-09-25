@@ -52,7 +52,6 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
 
     /**
      * @param array<mixed> $data
-     *
      */
     public static function decode(array $data): self
     {
@@ -95,6 +94,4 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
             $current = $current->previous;
         }
     }
-
-
 }

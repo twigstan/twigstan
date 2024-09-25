@@ -160,6 +160,5 @@ final class IgnoreErrorTest extends TestCase
                 null,
             ),
         ];
-
     }
 }

@@ -33,7 +33,7 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
 
     public function formatErrors(AnalysisResult $analysisResult, Output $output): int
     {
-        if (!isset($this->jsonFile)) {
+        if ( ! isset($this->jsonFile)) {
             // @phpstan-ignore phpstanApi.method (we don't care about this)
             return $this->jsonErrorFormatter->formatErrors($analysisResult, $output);
         }

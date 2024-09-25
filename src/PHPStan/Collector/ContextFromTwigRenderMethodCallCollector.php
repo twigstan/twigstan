@@ -23,25 +23,25 @@ final readonly class ContextFromTwigRenderMethodCallCollector implements Templat
 
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if (!$node->var instanceof Node\Expr\Variable) {
+        if ( ! $node->var instanceof Node\Expr\Variable) {
             return null;
         }
 
-        if (!$node->name instanceof Node\Identifier) {
+        if ( ! $node->name instanceof Node\Identifier) {
             return null;
         }
 
-        if (!\in_array($node->name->name, ['render', 'display'], true)) {
+        if ( ! \in_array($node->name->name, ['render', 'display'], true)) {
             return null;
         }
 
         $varType = $scope->getType($node->var);
-        if (!(new ObjectType(Environment::class))->isSuperTypeOf($varType)->yes()) {
+        if ( ! (new ObjectType(Environment::class))->isSuperTypeOf($varType)->yes()) {
             return null;
         }
 
         $args = $node->getArgs();
-        if (!isset($args[0])) {
+        if ( ! isset($args[0])) {
             return null;
         }
 

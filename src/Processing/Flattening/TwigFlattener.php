@@ -34,7 +34,6 @@ final readonly class TwigFlattener
     {
         $results = new FlatteningResultCollection();
         foreach ($collection as $compilationResult) {
-
             $metadata = $this->metadataRegistry->getMetadata($compilationResult->twigFileName);
             if ($metadata->hasResolvableParents()) {
                 foreach ($metadata->parents as $parent) {
@@ -57,9 +56,8 @@ final readonly class TwigFlattener
                         $blocksNeededFromParent['parent_block_' . $parentBlock] = $parentBlock;
                     }
 
-
                     // Inline the body of the `main` function from the parent template
-                    if (!$results->hasTwigFileName($parent)) {
+                    if ( ! $results->hasTwigFileName($parent)) {
                         throw new RuntimeException(sprintf('Parent template %s not found in mapping', $parent));
                     }
 
@@ -81,7 +79,7 @@ final readonly class TwigFlattener
 
                     $blockMethods = [];
                     foreach ($blocksNeededFromParent as $alias => $block) {
-                        if (!isset($blockMethodFinderVisitor->blocks[$block])) {
+                        if ( ! isset($blockMethodFinderVisitor->blocks[$block])) {
                             continue;
                         }
 

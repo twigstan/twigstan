@@ -12,11 +12,11 @@ final class RemoveBlockMethodsVisitor extends NodeVisitorAbstract
 {
     public function leaveNode(Node $node): ?int
     {
-        if (!$node instanceof Node\Stmt\ClassMethod) {
+        if ( ! $node instanceof Node\Stmt\ClassMethod) {
             return null;
         }
 
-        if (!str_starts_with($node->name->name, 'block_')) {
+        if ( ! str_starts_with($node->name->name, 'block_')) {
             return null;
         }
 

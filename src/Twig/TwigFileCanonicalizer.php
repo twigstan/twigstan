@@ -52,7 +52,7 @@ final class TwigFileCanonicalizer
             }
         }
 
-        if (!str_starts_with($name, '@')) {
+        if ( ! str_starts_with($name, '@')) {
             $name = sprintf('@%s/%s', FilesystemLoader::MAIN_NAMESPACE, $name);
         }
 
@@ -91,7 +91,7 @@ final class TwigFileCanonicalizer
 
             foreach ($this->loader->getPaths($namespace) as $path) {
                 foreach ($mainPaths as $mainPath) {
-                    if (!str_starts_with($path, $mainPath)) {
+                    if ( ! str_starts_with($path, $mainPath)) {
                         continue;
                     }
                     $namespacesWithinMainNamespace[$namespace][] = ltrim(substr($path, strlen($mainPath)), DIRECTORY_SEPARATOR);

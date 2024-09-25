@@ -28,7 +28,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         private ArrayShapeMerger $arrayShapeMerger,
     ) {}
 
-    public function enterNode(Node $node): Node | null
+    public function enterNode(Node $node): ?Node
     {
         // Search for the following pattern:
         //     // line 7
@@ -38,7 +38,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         //     */
         //    public function block_main(array $__twigstan_context) : iterable
 
-        if (!$node instanceof Node\Stmt\ClassMethod) {
+        if ( ! $node instanceof Node\Stmt\ClassMethod) {
             return null;
         }
 
@@ -67,8 +67,8 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         $node->setDocComment(new Doc(
             str_replace('array{}', (new Printer())->print($context), $phpDoc->getText()),
         ));
-        return $node;
 
+        return $node;
     }
 
     private function getContextBeforeBlock(string $blockName, bool $parent): ArrayShapeNode

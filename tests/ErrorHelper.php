@@ -60,8 +60,8 @@ final readonly class ErrorHelper
             ),
         );
     }
+
     /**
-     *
      * @return array{
      *     errors: list<array{
      *          message: string,

@@ -29,7 +29,6 @@ final readonly class FlatteningResultCollection implements IteratorAggregate
             ),
             $results,
         );
-
     }
 
     public function with(FlatteningResult ...$results): self

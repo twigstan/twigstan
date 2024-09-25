@@ -10,16 +10,16 @@ use Twig\Extension\CoreExtension;
 
 final class RefactorStaticIncludeCallVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node | null
+    public function enterNode(Node $node): ?Node
     {
         // Find: \Twig\Extension\CoreExtension::include($this->env, $context, "_random_footer.twig"))
         // Replace: $this->include(get_defined_vars(), "_random_footer.twig"))
 
-        if (!$node instanceof Node\Expr\StaticCall) {
+        if ( ! $node instanceof Node\Expr\StaticCall) {
             return null;
         }
 
-        if (!$node->class instanceof Node\Name) {
+        if ( ! $node->class instanceof Node\Name) {
             return null;
         }
 
@@ -27,7 +27,7 @@ final class RefactorStaticIncludeCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->name instanceof Node\Identifier) {
+        if ( ! $node->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -39,11 +39,11 @@ final class RefactorStaticIncludeCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->args[1] instanceof Node\Arg) {
+        if ( ! $node->args[1] instanceof Node\Arg) {
             return null;
         }
 
-        if (!$node->args[1]->value instanceof Node\Expr\Variable) {
+        if ( ! $node->args[1]->value instanceof Node\Expr\Variable) {
             return null;
         }
 

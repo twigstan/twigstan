@@ -13,11 +13,11 @@ final class IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor extends NodeVis
 {
     public function enterNode(Node $node): ?Node\Expr\StaticCall
     {
-        if (!$node instanceof Node\Expr\StaticCall) {
+        if ( ! $node instanceof Node\Expr\StaticCall) {
             return null;
         }
 
-        if (!$node->class instanceof Node\Name\FullyQualified) {
+        if ( ! $node->class instanceof Node\Name\FullyQualified) {
             return null;
         }
 
@@ -25,7 +25,7 @@ final class IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor extends NodeVis
             return null;
         }
 
-        if (!$node->name instanceof Node\Identifier) {
+        if ( ! $node->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -39,7 +39,7 @@ final class IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor extends NodeVis
             return null;
         }
 
-        $parent->setAttribute('comments', [new Comment("// @phpstan-ignore argument.templateType")]);
+        $parent->setAttribute('comments', [new Comment('// @phpstan-ignore argument.templateType')]);
 
         return $node;
     }

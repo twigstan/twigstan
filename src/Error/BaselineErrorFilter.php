@@ -16,7 +16,6 @@ final readonly class BaselineErrorFilter
         private bool $reportUnmatchedIgnoredErrors,
     ) {}
 
-
     /**
      * @param list<Error> $errors
      *
@@ -42,7 +41,7 @@ final readonly class BaselineErrorFilter
                 continue;
             }
 
-            if (!$this->reportUnmatchedIgnoredErrors && $baselineError->count > $baselineError->hits) {
+            if ( ! $this->reportUnmatchedIgnoredErrors && $baselineError->count > $baselineError->hits) {
                 continue;
             }
 

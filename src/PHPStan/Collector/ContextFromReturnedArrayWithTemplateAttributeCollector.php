@@ -31,7 +31,7 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
             return null;
         }
 
-        if (!$this->hasRouteAttribute($node, $classReflection)) {
+        if ( ! $this->hasRouteAttribute($node, $classReflection)) {
             return null;
         }
 
@@ -54,7 +54,7 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
 
             $context = $returnStatement->getScope()->getType($returnNode->expr);
 
-            if (!$context->isArray()->yes()) {
+            if ( ! $context->isArray()->yes()) {
                 continue;
             }
 
@@ -72,7 +72,6 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
 
         return $data;
     }
-
 
     private function hasRouteAttribute(MethodReturnStatementsNode $node, ClassReflection $classReflection): bool
     {
@@ -100,7 +99,7 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
                 continue;
             }
 
-            if (!$args[0] instanceof Node\Scalar\String_) {
+            if ( ! $args[0] instanceof Node\Scalar\String_) {
                 continue;
             }
 

@@ -69,6 +69,5 @@ final readonly class ArrayShapeMerger
         }
 
         return new ArrayShapeNode($items);
-
     }
 }

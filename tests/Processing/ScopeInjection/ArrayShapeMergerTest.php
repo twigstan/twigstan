@@ -27,9 +27,9 @@ final class ArrayShapeMergerTest extends TestCase
         $this->arrayShapeMerger = new ArrayShapeMerger();
     }
 
-    #[Test]
     #[DataProvider('provideMergeCases')]
     #[DataProvider('provideMergeAppendCases')]
+    #[Test]
     public function testMerge(ArrayShapeNode $left, ArrayShapeNode $right, ArrayShapeNode $expected, bool $append): void
     {
         self::assertEquals(
@@ -264,6 +264,5 @@ final class ArrayShapeMergerTest extends TestCase
             ]),
             true,
         ];
-
     }
 }

@@ -19,7 +19,7 @@ final readonly class RemoveProfilingNodeVisitor implements NodeVisitorInterface
 
     public function leaveNode(Node $node, Environment $env): ?Node
     {
-        if (!$node instanceof EnterProfileNode && !$node instanceof LeaveProfileNode) {
+        if ( ! $node instanceof EnterProfileNode && ! $node instanceof LeaveProfileNode) {
             return $node;
         }
 

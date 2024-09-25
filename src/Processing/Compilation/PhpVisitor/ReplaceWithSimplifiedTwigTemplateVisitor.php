@@ -17,9 +17,9 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
         private TwigGlobalsToPhpDoc $twigGlobalsToPhpDoc,
     ) {}
 
-    public function leaveNode(Node $node): Node | null
+    public function leaveNode(Node $node): ?Node
     {
-        if (!$node instanceof Node\Stmt\Class_) {
+        if ( ! $node instanceof Node\Stmt\Class_) {
             return null;
         }
 
@@ -46,7 +46,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
 
         $stmts = array_map(
             function ($node) {
-                if (!$node instanceof Node\Stmt\ClassMethod) {
+                if ( ! $node instanceof Node\Stmt\ClassMethod) {
                     return $node;
                 }
 
@@ -54,12 +54,12 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                     $node->setDocComment(new Doc(
                         sprintf(
                             <<<'DOC'
-                            /**
-                             * @param %s $__twigstan_globals
-                             * @param array{} $__twigstan_context
-                             * @return iterable<null|scalar|\Stringable>
-                             */
-                            DOC,
+                                /**
+                                 * @param %s $__twigstan_globals
+                                 * @param array{} $__twigstan_context
+                                 * @return iterable<null|scalar|\Stringable>
+                                 */
+                                DOC,
                             $this->twigGlobalsToPhpDoc->getGlobals(),
                         ),
                     ));
@@ -122,17 +122,18 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                             new Node\Expr\Array_(attributes: ['kind' => Node\Expr\Array_::KIND_SHORT]),
                         ),
                     ];
+
                     return $node;
                 }
 
                 if (str_starts_with($node->name->name, 'block_')) {
                     $node->setDocComment(new Doc(
                         <<<'DOC'
-                        /**
-                         * @param array{} $__twigstan_context
-                         * @return iterable<null|scalar|\Stringable>
-                         */
-                        DOC,
+                            /**
+                             * @param array{} $__twigstan_context
+                             * @return iterable<null|scalar|\Stringable>
+                             */
+                            DOC,
                     ));
                     $node->params = [
                         new Node\Param(
@@ -170,6 +171,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                         ),
                         ...$node->stmts,
                     ];
+
                     return $node;
                 }
 

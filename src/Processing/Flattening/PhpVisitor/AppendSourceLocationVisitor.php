@@ -17,7 +17,7 @@ final class AppendSourceLocationVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): ?Node
     {
-        if (!$node instanceof Stmt) {
+        if ( ! $node instanceof Stmt) {
             return null;
         }
 
@@ -35,7 +35,7 @@ final class AppendSourceLocationVisitor extends NodeVisitorAbstract
 
             $sourceLocation = SourceLocation::append($sourceLocation, $this->sourceLocation);
 
-            $comments[] = new Comment(sprintf("// line %s", $sourceLocation));
+            $comments[] = new Comment(sprintf('// line %s', $sourceLocation));
         }
 
         $node->setAttribute('comments', $comments);

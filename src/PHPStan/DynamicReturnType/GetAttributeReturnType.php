@@ -28,7 +28,6 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
     {
         return $methodReflection->getName() === 'getAttribute';
-
     }
 
     public function getTypeFromStaticMethodCall(
@@ -40,15 +39,15 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
             return null;
         }
 
-        if (!$methodCall->args[2] instanceof Arg) {
+        if ( ! $methodCall->args[2] instanceof Arg) {
             return null;
         }
 
-        if (!$methodCall->args[3] instanceof Arg) {
+        if ( ! $methodCall->args[3] instanceof Arg) {
             return null;
         }
 
-        if (!$methodCall->args[5] instanceof Arg) {
+        if ( ! $methodCall->args[5] instanceof Arg) {
             return null;
         }
 
@@ -59,7 +58,6 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         }
 
         $propertyOrMethodType = $scope->getType($methodCall->args[3]->value);
-
 
         if ($propertyOrMethodType instanceof ConstantIntegerType) {
             $propertyOrMethod = $propertyOrMethodType->getValue();
@@ -72,7 +70,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
             $propertyOrMethod = $constantStringTypes[0]->getValue();
         }
 
-        if (!$methodCall->args[5]->value instanceof String_) {
+        if ( ! $methodCall->args[5]->value instanceof String_) {
             return new MixedType();
         }
 
@@ -94,17 +92,17 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
             return new ErrorType();
         }
 
-        //if (is_int($propertyOrMethod)) {
+        // if (is_int($propertyOrMethod)) {
         //    return new ErrorType(); // @todo prob array?
-        //}
+        // }
 
         if (in_array($callType, [\Twig\Template::ANY_CALL], true)) {
             if ($objectType->hasProperty((string) $propertyOrMethod)->yes()) {
                 $property = $objectType->getProperty((string) $propertyOrMethod, $scope);
                 if ($property->isPublic()) {
-                    //if ($nullable) {
+                    // if ($nullable) {
                     //    return new UnionType([$property->getReadableType(), new NullType()]);
-                    //}
+                    // }
 
                     return $property->getReadableType();
                 }
@@ -113,7 +111,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
 
         if (in_array($callType, [\Twig\Template::ANY_CALL, \Twig\Template::METHOD_CALL], true)) {
             foreach (['', 'get', 'is', 'has'] as $prefix) {
-                if (!$objectType->hasMethod($prefix . $propertyOrMethod)->yes()) {
+                if ( ! $objectType->hasMethod($prefix . $propertyOrMethod)->yes()) {
                     continue;
                 }
 

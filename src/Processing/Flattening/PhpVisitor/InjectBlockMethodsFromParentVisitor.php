@@ -20,7 +20,7 @@ final class InjectBlockMethodsFromParentVisitor extends NodeVisitorAbstract
 
     public function leaveNode(Node $node): ?Node\Stmt\Class_
     {
-        if (!$node instanceof Node\Stmt\Class_) {
+        if ( ! $node instanceof Node\Stmt\Class_) {
             return null;
         }
 

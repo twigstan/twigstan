@@ -80,20 +80,21 @@ final readonly class PHPStanRunner
                 $xdebugMode ? '--xdebug' : null,
                 '--ansi',
                 ...$pathsToAnalyze,
-            ], fn($value) => !is_null($value)),
+            ], fn($value) => ! is_null($value)),
             $this->currentWorkingDirectory,
             array_filter([
                 'XDEBUG_MODE' => $xdebugMode ? 'debug' : null,
                 'XDEBUG_TRIGGER' => $xdebugMode ? '1' : null,
-            ], fn($value) => !is_null($value)),
+            ], fn($value) => ! is_null($value)),
             timeout: null,
         );
 
         $output->writeln($process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
 
         $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
-            if (Process::ERR === $type) {
+            if ($type === Process::ERR) {
                 $errorOutput->write($buffer);
+
                 return;
             }
 

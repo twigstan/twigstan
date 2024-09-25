@@ -15,7 +15,7 @@ final readonly class AnalysisResultFromJsonReader
 
     public function read(string $file): PHPStanAnalysisResult
     {
-        if (!file_exists($file)) {
+        if ( ! file_exists($file)) {
             return new PHPStanAnalysisResult(
                 [],
                 [],
@@ -27,7 +27,7 @@ final readonly class AnalysisResultFromJsonReader
 
         $content = $this->filesystem->readFile($file);
 
-        if (!json_validate($content)) {
+        if ( ! json_validate($content)) {
             throw new InvalidArgumentException(sprintf('File "%s" is not a valid JSON file', $file));
         }
 

@@ -28,7 +28,6 @@ final class TwigGlobalsToPhpDoc
     {
         $globals = [];
         foreach ($this->twig->getGlobals() as $name => $value) {
-
             $globals[] = new ArrayShapeItemNode(
                 new ConstExprStringNode($name),
                 false,
@@ -46,5 +45,4 @@ final class TwigGlobalsToPhpDoc
 
         return (new Printer())->print($node);
     }
-
 }

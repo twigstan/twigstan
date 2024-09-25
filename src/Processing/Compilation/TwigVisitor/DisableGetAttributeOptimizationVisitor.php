@@ -13,7 +13,7 @@ final readonly class DisableGetAttributeOptimizationVisitor implements NodeVisit
 {
     public function enterNode(Node $node, Environment $env): Node
     {
-        if (!$node instanceof GetAttrExpression) {
+        if ( ! $node instanceof GetAttrExpression) {
             return $node;
         }
 

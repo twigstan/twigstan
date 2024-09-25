@@ -9,7 +9,7 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node | null
+    public function enterNode(Node $node): ?Node
     {
         // Find: $this->yieldBlock("other", $context, $blocks);
         // Replace: $this->yieldBlock("other", get_defined_vars(), []);
@@ -17,11 +17,11 @@ final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
         // Find: $this->yieldParentBlock("other", $context, $blocks);
         // Replace: $this->yieldParentBlock("other", get_defined_vars(), []);
 
-        if (!$node instanceof Node\Expr\MethodCall) {
+        if ( ! $node instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (!$node->var instanceof Node\Expr\Variable) {
+        if ( ! $node->var instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -29,11 +29,11 @@ final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->name instanceof Node\Identifier) {
+        if ( ! $node->name instanceof Node\Identifier) {
             return null;
         }
 
-        if (!in_array($node->name->name, ['yieldBlock', 'yieldParentBlock'], true)) {
+        if ( ! in_array($node->name->name, ['yieldBlock', 'yieldParentBlock'], true)) {
             return null;
         }
 
@@ -41,11 +41,11 @@ final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->args[1] instanceof Node\Arg) {
+        if ( ! $node->args[1] instanceof Node\Arg) {
             return null;
         }
 
-        if (!$node->args[1]->value instanceof Node\Expr\Variable) {
+        if ( ! $node->args[1]->value instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -57,11 +57,11 @@ final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
             new Node\Name('get_defined_vars'),
         );
 
-        if (!$node->args[2] instanceof Node\Arg) {
+        if ( ! $node->args[2] instanceof Node\Arg) {
             return null;
         }
 
-        if (!$node->args[2]->value instanceof Node\Expr\Variable) {
+        if ( ! $node->args[2]->value instanceof Node\Expr\Variable) {
             return null;
         }
 

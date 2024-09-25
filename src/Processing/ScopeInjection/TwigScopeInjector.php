@@ -56,13 +56,13 @@ final readonly class TwigScopeInjector
                     '@var',
                 );
 
-                if (!$phpDocNode instanceof VarTagValueNode) {
+                if ( ! $phpDocNode instanceof VarTagValueNode) {
                     throw new LogicException('Invalid @var tag');
                 }
 
                 $context = $phpDocNode->type;
 
-                if (!$context instanceof ArrayShapeNode) {
+                if ( ! $context instanceof ArrayShapeNode) {
                     $context = new ArrayShapeNode([]);
                 }
 
@@ -99,13 +99,13 @@ final readonly class TwigScopeInjector
                     '@var',
                 );
 
-                if (!$phpDocNode instanceof VarTagValueNode) {
+                if ( ! $phpDocNode instanceof VarTagValueNode) {
                     continue;
                 }
 
                 $contextShape = $phpDocNode->type;
 
-                if (!$contextShape instanceof ArrayShapeNode) {
+                if ( ! $contextShape instanceof ArrayShapeNode) {
                     $contextShape = new ArrayShapeNode([]);
                 }
 
@@ -125,7 +125,6 @@ final readonly class TwigScopeInjector
 
         $results = new ScopeInjectionResultCollection();
         foreach ($collection as $flatteningResult) {
-
             $contextBeforeBlockRelatedToTemplate = array_values(array_filter(
                 $contextBeforeBlock,
                 fn($contextBeforeBlock) => $contextBeforeBlock['sourceLocation']->contains($flatteningResult->twigFileName),
@@ -181,5 +180,4 @@ final readonly class TwigScopeInjector
 
         return $stmts;
     }
-
 }

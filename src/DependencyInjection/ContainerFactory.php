@@ -62,7 +62,7 @@ final readonly class ContainerFactory
 
         $container = new $class();
 
-        if (!$container instanceof Container) {
+        if ( ! $container instanceof Container) {
             throw new RuntimeException('Container is not an instance of Nette\DI\Container');
         }
 

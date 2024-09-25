@@ -18,7 +18,7 @@ final readonly class ReplaceTypesNodeVisitor implements NodeVisitorInterface
 
     public function leaveNode(Node $node, Environment $env): Node
     {
-        if (!$node instanceof TypesNode) {
+        if ( ! $node instanceof TypesNode) {
             return $node;
         }
 

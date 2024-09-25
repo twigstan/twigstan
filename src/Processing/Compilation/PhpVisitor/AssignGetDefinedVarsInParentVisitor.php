@@ -12,20 +12,20 @@ use PhpParser\NodeVisitorAbstract;
 
 final class AssignGetDefinedVarsInParentVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node | null
+    public function enterNode(Node $node): ?Node
     {
         // Find: $context['_parent'] = $context;
         // Replace with: $context['_parent'] = get_defined_vars();
 
-        if (!$node instanceof Node\Expr\Assign) {
+        if ( ! $node instanceof Node\Expr\Assign) {
             return null;
         }
 
-        if (!$node->var instanceof ArrayDimFetch) {
+        if ( ! $node->var instanceof ArrayDimFetch) {
             return null;
         }
 
-        if (!$node->var->var instanceof Variable) {
+        if ( ! $node->var->var instanceof Variable) {
             return null;
         }
 
@@ -33,7 +33,7 @@ final class AssignGetDefinedVarsInParentVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->var->dim instanceof String_) {
+        if ( ! $node->var->dim instanceof String_) {
             return null;
         }
 
@@ -41,7 +41,7 @@ final class AssignGetDefinedVarsInParentVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->expr instanceof Variable) {
+        if ( ! $node->expr instanceof Variable) {
             return null;
         }
 
@@ -50,7 +50,7 @@ final class AssignGetDefinedVarsInParentVisitor extends NodeVisitorAbstract
         }
 
         return new Node\Expr\Assign(
-            new Node\Expr\ArrayDimFetch(
+            new ArrayDimFetch(
                 new Variable('context'),
                 new String_('_parent'),
             ),

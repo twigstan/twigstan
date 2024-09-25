@@ -27,11 +27,11 @@ final readonly class MetadataAnalyzer
         private TwigFileCanonicalizer $twigFileCanonicalizer,
     ) {}
 
-    ///**
+    // /**
     // * @return array<string, Metadata>
     // */
-    //public function getMetadata(): array
-    //{
+    // public function getMetadata(): array
+    // {
     //    $loader = $this->twig->getLoader();
     //
     //    if ($loader instanceof AbsolutePathLoader) {
@@ -58,7 +58,7 @@ final readonly class MetadataAnalyzer
     //    }
     //
     //    return $allMetadata;
-    //}
+    // }
 
     public function getMetadata(string $template): Metadata
     {
@@ -67,7 +67,6 @@ final readonly class MetadataAnalyzer
         if ($template->getSourceContext() === null) {
             throw new RuntimeException('Template has no source context');
         }
-
 
         $parentLineNumber = null;
         $parents = [];

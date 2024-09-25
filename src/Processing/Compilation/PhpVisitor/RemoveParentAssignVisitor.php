@@ -13,20 +13,20 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RemoveParentAssignVisitor extends NodeVisitorAbstract
 {
-    public function leaveNode(Node $node): int | null
+    public function leaveNode(Node $node): ?int
     {
         // Find: expression stmt $_parent = $context['_parent'];
         // Remove it
 
-        if (!$node instanceof Node\Stmt\Expression) {
+        if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
         }
 
-        if (!$node->expr instanceof Node\Expr\Assign) {
+        if ( ! $node->expr instanceof Node\Expr\Assign) {
             return null;
         }
 
-        if (!$node->expr->var instanceof Variable) {
+        if ( ! $node->expr->var instanceof Variable) {
             return null;
         }
 
@@ -34,11 +34,11 @@ final class RemoveParentAssignVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->expr->expr instanceof ArrayDimFetch) {
+        if ( ! $node->expr->expr instanceof ArrayDimFetch) {
             return null;
         }
 
-        if (!$node->expr->expr->var instanceof Variable) {
+        if ( ! $node->expr->expr->var instanceof Variable) {
             return null;
         }
 
@@ -46,7 +46,7 @@ final class RemoveParentAssignVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->expr->expr->dim instanceof String_) {
+        if ( ! $node->expr->expr->dim instanceof String_) {
             return null;
         }
 

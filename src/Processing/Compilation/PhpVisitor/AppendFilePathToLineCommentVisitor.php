@@ -16,7 +16,7 @@ final class AppendFilePathToLineCommentVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
-        if (!$node instanceof Stmt) {
+        if ( ! $node instanceof Stmt) {
             return null;
         }
 
@@ -34,7 +34,7 @@ final class AppendFilePathToLineCommentVisitor extends NodeVisitorAbstract
             $line = (int) $matches['line_number'];
 
             $comments[] = new Comment(sprintf(
-                "// line %s",
+                '// line %s',
                 new SourceLocation($this->filePath, $line),
             ));
         }

@@ -29,7 +29,6 @@ final readonly class ScopeInjectionResultCollection implements IteratorAggregate
             ),
             $results,
         );
-
     }
 
     public function with(ScopeInjectionResult ...$results): self

@@ -61,6 +61,4 @@ final readonly class Error
             $this->tip,
         );
     }
-
-
 }

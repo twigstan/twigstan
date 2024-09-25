@@ -9,20 +9,20 @@ use PhpParser\NodeVisitorAbstract;
 
 final class RefactorLoadTemplateYieldVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node | null
+    public function enterNode(Node $node): ?Node
     {
         // Find: $this->parent = $this->loadTemplate("@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1, ... maybe more);
         // Replace: yield from $this->yieldTemplate(get_defined_vars(), "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1, .. maybe more);
 
-        if (!$node instanceof Node\Expr\Assign) {
+        if ( ! $node instanceof Node\Expr\Assign) {
             return null;
         }
 
-        if (!$node->var instanceof Node\Expr\PropertyFetch) {
+        if ( ! $node->var instanceof Node\Expr\PropertyFetch) {
             return null;
         }
 
-        if (!$node->var->var instanceof Node\Expr\Variable) {
+        if ( ! $node->var->var instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -30,7 +30,7 @@ final class RefactorLoadTemplateYieldVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->var->name instanceof Node\Identifier) {
+        if ( ! $node->var->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -38,11 +38,11 @@ final class RefactorLoadTemplateYieldVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->expr instanceof Node\Expr\MethodCall) {
+        if ( ! $node->expr instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (!$node->expr->var instanceof Node\Expr\Variable) {
+        if ( ! $node->expr->var instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -52,7 +52,7 @@ final class RefactorLoadTemplateYieldVisitor extends NodeVisitorAbstract
 
         // Check if $node->expr->name is loadTemplate
 
-        if (!$node->expr->name instanceof Node\Identifier) {
+        if ( ! $node->expr->name instanceof Node\Identifier) {
             return null;
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace TwigStan\PHPStan\Collector;
 
 use PhpParser\Node;

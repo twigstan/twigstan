@@ -29,15 +29,15 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
 
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if (!$node->expr instanceof Node\Expr\MethodCall) {
+        if ( ! $node->expr instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (!$node->expr->name instanceof Node\Identifier) {
+        if ( ! $node->expr->name instanceof Node\Identifier) {
             return null;
         }
 
-        if (!in_array($node->expr->name->name, ['yieldBlock', 'yieldParentBlock'], true)) {
+        if ( ! in_array($node->expr->name->name, ['yieldBlock', 'yieldParentBlock'], true)) {
             return null;
         }
 
@@ -45,15 +45,15 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             return null;
         }
 
-        if (!$node->expr->args[0] instanceof Node\Arg) {
+        if ( ! $node->expr->args[0] instanceof Node\Arg) {
             return null;
         }
 
-        if (!$node->expr->args[0]->value instanceof Node\Scalar\String_) {
+        if ( ! $node->expr->args[0]->value instanceof Node\Scalar\String_) {
             return null;
         }
 
-        if (!$node->expr->args[1] instanceof Node\Arg) {
+        if ( ! $node->expr->args[1] instanceof Node\Arg) {
             return null;
         }
 
@@ -79,5 +79,4 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             'parent' => $node->expr->name->name === 'yieldParentBlock',
         ];
     }
-
 }

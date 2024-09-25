@@ -18,25 +18,25 @@ final class InlineBlocksVisitor extends NodeVisitorAbstract
     ) {}
 
     /**
-     * @return array<Node\Stmt\Expression>|null
+     * @return null|array<Node\Stmt\Expression>
      */
     public function leaveNode(Node $node): ?array
     {
-        if (!$node instanceof Node\Stmt\Expression) {
+        if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
         }
 
         $node = $node->expr;
-        if (!$node instanceof Node\Expr\YieldFrom) {
+        if ( ! $node instanceof Node\Expr\YieldFrom) {
             return null;
         }
 
         $expr = $node->expr;
-        if (!$expr instanceof Node\Expr\MethodCall) {
+        if ( ! $expr instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (!$expr->name instanceof Node\Identifier) {
+        if ( ! $expr->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -44,11 +44,11 @@ final class InlineBlocksVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$expr->var instanceof Node\Expr\MethodCall) {
+        if ( ! $expr->var instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if (!$expr->var->name instanceof Node\Identifier) {
+        if ( ! $expr->var->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -62,16 +62,16 @@ final class InlineBlocksVisitor extends NodeVisitorAbstract
 
         $blockNameArg = $expr->args[0];
 
-        if (!$blockNameArg instanceof Node\Arg) {
+        if ( ! $blockNameArg instanceof Node\Arg) {
             return null;
         }
 
-        if (!$blockNameArg->value instanceof Node\Scalar\String_) {
+        if ( ! $blockNameArg->value instanceof Node\Scalar\String_) {
             return null;
         }
 
         $blockName = $blockNameArg->value->value;
-        if (!isset($this->blocks[$blockName])) {
+        if ( ! isset($this->blocks[$blockName])) {
             return null;
         }
 

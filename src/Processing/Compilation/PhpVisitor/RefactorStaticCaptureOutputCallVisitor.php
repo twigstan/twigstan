@@ -10,20 +10,20 @@ use Twig\Extension\CoreExtension;
 
 final class RefactorStaticCaptureOutputCallVisitor extends NodeVisitorAbstract
 {
-    public function enterNode(Node $node): Node | null
+    public function enterNode(Node $node): ?Node
     {
         // Find: \Twig\Extension\CoreExtension::captureOutput((function () use(&$context, $macros, $blocks) { ... statements ... })())
         // Replace: \Twig\Extension\CoreExtension::captureOutput((function (array $__twigstan_context) {
         //  extract($__twigstan_context);
         //  unset($__twigstan_context);
         //  ... statements ...
-        //})(get_defined_vars()))
+        // })(get_defined_vars()))
 
-        if (!$node instanceof Node\Expr\StaticCall) {
+        if ( ! $node instanceof Node\Expr\StaticCall) {
             return null;
         }
 
-        if (!$node->class instanceof Node\Name) {
+        if ( ! $node->class instanceof Node\Name) {
             return null;
         }
 
@@ -31,7 +31,7 @@ final class RefactorStaticCaptureOutputCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if (!$node->name instanceof Node\Identifier) {
+        if ( ! $node->name instanceof Node\Identifier) {
             return null;
         }
 
@@ -39,24 +39,23 @@ final class RefactorStaticCaptureOutputCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
-
         if (count($node->args) !== 1) {
             return null;
         }
 
-        if (!$node->args[0] instanceof Node\Arg) {
+        if ( ! $node->args[0] instanceof Node\Arg) {
             return null;
         }
 
         $funcCall = $node->args[0]->value;
 
-        if (!$funcCall instanceof Node\Expr\FuncCall) {
+        if ( ! $funcCall instanceof Node\Expr\FuncCall) {
             return null;
         }
 
         $closure = $funcCall->name;
 
-        if (!$closure instanceof Node\Expr\Closure) {
+        if ( ! $closure instanceof Node\Expr\Closure) {
             return null;
         }
 
@@ -91,6 +90,5 @@ final class RefactorStaticCaptureOutputCallVisitor extends NodeVisitorAbstract
         )];
 
         return $node;
-
     }
 }

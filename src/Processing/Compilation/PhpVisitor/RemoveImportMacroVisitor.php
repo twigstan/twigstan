@@ -17,19 +17,19 @@ final class RemoveImportMacroVisitor extends NodeVisitorAbstract
         //      $macros["layout"] = $this->macros["layout"] = $this->loadTemplate("_layout.twig", "@EndToEnd/case5.twig", 2);
         // Remove the whole statement including the comment above
 
-        if (!$node instanceof Node\Stmt\Expression) {
+        if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
         }
 
-        if (!$node->expr instanceof Node\Expr\Assign) {
+        if ( ! $node->expr instanceof Node\Expr\Assign) {
             return null;
         }
 
-        if (!$node->expr->var instanceof Node\Expr\ArrayDimFetch) {
+        if ( ! $node->expr->var instanceof Node\Expr\ArrayDimFetch) {
             return null;
         }
 
-        if (!$node->expr->var->var instanceof Node\Expr\Variable) {
+        if ( ! $node->expr->var->var instanceof Node\Expr\Variable) {
             return null;
         }
 
@@ -38,6 +38,5 @@ final class RemoveImportMacroVisitor extends NodeVisitorAbstract
         }
 
         return NodeTraverser::REMOVE_NODE;
-
     }
 }

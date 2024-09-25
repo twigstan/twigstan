@@ -30,7 +30,6 @@ final readonly class DependencyFinder
     }
 
     /**
-     *
      * @return list<string>
      */
     private function findDependantsForFile(string $twigFileName): array
