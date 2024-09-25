@@ -10,12 +10,13 @@ final readonly class Error
 {
     public function __construct(
         public string $message,
-        public string $phpFile,
+        public ?string $phpFile,
         public int $phpLine,
         public ?string $twigFile,
         public ?SourceLocation $sourceLocation,
         public ?string $identifier,
         public ?string $tip,
+        public bool $canBeIgnored = true,
     ) {}
 
     /**
@@ -31,6 +32,7 @@ final readonly class Error
             null,
             $json['identifier'],
             $json['tip'],
+            $json['canBeIgnored'],
         );
     }
 

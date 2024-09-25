@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Application;
 
+use LogicException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -15,8 +16,16 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
+use TwigStan\Error\Baseline\NeonBaselineDumper;
+use TwigStan\Error\BaselineError;
+use TwigStan\Error\BaselineErrorFilter;
+use TwigStan\Error\ErrorCollapser;
+use TwigStan\Error\ErrorFilter;
+use TwigStan\Error\ErrorToSourceFileMapper;
+use TwigStan\Error\ErrorTransformer;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
+use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
@@ -42,6 +51,11 @@ final class AnalyzeCommand extends Command
         private FilesFinder $phpFilesFinder,
         private FilesFinder $twigFilesFinder,
         private GivenFilesFinder $givenFilesFinder,
+        private ErrorFilter $errorFilter,
+        private BaselineErrorFilter $baselineErrorFilter,
+        private ErrorCollapser $errorCollapser,
+        private ErrorTransformer $errorTransformer,
+        private ErrorToSourceFileMapper $errorToSourceFileMapper,
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
@@ -54,11 +68,24 @@ final class AnalyzeCommand extends Command
         $this->addArgument('paths', InputArgument::IS_ARRAY | InputArgument::OPTIONAL, 'Directories or files to analyze');
         $this->addOption('debug', null, InputOption::VALUE_NONE, 'Enable debug mode');
         $this->addOption('xdebug', null, InputOption::VALUE_NONE, 'Enable xdebug mode');
+        $this->addOption('generate-baseline', 'b', InputOption::VALUE_OPTIONAL, 'Path to a file where the baseline should be saved', false);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $errorOutput = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
+
+        $generateBaselineFile = $input->getOption('generate-baseline');
+
+        if ($generateBaselineFile === null) {
+            $generateBaselineFile = 'twigstan-baseline.neon';
+        } elseif ($generateBaselineFile !== false && Path::getExtension($input->getOption('generate-baseline')) !== 'neon') {
+            $errorOutput->writeln('<error>Baseline file must have .neon extension</error>');
+
+            return self::FAILURE;
+        } elseif ($generateBaselineFile === false) {
+            $generateBaselineFile = null;
+        }
 
         $result = $this->analyze(
             $input->getArgument('paths'),
@@ -66,7 +93,12 @@ final class AnalyzeCommand extends Command
             $errorOutput,
             $input->getOption('debug') === true,
             $input->getOption('xdebug') === true,
+            $generateBaselineFile,
         );
+
+        if ($generateBaselineFile !== null) {
+            return self::SUCCESS;
+        }
 
         foreach ($result->errors as $error) {
             $errorOutput->writeln($error->message);
@@ -81,25 +113,27 @@ final class AnalyzeCommand extends Command
                 $errorOutput->writeln(sprintf("🔖 <fg=blue>%s</>", $error->identifier));
             }
 
-            $errorOutput->writeln(
-                sprintf(
-                    '🐘 <href=%s>%s:%d</>',
-                    str_replace(
-                        ['%file%', '%line%'],
-                        [$error->phpFile, $error->phpLine],
-                        "phpstorm://open?file=%file%&line=%line%",
-                    ),
+            if ($error->phpFile !== null && $error->phpLine !== null) {
+                $errorOutput->writeln(
                     sprintf(
-                        'compiled_%s.php',
-                        preg_replace(
-                            '/(\.html)?\.twig\.\w+\.php$/',
-                            '',
-                            basename($error->phpFile),
+                        '🐘 <href=%s>%s:%d</>',
+                        str_replace(
+                            ['%file%', '%line%'],
+                            [$error->phpFile, $error->phpLine],
+                            "phpstorm://open?file=%file%&line=%line%",
                         ),
+                        sprintf(
+                            'compiled_%s.php',
+                            preg_replace(
+                                '/(\.html)?\.twig\.\w+\.php$/',
+                                '',
+                                basename($error->phpFile),
+                            ),
+                        ),
+                        $error->phpLine,
                     ),
-                    $error->phpLine,
-                ),
-            );
+                );
+            }
 
             if ($error->twigSourceLocation !== null) {
                 foreach ($error->twigSourceLocation as $sourceLocation) {
@@ -158,6 +192,7 @@ final class AnalyzeCommand extends Command
         OutputInterface $errorOutput,
         bool $debugMode,
         bool $xdebugMode,
+        null | string $generateBaselineFile,
     ): TwigStanAnalysisResult {
         $compilationDirectory = Path::normalize($this->tempDirectory . '/compilation');
         $this->filesystem->remove($compilationDirectory);
@@ -264,7 +299,6 @@ final class AnalyzeCommand extends Command
             ],
             $debugMode,
             $xdebugMode,
-            $flatteningResults,
             collectOnly: true,
         );
 
@@ -327,8 +361,74 @@ final class AnalyzeCommand extends Command
             $phpFileNamesToAnalyze,
             $debugMode,
             $xdebugMode,
-            $scopeInjectionResults,
         );
+
+        // Transform PHPStan errors to TwigStan errors
+        $errors = $this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult->errors);
+        $errors = $this->errorFilter->filter($errors);
+        $errors = $this->errorCollapser->collapse($errors);
+        $errors = $this->errorTransformer->transform($errors);
+
+        if ($generateBaselineFile === null) {
+            $errors = $this->baselineErrorFilter->filter($errors);
+        }
+
+        $analysisResult = new PHPStanAnalysisResult(
+            $errors,
+            $analysisResult->collectedData,
+            $analysisResult->notFileSpecificErrors,
+        );
+
+        if ($generateBaselineFile !== null) {
+            $errorsCount = 0;
+
+            /**
+             * @var array<string, BaselineError> $baselineErrors
+             */
+            $baselineErrors = [];
+            foreach ($errors as $error) {
+                if (!$error->canBeIgnored) {
+                    continue;
+                }
+
+                if ($error->sourceLocation === null) {
+                    throw new LogicException('Error without source location should not be present here');
+                }
+
+                $errorsCount++;
+
+                $twigFilePath = Path::makeRelative(
+                    $compilationResults->getByTwigFileName($error->sourceLocation->fileName)->twigFilePath,
+                    $this->currentWorkingDirectory,
+                );
+
+                $key = $error->message . "\n" . $error->identifier . "\n" . $twigFilePath;
+
+                if (array_key_exists($key, $baselineErrors)) {
+                    $baselineErrors[$key]->increaseCount();
+
+                    continue;
+                }
+
+                $baselineErrors[$key] = new BaselineError(
+                    $error->message,
+                    $error->identifier,
+                    $twigFilePath,
+                    1,
+                );
+            }
+
+            $dumper = new NeonBaselineDumper();
+
+            $this->filesystem->dumpFile(
+                $generateBaselineFile,
+                $dumper->dump(array_values($baselineErrors)),
+            );
+
+            $output->writeln(sprintf('<info>Baseline generated with %d %s in %s.</info>', $errorsCount, $errorsCount === 1 ? 'error' : 'errors', $generateBaselineFile));
+
+            return $result;
+        }
 
         foreach ($analysisResult->notFileSpecificErrors as $fileSpecificError) {
             $result = $result->withFileSpecificError($fileSpecificError);
@@ -373,7 +473,7 @@ final class AnalyzeCommand extends Command
                     $error->identifier,
                     $error->tip,
                     $error->phpFile,
-                    $error->phpLine ?? 0,
+                    $error->phpLine,
                     $twigSourceLocation,
                     $renderPoints,
                 ),

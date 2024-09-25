@@ -15,8 +15,8 @@ final readonly class TwigStanError
         public string $message,
         public ?string $identifier,
         public ?string $tip,
-        public string $phpFile,
-        public int $phpLine,
+        public ?string $phpFile,
+        public ?int $phpLine,
         public ?SourceLocation $twigSourceLocation,
         public array $renderPoints,
     ) {}

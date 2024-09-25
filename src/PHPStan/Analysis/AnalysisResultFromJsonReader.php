@@ -6,20 +6,14 @@ namespace TwigStan\PHPStan\Analysis;
 
 use InvalidArgumentException;
 use Symfony\Component\Filesystem\Filesystem;
-use TwigStan\Processing\Flattening\FlatteningResultCollection;
-use TwigStan\Processing\ScopeInjection\ScopeInjectionResultCollection;
 
 final readonly class AnalysisResultFromJsonReader
 {
     public function __construct(
-        private ErrorFilter $errorFilter,
-        private ErrorCollapser $errorCollapser,
-        private ErrorTransformer $errorTransformer,
-        private ErrorToSourceFileMapper $errorToSourceFileMapper,
         private Filesystem $filesystem,
     ) {}
 
-    public function read(string $file, FlatteningResultCollection | ScopeInjectionResultCollection $mapping): PHPStanAnalysisResult
+    public function read(string $file): PHPStanAnalysisResult
     {
         if (!file_exists($file)) {
             return new PHPStanAnalysisResult(
@@ -44,18 +38,8 @@ final readonly class AnalysisResultFromJsonReader
             $result['fileSpecificErrors'],
         ));
 
-        if ($mapping instanceof ScopeInjectionResultCollection) {
-            $errors = $this->errorToSourceFileMapper->map(
-                $mapping,
-                $errors,
-            );
-        }
-
-        $errors = $this->errorFilter->filter($errors);
-        $errors = $this->errorCollapser->collapse($errors);
-
         return new PHPStanAnalysisResult(
-            $this->errorTransformer->transform($errors),
+            $errors,
             array_values(array_map(
                 CollectedData::decode(...),
                 $result['collectedData'],

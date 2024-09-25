@@ -10,8 +10,6 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Process;
 use TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader;
 use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
-use TwigStan\Processing\Flattening\FlatteningResultCollection;
-use TwigStan\Processing\ScopeInjection\ScopeInjectionResultCollection;
 
 final readonly class PHPStanRunner
 {
@@ -33,7 +31,6 @@ final readonly class PHPStanRunner
         array $pathsToAnalyze,
         bool $debugMode,
         bool $xdebugMode,
-        FlatteningResultCollection | ScopeInjectionResultCollection $mapping,
         bool $collectOnly = false,
     ): PHPStanAnalysisResult {
         $tempConfigFile = tempnam(sys_get_temp_dir(), 'twigstan-phpstan-');
@@ -103,7 +100,7 @@ final readonly class PHPStanRunner
             $output->write($buffer);
         });
 
-        $analysisResult = $this->analysisResultFromJsonReader->read($analysisResultJsonFile, $mapping);
+        $analysisResult = $this->analysisResultFromJsonReader->read($analysisResultJsonFile);
 
         $this->filesystem->remove($tempConfigFile);
         $this->filesystem->remove($analysisResultJsonFile);

@@ -1,0 +1,54 @@
+{
+    "errors": [
+        {
+            "message": "If condition is always false.",
+            "identifier": "if.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "homepage.html.twig:3",
+            "renderPoints": []
+        },
+        {
+            "message": "Undefined variable: name",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "layout.html.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Undefined variable: name",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "layout.html.twig:3",
+            "renderPoints": []
+        },
+        {
+            "message": "Undefined variable: name",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "layout.html.twig:5",
+            "renderPoints": []
+        },
+        {
+            "message": "Undefined variable: email",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "layout.html.twig:7",
+            "renderPoints": []
+        },
+        {
+            "message": "Undefined variable: email",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "layout.html.twig:8",
+            "renderPoints": []
+        },
+        {
+            "message": "Undefined variable: userId",
+            "identifier": "variable.undefined",
+            "tip": null,
+            "twigSourceLocation": "layout.html.twig:10",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}

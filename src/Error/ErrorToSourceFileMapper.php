@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace TwigStan\PHPStan\Analysis;
+namespace TwigStan\Error;
 
+use TwigStan\PHPStan\Analysis\Error;
 use TwigStan\Processing\ScopeInjection\ScopeInjectionResultCollection;
 
 final readonly class ErrorToSourceFileMapper
@@ -17,6 +18,10 @@ final readonly class ErrorToSourceFileMapper
     {
         return array_map(
             function (Error $error) use ($mapping) {
+                if ($error->phpFile === null) {
+                    return $error;
+                }
+
                 if (!$mapping->hasPhpFile($error->phpFile)) {
                     return $error;
                 }

@@ -7,6 +7,7 @@ namespace TwigStan\DependencyInjection;
 use Nette\Schema\Elements\Structure;
 use Nette\Schema\Expect;
 use Symfony\Component\Filesystem\Path;
+use TwigStan\Error\BaselineError;
 use TwigStan\Error\IgnoreError;
 
 final readonly class SchemaFactory
@@ -24,6 +25,7 @@ final readonly class SchemaFactory
             ),
             'services' => Expect::array(),
             'parameters' => Expect::structure([
+                'reportUnmatchedIgnoredErrors' => Expect::anyOf(Expect::bool(), Expect::null()),
                 'php' => Expect::structure([
                     'paths' => Expect::listOf('string')->transform(
                         fn(array $directories) => array_map(
@@ -68,6 +70,12 @@ final readonly class SchemaFactory
                         Expect::null(),
                     ),
                 ])->castTo(IgnoreError::class)),
+                'baselineErrors' => Expect::listOf(Expect::structure([
+                    'message' => Expect::string(),
+                    'identifier' => Expect::anyOf(Expect::string(), Expect::null()),
+                    'path' => Expect::string(),
+                    'count' => Expect::int(),
+                ])->castTo(BaselineError::class)),
             ])->skipDefaults()->castTo('array'),
         ])->skipDefaults()->castTo('array');
     }
