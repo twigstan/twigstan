@@ -42,15 +42,7 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
             json_encode([
                 'fileSpecificErrors' => $analysisResult->getFileSpecificErrors(),
                 'notFileSpecificErrors' => $analysisResult->getNotFileSpecificErrors(),
-                'internalErrors' => $analysisResult->getInternalErrorObjects(),
-                'warnings' => $analysisResult->getWarnings(),
                 'collectedData' => $analysisResult->getCollectedData(),
-                'defaultLevelUsed' => $analysisResult->isDefaultLevelUsed(),
-                'projectConfigFile' => $analysisResult->getProjectConfigFile(),
-                'savedResultCache' => $analysisResult->isResultCacheSaved(),
-                'peakMemoryUsageBytes' => $analysisResult->getPeakMemoryUsageBytes(),
-                'isResultCacheUsed' => $analysisResult->isResultCacheUsed(),
-                'changedProjectExtensionFilesOutsideOfAnalysedPaths' => $analysisResult->getChangedProjectExtensionFilesOutsideOfAnalysedPaths(),
             ]),
         );
 
