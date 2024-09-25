@@ -32,7 +32,7 @@ final readonly class SchemaFactory
                         ),
                     ),
                     'excludes' => Expect::listOf('string'),
-                ])->castTo('array'),
+                ])->skipDefaults()->castTo('array'),
                 'twig' => Expect::structure([
                     'paths' => Expect::listOf('string')->transform(
                         fn(array $directories) => array_map(
@@ -41,7 +41,7 @@ final readonly class SchemaFactory
                         ),
                     ),
                     'excludes' => Expect::listOf('string'),
-                ])->castTo('array'),
+                ])->skipDefaults()->castTo('array'),
                 'phpstan' => Expect::structure([
                     'configurationFile' => Expect::string()->transform(
                         fn(string $path) => Path::makeAbsolute($path, $basePath),
@@ -51,7 +51,10 @@ final readonly class SchemaFactory
                         Expect::bool()->assert(fn($value) => $value === false, 'Only false is accepted')->transform(fn() => '-1'),
                         Expect::null(),
                     ),
-                ])->castTo('array'),
+                ])->skipDefaults()->castTo('array'),
+                'tempDir' => Expect::string()->transform(
+                    fn(string $path) => Path::makeAbsolute($path, $basePath),
+                ),
                 'environmentLoader' => Expect::string()->transform(
                     fn(string $path) => Path::makeAbsolute($path, $basePath),
                 ),
@@ -65,7 +68,7 @@ final readonly class SchemaFactory
                         Expect::null(),
                     ),
                 ])->castTo(IgnoreError::class)),
-            ])->castTo('array'),
-        ])->castTo('array');
+            ])->skipDefaults()->castTo('array'),
+        ])->skipDefaults()->castTo('array');
     }
 }

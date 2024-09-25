@@ -8,13 +8,13 @@ use Nette\DI\Config\Loader;
 
 final class Configurator extends \Nette\Bootstrap\Configurator
 {
-    public function __construct(private LoaderFactory $loaderFactory)
+    public function __construct(private Loader $loader)
     {
         parent::__construct();
     }
 
     protected function createLoader(): Loader
     {
-        return $this->loaderFactory->createLoader();
+        return $this->loader;
     }
 }
