@@ -100,9 +100,9 @@ abstract class SimplifiedTwigTemplate
 
     public function loadTemplate(
         string $template,
-        string $templateName = null,
-        int $line = null,
-        int $index = null,
+        ?string $templateName = null,
+        ?int $line = null,
+        ?int $index = null,
     ): self {
         return $this;
     }
