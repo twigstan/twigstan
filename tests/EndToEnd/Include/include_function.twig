@@ -1,0 +1,20 @@
+{{ include('@EndToEnd/Include/footer.twig') }}
+{{ include('@EndToEnd/Include/footer.twig', with_context = false) }}
+{{ include('@EndToEnd/Include/footer.twig', { title: 'Hello, World!' }) }}
+{{ include('@EndToEnd/Include/footer.twig', { title: 'Hello, World!' }, with_context = false) }}
+
+{{ include('@EndToEnd/Include/maybe-exists.twig', ignore_missing = true) }}
+{{ include('@EndToEnd/Include/maybe-exists.twig', ignore_missing = true, with_context = false) }}
+{{ include('@EndToEnd/Include/maybe-exists.twig', { title: 'Hello, World!' }, ignore_missing = true) }}
+{{ include('@EndToEnd/Include/maybe-exists.twig', { title: 'Hello, World!' }, with_context = false) }}
+
+{{ include(['@EndToEnd/Include/maybe-exists.twig', '@EndToEnd/Include/footer.twig']) }}
+
+{% set template = '@EndToEnd/Include/footer.twig' %}
+{{ include(template) }}
+
+{% types {
+    isMobile: 'bool'
+} %}
+
+{{ include(isMobile ? '@EndToEnd/Include/isMobile.twig' : '@EndToEnd/Include/footer.twig') }}
