@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace TwigStan\PHPStan\DynamicReturnType;
 
 use PhpParser\Node\Arg;
+use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -35,29 +35,19 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         StaticCall $methodCall,
         Scope $scope,
     ): ?Type {
-        if (count($methodCall->args) < 4) {
+        $arguments = $this->getNormalizedArguments($methodCall);
+
+        if ($arguments === null) {
             return null;
         }
 
-        if ( ! $methodCall->args[2] instanceof Arg) {
-            return null;
-        }
-
-        if ( ! $methodCall->args[3] instanceof Arg) {
-            return null;
-        }
-
-        if ( ! $methodCall->args[5] instanceof Arg) {
-            return null;
-        }
-
-        $objectType = $scope->getType($methodCall->args[2]->value);
+        $objectType = $scope->getType($arguments['object']);
 
         if ($objectType instanceof MixedType) {
             return new MixedType();
         }
 
-        $propertyOrMethodType = $scope->getType($methodCall->args[3]->value);
+        $propertyOrMethodType = $scope->getType($arguments['item']);
 
         if ($propertyOrMethodType instanceof ConstantIntegerType) {
             $propertyOrMethod = $propertyOrMethodType->getValue();
@@ -70,13 +60,13 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
             $propertyOrMethod = $constantStringTypes[0]->getValue();
         }
 
-        if ( ! $methodCall->args[5]->value instanceof String_) {
+        $typeStrings = $scope->getType($arguments['type'])->getConstantStrings();
+        if (count($typeStrings) !== 1) {
             return new MixedType();
         }
+        $type = $typeStrings[0]->getValue();
 
-        $callType = $methodCall->args[5]->value->value;
-
-        if (in_array($callType, [\Twig\Template::ANY_CALL, \Twig\Template::ARRAY_CALL], true)) {
+        if (in_array($type, [\Twig\Template::ANY_CALL, \Twig\Template::ARRAY_CALL], true)) {
             if ($objectType->isArray()->yes()) {
                 return $objectType->getOffsetValueType($propertyOrMethodType);
             }
@@ -96,7 +86,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         //    return new ErrorType(); // @todo prob array?
         // }
 
-        if (in_array($callType, [\Twig\Template::ANY_CALL], true)) {
+        if (in_array($type, [\Twig\Template::ANY_CALL], true)) {
             if ($objectType->hasProperty((string) $propertyOrMethod)->yes()) {
                 $property = $objectType->getProperty((string) $propertyOrMethod, $scope);
                 if ($property->isPublic()) {
@@ -109,7 +99,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
             }
         }
 
-        if (in_array($callType, [\Twig\Template::ANY_CALL, \Twig\Template::METHOD_CALL], true)) {
+        if (in_array($type, [\Twig\Template::ANY_CALL, \Twig\Template::METHOD_CALL], true)) {
             foreach (['', 'get', 'is', 'has'] as $prefix) {
                 if ( ! $objectType->hasMethod($prefix . $propertyOrMethod)->yes()) {
                     continue;
@@ -122,5 +112,33 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         }
 
         return new ErrorType();
+    }
+
+    /**
+     * @return null|array{object: Expr, item: Expr, type: Expr}
+     */
+    private function getNormalizedArguments(StaticCall $methodCall): ?array
+    {
+        if (count($methodCall->args) < 5) {
+            return null;
+        }
+
+        if ( ! $methodCall->args[2] instanceof Arg) {
+            return null;
+        }
+
+        if ( ! $methodCall->args[3] instanceof Arg) {
+            return null;
+        }
+
+        if ( ! $methodCall->args[5] instanceof Arg) {
+            return null;
+        }
+
+        return [
+            'object' => $methodCall->args[2]->value,
+            'item' => $methodCall->args[3]->value,
+            'type' => $methodCall->args[5]->value,
+        ];
     }
 }
