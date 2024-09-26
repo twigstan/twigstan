@@ -5,55 +5,85 @@ declare(strict_types=1);
 
 include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
 
+use Composer\InstalledVersions;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Application\AnalyzeCommand;
 use TwigStan\DependencyInjection\ContainerFactory;
 
 $currentWorkingDirectory = getcwd();
 
-$application = new Application();
-$application->setDefaultCommand('analyze');
-$application->getDefinition()->addOption(
-    new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The path to the configuration file', 'twigstan.neon'),
-);
+$defaultConfigurationFile = 'twigstan.php';
 
 $input = new ArgvInput();
 $configurationArg = $input->getParameterOption(['--configuration', '-c'], null);
-$configurationFile = Path::makeAbsolute($configurationArg ?? 'twigstan.neon', $currentWorkingDirectory);
+$configurationFile = Path::makeAbsolute($configurationArg ?? $defaultConfigurationFile, $currentWorkingDirectory);
 
-if (!file_exists($configurationFile)) {
+$output = new ConsoleOutput();
+
+if ( ! file_exists($configurationFile)) {
+    $io = new SymfonyStyle($input, $output);
+
     if ($configurationArg !== null) {
-        echo sprintf("Configuration file \"%s\" does not exist.\n", $configurationFile);
+        $io->error(sprintf('Configuration file "%s" does not exist.', $configurationFile));
 
         exit(1);
     }
 
-    echo "Could not find TwigStan configuration file.\n\n";
+    $io->error('Could not find TwigStan configuration file.');
 
-    echo "Create file 'twigstan.neon' in the root of your project with the following contents:\n```neon\n";
-    echo file_get_contents(__DIR__ . '/../twigstan.neon.dist');
-    echo "```\n\n";
+    if ($io->askQuestion(new ConfirmationQuestion(sprintf('Do you want to create a default configuration file in "%s"?', $configurationFile), true)) === false) {
+        exit(1);
+    }
 
-    echo "Create file 'twig-loader.php' in the root of your project with the following contents:\n```php\n";
-    echo file_get_contents(__DIR__ . '/../twig-loader.php.dist');
-    echo "```\n\n";
+    $filesystem = new Filesystem();
 
-    echo "If you are using Symfony, you can use the following `twig-loader.php`:\n```php\n";
-    echo file_get_contents(__DIR__ . '/../twig-loader-symfony.php.dist');
-    echo "```\n\n";
+    $filesystem->dumpFile(
+        $configurationFile,
+        $filesystem->readFile(__DIR__ . '/../example/twigstan.php'),
+    );
+
+    $io->success(sprintf('Configuration file "%s" has been created.', $configurationFile));
+
+    $twigEnvironmentLoader = Path::join(Path::getDirectory($configurationFile), 'twig-loader.php');
+    if ($io->askQuestion(new ConfirmationQuestion(sprintf('Do you want to create a default Twig loader file in "%s"?', $twigEnvironmentLoader), true)) === true) {
+        if (InstalledVersions::isInstalled('symfony/framework-bundle')) {
+            $filesystem->dumpFile(
+                $twigEnvironmentLoader,
+                $filesystem->readFile(__DIR__ . '/../example/twig-loader-symfony.php'),
+            );
+        } else {
+            $filesystem->dumpFile(
+                $twigEnvironmentLoader,
+                $filesystem->readFile(__DIR__ . '/../example/twig-loader.php'),
+            );
+        }
+
+        $io->success(sprintf('Twig loader file "%s" has been created.', $twigEnvironmentLoader));
+    }
+
+    $io->info('Please review the configuration file and the Twig loader file and adjust it to your needs. After that, you can run TwigStan again.');
 
     exit(1);
 }
 
-$factory = new ContainerFactory(
+$factory = ContainerFactory::fromFile(
     getcwd(),
     $configurationFile,
 );
 $container = $factory->create();
 
+$application = new Application();
+$application->setDefaultCommand('analyze');
+$application->getDefinition()->addOption(
+    new InputOption('configuration', 'c', InputOption::VALUE_REQUIRED, 'The path to the configuration file', $defaultConfigurationFile),
+);
 $application->add($container->getByType(AnalyzeCommand::class));
 
-exit($application->run());
+exit($application->run($input, $output));

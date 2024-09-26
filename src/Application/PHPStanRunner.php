@@ -17,7 +17,7 @@ final readonly class PHPStanRunner
         private Filesystem $filesystem,
         private AnalysisResultFromJsonReader $analysisResultFromJsonReader,
         private string $phpstanConfigurationFile,
-        private ?string $phpstanMemoryLimit,
+        private null | false | string $phpstanMemoryLimit,
         private string $currentWorkingDirectory,
     ) {}
 
@@ -42,7 +42,7 @@ final readonly class PHPStanRunner
 
         $parameters = [
             'twigstan' => [
-                'environmentLoader' => $environmentLoader,
+                'twigEnvironmentLoader' => $environmentLoader,
                 'analysisResultJsonFile' => $analysisResultJsonFile,
             ],
         ];
@@ -67,7 +67,7 @@ final readonly class PHPStanRunner
             array_filter([
                 PHP_BINARY,
                 $xdebugMode ? '-d zend_extension=xdebug.so' : null,
-                $this->phpstanMemoryLimit !== null ? sprintf('-d memory_limit=%s', $this->phpstanMemoryLimit) : null,
+                $this->phpstanMemoryLimit !== null ? sprintf('-d memory_limit=%s', $this->phpstanMemoryLimit !== false ? $this->phpstanMemoryLimit : '-1') : null,
                 'vendor/bin/phpstan',
                 'analyse',
                 sprintf('--configuration=%s', $tempConfigFile),

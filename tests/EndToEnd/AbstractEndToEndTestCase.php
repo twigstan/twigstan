@@ -20,11 +20,10 @@ abstract class AbstractEndToEndTestCase extends TestCase
 
     protected function setUp(): void
     {
-        $containerFactory = new ContainerFactory(
+        $container = ContainerFactory::fromFile(
             dirname(__DIR__, 2),
-            __DIR__ . '/../twigstan.neon',
-        );
-        $container = $containerFactory->create();
+            __DIR__ . '/../twigstan.php',
+        )->create();
         $this->command = $container->getByType(AnalyzeCommand::class);
 
         $this->output = new BufferedOutput();

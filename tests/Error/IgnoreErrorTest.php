@@ -25,7 +25,7 @@ final class IgnoreErrorTest extends TestCase
     {
         yield [
             true,
-            new IgnoreError(message: '#message#'),
+            IgnoreError::message('#message#'),
             new Error(
                 'message',
                 'generated.php',
@@ -38,7 +38,7 @@ final class IgnoreErrorTest extends TestCase
         ];
         yield [
             true,
-            new IgnoreError(identifier: 'identifier'),
+            IgnoreError::identifier('identifier'),
             new Error(
                 'message',
                 'generated.php',
@@ -51,7 +51,7 @@ final class IgnoreErrorTest extends TestCase
         ];
         yield [
             true,
-            new IgnoreError(path: 'templates/layout.html.twig'),
+            IgnoreError::path('templates/layout.html.twig'),
             new Error(
                 'message',
                 'generated.php',
@@ -64,7 +64,7 @@ final class IgnoreErrorTest extends TestCase
         ];
         yield [
             true,
-            new IgnoreError(path: '*.html.twig'),
+            IgnoreError::path('*.html.twig'),
             new Error(
                 'message',
                 'generated.php',
@@ -77,7 +77,7 @@ final class IgnoreErrorTest extends TestCase
         ];
         yield [
             true,
-            new IgnoreError(message: '#message#', identifier: 'identifier', path: 'templates/layout.html.twig'),
+            IgnoreError::create('#message#', 'identifier', 'templates/layout.html.twig'),
             new Error(
                 'message',
                 'generated.php',
@@ -97,7 +97,7 @@ final class IgnoreErrorTest extends TestCase
     {
         yield [
             false,
-            new IgnoreError(message: '#message#'),
+            IgnoreError::message('#message#'),
             new Error(
                 'someError',
                 'generated.php',
@@ -110,7 +110,7 @@ final class IgnoreErrorTest extends TestCase
         ];
         yield [
             false,
-            new IgnoreError(identifier: 'identifier'),
+            IgnoreError::identifier('identifier'),
             new Error(
                 'someError',
                 'generated.php',
@@ -123,7 +123,7 @@ final class IgnoreErrorTest extends TestCase
         ];
         yield [
             false,
-            new IgnoreError(path: 'templates/base.html.twig'),
+            IgnoreError::path('templates/base.html.twig'),
             new Error(
                 'someError',
                 'generated.php',
@@ -136,7 +136,7 @@ final class IgnoreErrorTest extends TestCase
         ];
         yield [
             false,
-            new IgnoreError(path: 'templates/base.html.twig'),
+            IgnoreError::path('templates/base.html.twig'),
             new Error(
                 'someError',
                 'generated.php',
@@ -149,7 +149,7 @@ final class IgnoreErrorTest extends TestCase
         ];
         yield [
             false,
-            new IgnoreError(message: '#message#', identifier: 'identifier'),
+            IgnoreError::messageAndIdentifier('#message#', 'identifier'),
             new Error(
                 'someError',
                 'generated.php',
