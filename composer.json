@@ -3,7 +3,8 @@
     "description": "TwigStan is a static analyzer for Twig templates powered by PHPStan",
     "license": "MIT",
     "keywords": [
-        "static analysis"
+        "static analysis",
+        "twig"
     ],
     "require": {
         "php": "^8.3",
