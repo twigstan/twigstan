@@ -3,3 +3,6 @@
 /.phpunit.result.cache
 /.phpunit.cache
 .twigstan
+/twigstan.php
+/twigstan-baseline.php
+/twig-loader.php
