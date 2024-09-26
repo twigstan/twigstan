@@ -26,7 +26,4 @@ $config->ignoreErrorsOnPackagesAndPaths(
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );
 
-$config->addPathToExclude('.twigstan');
-$config->addPathToExclude('tests/.twigstan');
-
 return $config;
