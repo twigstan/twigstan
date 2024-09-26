@@ -73,11 +73,12 @@ abstract class SimplifiedTwigTemplate
 
     /**
      * @param array<mixed> $context
+     * @param list<string>|string $template
      * @param array<mixed> $variables
      */
     public function include(
         array $context,
-        string $template,
+        array | string $template,
         array $variables = [],
         bool $withContext = true,
         bool $ignoreMissing = false,

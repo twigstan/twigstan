@@ -83,6 +83,7 @@ services:
 	- TwigStan\Processing\Compilation\TwigGlobalsToPhpDoc
 	- TwigStan\Processing\Compilation\TwigVisitor\DisableGetAttributeOptimizationVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\RemoveProfilingNodeVisitor
+	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceIncludeNodeNodeVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceNameExpressionNodeVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceTypesNodeVisitor
 	- TwigStan\Processing\Flattening\TwigFlattener
