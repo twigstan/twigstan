@@ -57,6 +57,15 @@ final readonly class TwigCompiler
 
         $phpSource = $this->compiler->compile($template)->getSource();
 
+        $this->filesystem->dumpFile(
+            Path::join($targetDirectory, sprintf(
+                '%s.original.%s.php',
+                basename($twigFilePath),
+                hash('crc32', $twigFilePath),
+            )),
+            $phpSource,
+        );
+
         $stmts = $this->phpParser->parse($phpSource);
 
         $stmts = $this->applyVisitors(
