@@ -5,7 +5,7 @@ parameters:
 		- ../stubs/functions.php
 parametersSchema:
 	twigstan: structure([
-		environmentLoader: schema(string(), nullable())
+		twigEnvironmentLoader: schema(string(), nullable())
 		analysisResultJsonFile: schema(string(), nullable())
 	])
 services:
@@ -51,7 +51,7 @@ services:
 		factory: @TwigStan\Twig\TwigFactory::create
 	- TwigStan\PHP\PhpDocToPhpStanTypeResolver
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
-	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.environmentLoader%)
+	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.twigEnvironmentLoader%)
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser

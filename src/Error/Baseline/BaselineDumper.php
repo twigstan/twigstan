@@ -11,5 +11,5 @@ interface BaselineDumper
     /**
      * @param list<BaselineError> $errors
      */
-    public function dump(array $errors): string;
+    public function dump(array $errors, string $baselineDirectory): string;
 }

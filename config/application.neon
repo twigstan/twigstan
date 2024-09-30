@@ -1,67 +1,29 @@
-parameters:
-	reportUnmatchedIgnoredErrors: true
-	phpstan:
-		configurationFile: phpstan.neon
-		memoryLimit: null
-	php:
-		paths: []
-		excludes: []
-	twig:
-		paths: []
-		excludes: []
-	baselineErrors: []
-	ignoreErrors:
-		-
-			identifier: isset.variable
-
-		-
-			# It's perfectly fine to do `a == b ? 'yes' : 'no'` in Twig.
-			identifier: equal.notAllowed
-
-		-
-			# It's perfectly fine to do `a != b ? 'no' : 'yes'` in Twig.
-			identifier: notEqual.notAllowed
-
-		-
-			# The context is backed up before a loop and restored after it.
-			# Therefore this is a non-issue in Twig templates.
-			identifier: foreach.valueOverwrite
-
-		-
-			# When an array inside the context is not typed, this produces an error.
-			message: '#__twigstan_context#'
-			identifier: missingType.iterableValue
-
-		-
-			# When the variable that is passed does not exist, this produces an error.
-			message: '#CoreExtension::ensureTraversable#'
-			identifier: argument.templateType
 services:
 	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
 	- Symfony\Component\Filesystem\Filesystem
 	- TwigStan\Application\AnalyzeCommand(
-		environmentLoader: %environmentLoader%
+		environmentLoader: %twigEnvironmentLoader%
 		tempDirectory: %tempDir%
 		currentWorkingDirectory: %currentWorkingDirectory%
 		phpFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.php
-			paths: %php.paths%
-			exclusions: %php.excludes%
+			paths: %phpPaths%
+			exclusions: %phpExcludes%
 		)
 		twigFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.twig
-			paths: %twig.paths%
-			exclusions: %twig.excludes%
+			paths: %twigPaths%
+			exclusions: %twigExcludes%
 		)
 		givenFilesFinder: TwigStan\Finder\GivenFilesFinder(
 			currentWorkingDirectory: %currentWorkingDirectory%
 		)
 	)
 	- TwigStan\Application\PHPStanRunner(
-		phpstanConfigurationFile: %phpstan.configurationFile%
-		phpstanMemoryLimit: %phpstan.memoryLimit%
+		phpstanConfigurationFile: %phpstanConfigurationFile%
+		phpstanMemoryLimit: %phpstanMemoryLimit%
 		currentWorkingDirectory: %currentWorkingDirectory%
 	)
 	- TwigStan\PHP\PrettyPrinter
@@ -98,5 +60,5 @@ services:
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
-	- TwigStan\Twig\TwigFactory(environmentLoader: %environmentLoader%)
+	- TwigStan\Twig\TwigFactory(environmentLoader: %twigEnvironmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer

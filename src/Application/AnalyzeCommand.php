@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
-use TwigStan\Error\Baseline\NeonBaselineDumper;
+use TwigStan\Error\Baseline\PhpBaselineDumper;
 use TwigStan\Error\BaselineError;
 use TwigStan\Error\BaselineErrorFilter;
 use TwigStan\Error\ErrorCollapser;
@@ -78,9 +78,9 @@ final class AnalyzeCommand extends Command
         $generateBaselineFile = $input->getOption('generate-baseline');
 
         if ($generateBaselineFile === null) {
-            $generateBaselineFile = 'twigstan-baseline.neon';
-        } elseif ($generateBaselineFile !== false && Path::getExtension($input->getOption('generate-baseline')) !== 'neon') {
-            $errorOutput->writeln('<error>Baseline file must have .neon extension</error>');
+            $generateBaselineFile = 'twigstan-baseline.php';
+        } elseif ($generateBaselineFile !== false && Path::getExtension($input->getOption('generate-baseline')) !== 'php') {
+            $errorOutput->writeln('<error>Baseline file must have .php extension</error>');
 
             return self::FAILURE;
         } elseif ($generateBaselineFile === false) {
@@ -417,11 +417,14 @@ final class AnalyzeCommand extends Command
                 );
             }
 
-            $dumper = new NeonBaselineDumper();
+            $dumper = new PhpBaselineDumper($this->currentWorkingDirectory);
 
             $this->filesystem->dumpFile(
                 $generateBaselineFile,
-                $dumper->dump(array_values($baselineErrors)),
+                $dumper->dump(
+                    array_values($baselineErrors),
+                    Path::getDirectory($generateBaselineFile),
+                ),
             );
 
             $output->writeln(sprintf('<info>Baseline generated with %d %s in %s.</info>', $errorsCount, $errorsCount === 1 ? 'error' : 'errors', $generateBaselineFile));

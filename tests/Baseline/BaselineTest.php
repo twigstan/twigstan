@@ -32,9 +32,9 @@ final class BaselineTest extends TestCase
 
     public function testBaseline(): void
     {
-        $baseline = __DIR__ . '/baseline.neon';
+        $baseline = __DIR__ . '/baseline.php';
 
-        $result = $this->getAnalyzeCommand(__DIR__ . '/twigstan.neon')->analyze(
+        $result = $this->getAnalyzeCommand(__DIR__ . '/twigstan.php')->analyze(
             ['tests/Baseline'],
             $this->output,
             $this->errorOutput,
@@ -46,12 +46,12 @@ final class BaselineTest extends TestCase
         self::assertSame([], $result->errors);
         self::assertSame([], $result->fileSpecificErrors);
 
-        self::assertFileEquals(__DIR__ . '/expected.neon', $baseline);
+        self::assertFileEquals(__DIR__ . '/expected.php', $baseline);
     }
 
     public function testWithoutBaseline(): void
     {
-        $result = $this->getAnalyzeCommand(__DIR__ . '/../twigstan.neon')->analyze(
+        $result = $this->getAnalyzeCommand(__DIR__ . '/../twigstan.php')->analyze(
             ['tests/Baseline'],
             $this->output,
             $this->errorOutput,
@@ -65,11 +65,10 @@ final class BaselineTest extends TestCase
 
     private function getAnalyzeCommand(string $configurationFile): AnalyzeCommand
     {
-        $containerFactory = new ContainerFactory(
+        $container = ContainerFactory::fromFile(
             dirname(__DIR__, 2),
             $configurationFile,
-        );
-        $container = $containerFactory->create();
+        )->create();
 
         return $container->getByType(AnalyzeCommand::class);
     }
