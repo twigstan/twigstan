@@ -56,7 +56,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                             <<<'DOC'
                                 /**
                                  * @param %s $__twigstan_globals
-                                 * @param array{} $__twigstan_context
+                                 * @param array{} $context
                                  * @return iterable<null|scalar|\Stringable>
                                  */
                                 DOC,
@@ -71,7 +71,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                             new Node\Identifier('array'),
                         ),
                         new Node\Param(
-                            new Node\Expr\Variable('__twigstan_context'),
+                            new Node\Expr\Variable('context'),
                             null,
                             new Node\Identifier('array'),
                         ),
@@ -91,36 +91,27 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                     );
 
                     $node->stmts = [
+                        // Add: $context = array_merge($__twigstan_globals, $context);
                         new Node\Stmt\Expression(
-                            new Node\Expr\FuncCall(
-                                new Node\Name('extract'),
-                                [
-                                    new Node\Arg(new Node\Expr\Variable('__twigstan_globals')),
-                                ],
+                            new Node\Expr\Assign(
+                                new Node\Expr\Variable('context'),
+                                new Node\Expr\FuncCall(
+                                    new Node\Name('array_merge'),
+                                    [
+                                        new Node\Arg(new Node\Expr\Variable('__twigstan_globals')),
+                                        new Node\Arg(new Node\Expr\Variable('context')),
+                                    ],
+                                ),
                             ),
                         ),
+
+                        // Add: unset($__twigstan_globals);
                         new Node\Stmt\Unset_(
                             [
                                 new Node\Expr\Variable('__twigstan_globals'),
                             ],
                         ),
-                        new Node\Stmt\Expression(
-                            new Node\Expr\FuncCall(
-                                new Node\Name('extract'),
-                                [
-                                    new Node\Arg(new Node\Expr\Variable('__twigstan_context')),
-                                ],
-                            ),
-                        ),
-                        new Node\Stmt\Unset_(
-                            [
-                                new Node\Expr\Variable('__twigstan_context'),
-                            ],
-                        ),
                         ...$node->stmts,
-                        new Node\Stmt\Return_(
-                            new Node\Expr\Array_(attributes: ['kind' => Node\Expr\Array_::KIND_SHORT]),
-                        ),
                     ];
 
                     return $node;
@@ -130,47 +121,20 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                     $node->setDocComment(new Doc(
                         <<<'DOC'
                             /**
-                             * @param array{} $__twigstan_context
+                             * @param array{} $context
                              * @return iterable<null|scalar|\Stringable>
                              */
                             DOC,
                     ));
                     $node->params = [
                         new Node\Param(
-                            new Node\Expr\Variable('__twigstan_context'),
+                            new Node\Expr\Variable('context'),
                             null,
                             new Node\Identifier('array'),
                         ),
                     ];
                     $node->returnType = new Node\Identifier('iterable');
                     $node->flags = ($node->flags & ~Node\Stmt\Class_::MODIFIER_PROTECTED) | Node\Stmt\Class_::MODIFIER_PUBLIC;
-                    $node->stmts = array_filter(
-                        $node->stmts ?? [],
-                        function ($node) {
-                            // Remove: $macros = $this->macros;
-                            if ($node instanceof Node\Stmt\Expression && $node->expr instanceof Node\Expr\Assign && $node->expr->var instanceof Node\Expr\Variable && $node->expr->var->name === 'macros') {
-                                return false;
-                            }
-
-                            return true;
-                        },
-                    );
-                    $node->stmts = [
-                        // Add: extract($__twigstan_context);
-                        new Node\Stmt\Expression(
-                            new Node\Expr\FuncCall(
-                                new Node\Name\FullyQualified('extract'),
-                                [
-                                    new Node\Arg(new Node\Expr\Variable('__twigstan_context')),
-                                ],
-                            ),
-                        ),
-                        // Unset: unset($__twigstan_context);
-                        new Node\Stmt\Unset_(
-                            [new Node\Expr\Variable('__twigstan_context')],
-                        ),
-                        ...$node->stmts,
-                    ];
 
                     return $node;
                 }

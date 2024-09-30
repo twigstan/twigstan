@@ -37,7 +37,7 @@ final class SimpleIncludeNode extends IncludeNode
     public function compile(Compiler $compiler): void
     {
         $compiler->write('$this->include(')
-            ->raw('get_defined_vars(), ')
+            ->raw('$context, ')
             ->subcompile($this->getNode('expr'))
             ->raw(', ');
 

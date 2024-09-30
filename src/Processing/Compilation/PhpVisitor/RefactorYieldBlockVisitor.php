@@ -12,10 +12,10 @@ final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): ?Node
     {
         // Find: $this->yieldBlock("other", $context, $blocks);
-        // Replace: $this->yieldBlock("other", get_defined_vars(), []);
+        // Replace: $this->yieldBlock("other", $context, []);
 
         // Find: $this->yieldParentBlock("other", $context, $blocks);
-        // Replace: $this->yieldParentBlock("other", get_defined_vars(), []);
+        // Replace: $this->yieldParentBlock("other", $context, []);
 
         if ( ! $node instanceof Node\Expr\MethodCall) {
             return null;
@@ -40,22 +40,6 @@ final class RefactorYieldBlockVisitor extends NodeVisitorAbstract
         if (count($node->args) !== 3) {
             return null;
         }
-
-        if ( ! $node->args[1] instanceof Node\Arg) {
-            return null;
-        }
-
-        if ( ! $node->args[1]->value instanceof Node\Expr\Variable) {
-            return null;
-        }
-
-        if ($node->args[1]->value->name !== 'context') {
-            return null;
-        }
-
-        $node->args[1]->value = new Node\Expr\FuncCall(
-            new Node\Name('get_defined_vars'),
-        );
 
         if ( ! $node->args[2] instanceof Node\Arg) {
             return null;

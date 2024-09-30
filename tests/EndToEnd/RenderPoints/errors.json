@@ -1,8 +1,8 @@
 {
     "errors": [
         {
-            "message": "Variable error might not be defined.",
-            "identifier": "variable.undefined",
+            "message": "Variable 'error' might not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "complex.html.twig:3",
             "renderPoints": [
@@ -21,8 +21,8 @@
             ]
         },
         {
-            "message": "Undefined variable: error",
-            "identifier": "variable.undefined",
+            "message": "Variable 'error' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "render.html.twig:7",
             "renderPoints": [

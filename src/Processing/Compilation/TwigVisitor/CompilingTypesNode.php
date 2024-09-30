@@ -16,23 +16,13 @@ final class CompilingTypesNode extends TypesNode
         $compiler->addDebugInfo($this);
 
         foreach ($this->getAttribute('mapping') as $name => ['type' => $type, 'optional' => $optional]) {
-            $hint = sprintf(
-                "$%s = twigstan_type_hint(%s);\n",
-                $name,
-                var_export($type, true),
-            );
-
-            if ($optional) {
-                $compiler->write("if (rand(0, 1) === 1) {\n")
-                    ->indent()
-                    ->write($hint)
-                    ->outdent()
-                    ->write("}\n");
-
-                continue;
-            }
-
-            $compiler->write($hint);
+            $compiler->write('twigstan_type_hint($context, ')
+                ->repr($name)
+                ->raw(', ')
+                ->repr($type)
+                ->raw(', ')
+                ->repr($optional)
+                ->raw(");\n");
         }
     }
 }

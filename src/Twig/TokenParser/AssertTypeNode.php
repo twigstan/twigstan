@@ -25,7 +25,7 @@ final class AssertTypeNode extends Node
     {
         $compiler
             ->addDebugInfo($this)
-            ->write("// @phpstan-ignore variable.undefined\n")
+            ->write("// @phpstan-ignore offsetAccess.notFound\n")
             ->write('\PHPStan\Testing\assertType(')
             ->string($this->getAttribute('expectedType'))
             ->raw(', ')

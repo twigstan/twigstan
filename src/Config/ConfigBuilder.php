@@ -64,9 +64,6 @@ final class ConfigBuilder
             // Therefore this is a non-issue in Twig templates.
             IgnoreError::identifier('foreach.valueOverwrite'),
 
-            // When an array inside the context is not typed, this produces an error.
-            IgnoreError::messageAndIdentifier('#__twigstan_context#', 'missingType.iterableValue'),
-
             // When the variable that is passed does not exist, this produces an error.
             IgnoreError::messageAndIdentifier('#CoreExtension::ensureTraversable#', 'argument.templateType'),
         ];

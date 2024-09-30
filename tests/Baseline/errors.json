@@ -8,43 +8,43 @@
             "renderPoints": []
         },
         {
-            "message": "Undefined variable: name",
-            "identifier": "variable.undefined",
+            "message": "Variable 'name' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "layout.html.twig:1",
             "renderPoints": []
         },
         {
-            "message": "Undefined variable: name",
-            "identifier": "variable.undefined",
+            "message": "Variable 'name' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "layout.html.twig:3",
             "renderPoints": []
         },
         {
-            "message": "Undefined variable: name",
-            "identifier": "variable.undefined",
+            "message": "Variable 'name' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "layout.html.twig:5",
             "renderPoints": []
         },
         {
-            "message": "Undefined variable: email",
-            "identifier": "variable.undefined",
+            "message": "Variable 'email' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "layout.html.twig:7",
             "renderPoints": []
         },
         {
-            "message": "Undefined variable: email",
-            "identifier": "variable.undefined",
+            "message": "Variable 'email' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "layout.html.twig:8",
             "renderPoints": []
         },
         {
-            "message": "Undefined variable: userId",
-            "identifier": "variable.undefined",
+            "message": "Variable 'userId' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "layout.html.twig:10",
             "renderPoints": []

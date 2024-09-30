@@ -15,21 +15,13 @@ services:
 			jsonErrorFormatter: @errorFormatter.prettyJson
 			jsonFile: %twigstan.analysisResultJsonFile%
 	-
-		class: TwigStan\PHPStan\DynamicReturnType\GetDefinedVarsReturnType
-		tags:
-			- phpstan.broker.dynamicFunctionReturnTypeExtension
-	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
 		tags:
-			- phpstan.broker.dynamicFunctionReturnTypeExtension
+			- phpstan.functionParameterOutTypeExtension
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\GetAttributeReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
-	-
-		class: TwigStan\PHPStan\TypeSpecifying\VariableExistsExtension
-		tags:
-			- phpstan.typeSpecifier.functionTypeSpecifyingExtension
 	-
 		class: TwigStan\PHPStan\Collector\BlockContextCollector
 		tags:

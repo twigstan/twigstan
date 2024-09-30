@@ -33,10 +33,10 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         // Search for the following pattern:
         //     // line 7
         //    /**
-        //     * @param array{} $__twigstan_context
+        //     * @param array{} $context
         //     * @return iterable<scalar>
         //     */
-        //    public function block_main(array $__twigstan_context) : iterable
+        //    public function block_main(array $context) : iterable
 
         if ( ! $node instanceof Node\Stmt\ClassMethod) {
             return null;
@@ -66,8 +66,8 @@ final class InjectContextVisitor extends NodeVisitorAbstract
 
         $node->setDocComment(new Doc(
             str_replace(
-                'array{} $__twigstan_context',
-                sprintf('%s $__twigstan_context', (new Printer())->print($context)),
+                'array{} $context',
+                sprintf('%s $context', (new Printer())->print($context)),
                 $phpDoc->getText(),
             ),
         ));

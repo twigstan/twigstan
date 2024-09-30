@@ -14,7 +14,6 @@ use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\ParentExpression;
 use Twig\Node\Node;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
-use TwigStan\Processing\Compilation\TwigVisitor\SimpleNameExpression;
 use TwigStan\Twig\Node\NodeFinder;
 use TwigStan\Twig\TwigFileCanonicalizer;
 
@@ -96,9 +95,9 @@ final readonly class MetadataAnalyzer
             return [$node->getAttribute('value')];
         }
 
-        if ($node instanceof SimpleNameExpression) {
-            return ['$' . $node->getAttribute('name')];
-        }
+        // if ($node instanceof NameExpression) {
+        //    return ['$' . $node->getAttribute('name')];
+        // }
 
         if ($node instanceof ArrayExpression) {
             $strings = [];

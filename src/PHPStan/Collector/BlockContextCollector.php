@@ -58,7 +58,7 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
         }
 
         $blockName = $node->expr->args[0]->value->value;
-        $context = $scope->getType($node->expr->args[1]->value);
+        $context = $scope->getVariableType('context');
 
         $sourceLocation = null;
         foreach ($node->getComments() as $comment) {

@@ -25,7 +25,7 @@ final class DumpTypeNode extends Node
         if ($this->hasNode('expr')) {
             $compiler->subcompile($this->getNode('expr'));
         } else {
-            $compiler->raw('get_defined_vars()');
+            $compiler->raw('$context');
         }
 
         $compiler->raw(");\n");
