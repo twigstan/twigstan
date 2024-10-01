@@ -19,25 +19,15 @@ final class DumpTypeNode extends Node
 
     public function compile(Compiler $compiler): void
     {
-        $compiler->addDebugInfo($this);
-
-        if ( ! $this->hasNode('expr')) {
-            $var = $compiler->getVarName();
-            $compiler->write(sprintf("\$%s = get_defined_vars();\n", $var));
-        }
-
-        $compiler->write('\PHPStan\dumpType(');
+        $compiler->addDebugInfo($this)
+            ->write('\PHPStan\dumpType(');
 
         if ($this->hasNode('expr')) {
             $compiler->subcompile($this->getNode('expr'));
         } else {
-            $compiler->raw('$')->raw($var);
+            $compiler->raw('get_defined_vars()');
         }
 
         $compiler->raw(");\n");
-
-        if ( ! $this->hasNode('expr')) {
-            $compiler->write(sprintf("unset(\$%s);\n", $var));
-        }
     }
 }
