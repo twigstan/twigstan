@@ -78,6 +78,10 @@ final class ConfigBuilder
             throw new InvalidArgumentException(sprintf('The configuration file "%s" does not exist.', $configurationFile));
         }
 
+        if ( ! Path::isAbsolute($configurationFile)) {
+            throw new InvalidArgumentException(sprintf('The configuration file "%s" must be an absolute path.', $configurationFile));
+        }
+
         $configuration = include $configurationFile;
 
         if ( ! $configuration instanceof ConfigBuilder) {
@@ -132,6 +136,10 @@ final class ConfigBuilder
             throw new InvalidArgumentException(sprintf('The baseline file "%s" does not exist.', $baselineFile));
         }
 
+        if ( ! Path::isAbsolute($baselineFile)) {
+            throw new InvalidArgumentException(sprintf('The baseline file "%s" must be an absolute path.', $baselineFile));
+        }
+
         if (Path::getExtension($baselineFile) !== 'php') {
             throw new InvalidArgumentException(sprintf('The baseline file "%s" must be a PHP file.', $baselineFile));
         }
@@ -175,6 +183,10 @@ final class ConfigBuilder
             throw new InvalidArgumentException(sprintf('The PHPStan configuration file "%s" does not exist.', $phpstanConfigurationFile));
         }
 
+        if ( ! Path::isAbsolute($phpstanConfigurationFile)) {
+            throw new InvalidArgumentException(sprintf('The PHPStan configuration file "%s" must be an absolute path.', $phpstanConfigurationFile));
+        }
+
         $this->phpstanConfigurationFile = $phpstanConfigurationFile;
 
         return $this;
@@ -206,6 +218,10 @@ final class ConfigBuilder
             throw new InvalidArgumentException(sprintf('The Twig environment loader file "%s" does not exist.', $twigEnvironmentLoader));
         }
 
+        if ( ! Path::isAbsolute($twigEnvironmentLoader)) {
+            throw new InvalidArgumentException(sprintf('The Twig environment loader file "%s" must be an absolute path.', $twigEnvironmentLoader));
+        }
+
         $this->twigEnvironmentLoader = $twigEnvironmentLoader;
 
         return $this;
@@ -225,6 +241,10 @@ final class ConfigBuilder
                     function (string $path) {
                         if ( ! file_exists($path)) {
                             throw new InvalidArgumentException(sprintf('The path "%s" does not exist.', $path));
+                        }
+
+                        if ( ! Path::isAbsolute($path)) {
+                            throw new InvalidArgumentException(sprintf('The path "%s" must be an absolute path.', $path));
                         }
 
                         return $path;
@@ -267,6 +287,10 @@ final class ConfigBuilder
                     function (string $path) {
                         if ( ! file_exists($path)) {
                             throw new InvalidArgumentException(sprintf('The path "%s" does not exist.', $path));
+                        }
+
+                        if ( ! Path::isAbsolute($path)) {
+                            throw new InvalidArgumentException(sprintf('The path "%s" must be an absolute path.', $path));
                         }
 
                         return $path;
