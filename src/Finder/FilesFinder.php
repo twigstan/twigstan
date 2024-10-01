@@ -33,7 +33,7 @@ final class FilesFinder
             ->name([$this->namePattern])
             ->in($this->paths)
             ->sortByName()
-            ->filter(function (\SplFileInfo $file) {
+            ->filter(function (SplFileInfo $file) {
                 foreach ($this->exclusions as $exclude) {
                     if (fnmatch($exclude, $file->getRealPath(), FNM_NOESCAPE)) {
                         return false;

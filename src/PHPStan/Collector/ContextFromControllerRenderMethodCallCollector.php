@@ -34,7 +34,7 @@ final readonly class ContextFromControllerRenderMethodCallCollector implements T
             return null;
         }
 
-        if ( ! \in_array($node->name->name, ['render', 'renderView'], true)) {
+        if ( ! in_array($node->name->name, ['render', 'renderView'], true)) {
             return null;
         }
 

@@ -31,7 +31,7 @@ final readonly class ContextFromTwigRenderMethodCallCollector implements Templat
             return null;
         }
 
-        if ( ! \in_array($node->name->name, ['render', 'display'], true)) {
+        if ( ! in_array($node->name->name, ['render', 'display'], true)) {
             return null;
         }
 
