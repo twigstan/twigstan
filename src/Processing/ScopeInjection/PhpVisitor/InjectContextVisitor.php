@@ -65,7 +65,11 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         }
 
         $node->setDocComment(new Doc(
-            str_replace('array{}', (new Printer())->print($context), $phpDoc->getText()),
+            str_replace(
+                'array{} $__twigstan_context',
+                sprintf('%s $__twigstan_context', (new Printer())->print($context)),
+                $phpDoc->getText(),
+            ),
         ));
 
         return $node;
