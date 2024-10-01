@@ -35,6 +35,7 @@ use TwigStan\Twig\DependencyFinder;
 use TwigStan\Twig\DependencySorter;
 use TwigStan\Twig\SourceLocation;
 use TwigStan\Twig\TwigFileCanonicalizer;
+use TwigStan\Twig\UnableToCanonicalizeTwigFileException;
 
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
@@ -321,8 +322,12 @@ final class AnalyzeCommand extends Command
         foreach ($analysisResult->collectedData as $data) {
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
-                    $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
-                    $templateToRenderPoint[$template][$data->filePath][] = $renderData['startLine'];
+                    try {
+                        $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
+                        $templateToRenderPoint[$template][$data->filePath][] = $renderData['startLine'];
+                    } catch (UnableToCanonicalizeTwigFileException) {
+                        // Ignore
+                    }
                 }
             }
         }

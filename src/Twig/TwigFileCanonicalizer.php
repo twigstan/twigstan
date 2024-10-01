@@ -32,6 +32,8 @@ final class TwigFileCanonicalizer
      * @Admin/layout.html > @Admin/layout.html
      * /Path/To/Project/templates/layout.html > @__main__/layout.html
      * /Path/To/Project/admin/layout.html > @Admin/layout.html
+     *
+     * @throws UnableToCanonicalizeTwigFileException
      */
     public function canonicalize(string $name): string
     {
@@ -69,7 +71,7 @@ final class TwigFileCanonicalizer
             return $name;
         }
 
-        throw new RuntimeException(sprintf('Unable to resolve path for "%s"', $name));
+        throw new UnableToCanonicalizeTwigFileException(sprintf('Unable to resolve path for "%s"', $name));
     }
 
     /**

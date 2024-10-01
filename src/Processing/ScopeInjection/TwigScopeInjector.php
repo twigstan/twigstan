@@ -28,6 +28,7 @@ use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
 use TwigStan\Twig\SourceLocation;
 use TwigStan\Twig\TwigFileCanonicalizer;
+use TwigStan\Twig\UnableToCanonicalizeTwigFileException;
 
 final readonly class TwigScopeInjector
 {
@@ -83,9 +84,13 @@ final readonly class TwigScopeInjector
         foreach ($collectedData as $data) {
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
-                    $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
+                    try {
+                        $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
 
-                    $templateRenderContexts[$template][] = $renderData['context'];
+                        $templateRenderContexts[$template][] = $renderData['context'];
+                    } catch (UnableToCanonicalizeTwigFileException) {
+                        // Ignore
+                    }
                 }
             }
         }
