@@ -62,13 +62,13 @@
         "dependencies": "vendor/bin/composer-dependency-analyser",
         "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --ansi",
         "phpstan": "vendor/bin/phpstan",
-        "phpunit": "vendor/bin/phpunit",
         "qa": [
             "composer normalize --diff",
             "@php-cs-fixer",
             "@phpstan",
-            "@phpunit",
+            "@tests",
             "@dependencies"
-        ]
+        ],
+        "tests": "vendor/bin/phpunit"
     }
 }
