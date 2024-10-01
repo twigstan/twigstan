@@ -6,7 +6,7 @@ namespace TwigStan\Twig\Metadata;
 
 use RuntimeException;
 use Twig\Environment;
-use Twig\Node\BlockNode;
+use Twig\Node\BodyNode;
 use Twig\Node\Expression\ArrayExpression;
 use Twig\Node\Expression\Binary\ConcatBinary;
 use Twig\Node\Expression\ConditionalExpression;
@@ -60,10 +60,12 @@ final readonly class MetadataAnalyzer
 
         $blocks = [];
         $parentBlocks = [];
-        /**
-         * @var BlockNode $block
-         */
+
         foreach ($template->getNode('blocks') as $block) {
+            if ( ! $block instanceof BodyNode) {
+                throw new RuntimeException(sprintf('Node is expected to be of type %s, got %s.', BodyNode::class, $block::class));
+            }
+
             $blockName = $block->getNode('0')->getAttribute('name');
             $blocks[] = $blockName;
 
