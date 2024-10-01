@@ -323,8 +323,12 @@ final class AnalyzeCommand extends Command
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
                     try {
+                        $filePath = $data->filePath;
+                        if ($flatteningResults->hasPhpFile($data->filePath)) {
+                            $filePath = $flatteningResults->getByPhpFile($data->filePath)->twigFileName;
+                        }
                         $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
-                        $templateToRenderPoint[$template][$data->filePath][] = $renderData['startLine'];
+                        $templateToRenderPoint[$template][$filePath][] = $renderData['startLine'];
                     } catch (UnableToCanonicalizeTwigFileException) {
                         // Ignore
                     }

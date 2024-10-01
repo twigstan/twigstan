@@ -1,3 +1,5 @@
+{% set somethingInTheContext = true %}
+
 {{ include('@EndToEnd/Include/footer.twig') }}
 {{ include('@EndToEnd/Include/footer.twig', with_context = false) }}
 {{ include('@EndToEnd/Include/footer.twig', { title: 'Hello, World!' }) }}
