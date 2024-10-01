@@ -21,17 +21,4 @@ final class MetadataRegistry
 
         return $this->metadata[$name];
     }
-
-    // public function findByTwigFile(string $filePath): Metadata
-    // {
-    //    $this->metadata ??= $this->metadataAnalyzer->getMetadata();
-    //
-    //    foreach ($this->metadata as $metadata) {
-    //        if ($metadata->filePath === $filePath) {
-    //            return $metadata;
-    //        }
-    //    }
-    //
-    //    throw new \RuntimeException(sprintf('Metadata not found for file path %s', $filePath));
-    // }
 }

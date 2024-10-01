@@ -27,39 +27,6 @@ final readonly class MetadataAnalyzer
         private TwigFileCanonicalizer $twigFileCanonicalizer,
     ) {}
 
-    // /**
-    // * @return array<string, Metadata>
-    // */
-    // public function getMetadata(): array
-    // {
-    //    $loader = $this->twig->getLoader();
-    //
-    //    if ($loader instanceof AbsolutePathLoader) {
-    //        $loader = $loader->getLoader();
-    //    }
-    //
-    //    if (! $loader instanceof FilesystemLoader) {
-    //        throw new RuntimeException('Twig loader is not a filesystem loader');
-    //    }
-    //
-    //    $allMetadata = [];
-    //    foreach ($loader->getNamespaces() as $namespace) {
-    //        $paths = $loader->getPaths($namespace);
-    //
-    //        $templates = Finder::create()
-    //            ->files()
-    //            ->in($paths)
-    //            ->name('*.twig')
-    //            ->sortByName(true);
-    //        foreach ($templates as $template) {
-    //            $metadata = $this->analyzeFile($template->getPathname());
-    //            $allMetadata[$metadata->name] = $metadata;
-    //        }
-    //    }
-    //
-    //    return $allMetadata;
-    // }
-
     public function getMetadata(string $template): Metadata
     {
         $template = $this->twigNodeParser->parse($template);
