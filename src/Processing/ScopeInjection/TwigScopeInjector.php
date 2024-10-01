@@ -99,19 +99,23 @@ final readonly class TwigScopeInjector
         foreach ($templateRenderContexts as $template => $contexts) {
             $newContext = null;
             foreach (array_unique($contexts) as $context) {
-                $phpDocNode = $phpDocParser->parseTagValue(
-                    new TokenIterator($lexer->tokenize($context)),
-                    '@var',
-                );
+                $contextShape = new ArrayShapeNode([]);
 
-                if ( ! $phpDocNode instanceof VarTagValueNode) {
-                    continue;
-                }
+                if ($context !== 'array{}') {
+                    $phpDocNode = $phpDocParser->parseTagValue(
+                        new TokenIterator($lexer->tokenize($context)),
+                        '@var',
+                    );
 
-                $contextShape = $phpDocNode->type;
+                    if ( ! $phpDocNode instanceof VarTagValueNode) {
+                        continue;
+                    }
 
-                if ( ! $contextShape instanceof ArrayShapeNode) {
-                    $contextShape = new ArrayShapeNode([]);
+                    $contextShape = $phpDocNode->type;
+
+                    if ( ! $contextShape instanceof ArrayShapeNode) {
+                        $contextShape = new ArrayShapeNode([]);
+                    }
                 }
 
                 if ($newContext === null) {
