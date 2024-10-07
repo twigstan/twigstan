@@ -60,6 +60,6 @@ abstract class AbstractEndToEndTestCase extends TestCase
             null,
         );
 
-        ErrorHelper::assertAnalysisResultMatchesJsonFile($result, $directory);
+        ErrorHelper::assertAnalysisResultMatchesJsonFile($result, $directory, $files);
     }
 }

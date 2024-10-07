@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan;
 
+use JsonException;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -12,7 +13,12 @@ use TwigStan\Application\TwigStanError;
 
 final readonly class ErrorHelper
 {
-    public static function assertAnalysisResultMatchesJsonFile(TwigStanAnalysisResult $result, string $directory): void
+    /**
+     * @param list<string> $files
+     *
+     * @throws JsonException
+     */
+    public static function assertAnalysisResultMatchesJsonFile(TwigStanAnalysisResult $result, string $directory, array $files = []): void
     {
         $filesystem = new Filesystem();
         $expectedErrors = json_decode(
@@ -21,6 +27,24 @@ final readonly class ErrorHelper
             512,
             JSON_THROW_ON_ERROR,
         );
+
+        // When the test only wants to check a subset of files, we should filter out other expected errors.
+        // Otherwise the test will never pass. This is especially useful when debugging.
+        if ($files !== []) {
+            $expectedErrors['errors'] = array_filter(
+                $expectedErrors['errors'],
+                function ($error) use ($files) {
+                    foreach ($files as $file) {
+                        if (str_starts_with(sprintf('%s:', $error['twigSourceLocation']), $file)) {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                },
+            );
+        }
+
         $actual = self::toArray($result, $directory);
 
         $expectedButNotActual = [];
