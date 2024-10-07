@@ -1,5 +1,5 @@
 <?php
 
-function twigstan_type_hint(string $type) {}
+declare(strict_types=1);
 
-function twigstan_variable_exists(string $name): bool {}
+function twigstan_type_hint(array &$context, string $name, string $type, bool $optional): void {}

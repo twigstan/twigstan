@@ -5,18 +5,16 @@ declare(strict_types=1);
 namespace TwigStan\Processing\Compilation\PhpVisitor;
 
 use PhpParser\Node;
-use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Variable;
-use PhpParser\Node\Scalar\String_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 
-final class RemoveParentAssignVisitor extends NodeVisitorAbstract
+final class RemoveAssignMacrosVisitor extends NodeVisitorAbstract
 {
     public function leaveNode(Node $node): ?int
     {
-        // Find: expression stmt $_parent = $context['_parent'];
-        // Remove it
+        // Find: $macros = $this->macros;
+        // Remove it.
 
         if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
@@ -30,11 +28,11 @@ final class RemoveParentAssignVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if ($node->expr->var->name !== '_parent') {
+        if ($node->expr->var->name !== 'macros') {
             return null;
         }
 
-        if ( ! $node->expr->expr instanceof ArrayDimFetch) {
+        if ( ! $node->expr->expr instanceof Node\Expr\PropertyFetch) {
             return null;
         }
 
@@ -42,15 +40,14 @@ final class RemoveParentAssignVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if ($node->expr->expr->var->name !== 'context') {
+        if ($node->expr->expr->var->name !== 'this') {
+            return null;
+        }
+        if ( ! $node->expr->expr->name instanceof Node\Identifier) {
             return null;
         }
 
-        if ( ! $node->expr->expr->dim instanceof String_) {
-            return null;
-        }
-
-        if ($node->expr->expr->dim->value !== '_parent') {
+        if ($node->expr->expr->name->name !== 'macros') {
             return null;
         }
 

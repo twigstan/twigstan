@@ -19,11 +19,11 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
     ) {}
 
     /**
-     * @return null|array<Node\Stmt\Expression>
+     * @return null|array<Node>
      */
     public function leaveNode(Node $node): ?array
     {
-        // Find: yield from $this->yieldTemplate(get_defined_vars(), "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1);
+        // Find: yield from $this->yieldTemplate($context, "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1);
 
         if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
@@ -60,28 +60,7 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
 
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new AppendSourceLocationVisitor($sourceLocation));
-        $stmts = $traverser->traverse($this->stmts);
 
-        return [
-            new Node\Stmt\Expression(
-                new Node\Expr\FuncCall(
-                    new Node\Expr\Closure(
-                        [
-                            'stmts' => $stmts,
-                            'params' => [
-                                new Node\Param(
-                                    var: new Node\Expr\Variable('__twigstan_context'),
-                                    type: new Node\Name('array'),
-                                ),
-                            ],
-                        ],
-                    ),
-                    [
-                        $expr->args[0],
-                    ],
-                ),
-                attributes: ['comments' => $node->getComments()],
-            ),
-        ];
+        return $traverser->traverse($this->stmts);
     }
 }

@@ -25,7 +25,7 @@ final class AssertVariableExistsNode extends Node
     {
         $compiler
             ->addDebugInfo($this)
-            ->write("// @phpstan-ignore variable.undefined\n")
+            ->write("// @phpstan-ignore offsetAccess.notFound\n")
             ->write('\PHPStan\Testing\assertVariableCertainty(')
             ->raw(sprintf(
                 '\PHPStan\TrinaryLogic::create%s(),',

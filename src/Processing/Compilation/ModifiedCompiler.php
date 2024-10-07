@@ -6,6 +6,7 @@ namespace TwigStan\Processing\Compilation;
 
 use ReflectionProperty;
 use Twig\Compiler;
+use Twig\Node\Expression\NameExpression;
 use Twig\Node\Node;
 
 final class ModifiedCompiler extends Compiler
@@ -14,6 +15,10 @@ final class ModifiedCompiler extends Compiler
 
     public function addDebugInfo(Node $node): self
     {
+        if ($node instanceof NameExpression) {
+            return $this;
+        }
+
         $this->reflector ??= new ReflectionProperty(Compiler::class, 'lastLine');
 
         $lastLine = $this->reflector->getValue($this);

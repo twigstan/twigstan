@@ -12,7 +12,7 @@ final class RefactorLoadTemplateYieldVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): ?Node
     {
         // Find: $this->parent = $this->loadTemplate("@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1, ... maybe more);
-        // Replace: yield from $this->yieldTemplate(get_defined_vars(), "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1, .. maybe more);
+        // Replace: yield from $this->yieldTemplate($context, "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1, .. maybe more);
 
         if ( ! $node instanceof Node\Expr\Assign) {
             return null;
@@ -65,11 +65,7 @@ final class RefactorLoadTemplateYieldVisitor extends NodeVisitorAbstract
                 new Node\Expr\Variable('this'),
                 new Node\Identifier('yieldTemplate'),
                 [
-                    new Node\Arg(
-                        new Node\Expr\FuncCall(
-                            new Node\Name('get_defined_vars'),
-                        ),
-                    ),
+                    new Node\Arg(new Node\Expr\Variable('context')),
                     ...$node->expr->args,
                 ],
             ),

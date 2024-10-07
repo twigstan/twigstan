@@ -116,9 +116,8 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
                 }
 
                 $method = $objectType->getMethod($prefix . $propertyOrMethod, $scope);
-                $type = ParametersAcceptorSelector::selectSingle($method->getVariants())->getReturnType();
 
-                return $type;
+                return ParametersAcceptorSelector::selectFromArgs($scope, [], $method->getVariants())->getReturnType();
             }
         }
 

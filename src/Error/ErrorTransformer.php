@@ -17,11 +17,11 @@ final readonly class ErrorTransformer
     {
         return array_map(
             function ($error) {
-                if ( ! str_contains($error->message, '$')) {
-                    return $error;
+                if ($error->identifier === 'offsetAccess.notFound' && preg_match("/Offset '(?<variableName>.*)' (?<error>might not exist|does not exist) on (.*)\./", $error->message, $matches) === 1) {
+                    return $error->withMessage(sprintf("Variable '%s' %s.", $matches['variableName'], $matches['error']));
                 }
 
-                return $error->withMessage(str_replace('$', '', $error->message));
+                return $error;
             },
             $errors,
         );

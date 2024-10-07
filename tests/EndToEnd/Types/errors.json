@@ -1,15 +1,15 @@
 {
     "errors": [
         {
-            "message": "Undefined variable: name",
-            "identifier": "variable.undefined",
+            "message": "Variable 'name' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "optionality.twig:4",
             "renderPoints": []
         },
         {
-            "message": "Variable name might not be defined.",
-            "identifier": "variable.undefined",
+            "message": "Variable 'name' might not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "optionality.twig:10",
             "renderPoints": []

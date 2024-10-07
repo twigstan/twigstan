@@ -13,7 +13,7 @@ final class RefactorStaticMacroCallVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): ?Node
     {
         // Find: CoreExtension::callMacro($macros["layout"], "macro_hello", [$name], 9, $context, $this->getSourceContext());
-        // Replace: self::callMacro("layout", "macro_hello", [$name], 9, get_defined_vars())
+        // Replace: self::callMacro("layout", "macro_hello", [$name], 9, $context)
 
         if ( ! $node instanceof Node\Expr\StaticCall) {
             return null;

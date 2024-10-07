@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\EndToEnd;
 
+use JsonException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Filesystem\Path;
@@ -38,10 +39,20 @@ abstract class AbstractEndToEndTestCase extends TestCase
         throw $t;
     }
 
-    protected function runTests(string $directory): void
+    /**
+     * @param list<string> $files
+     *
+     * @throws Throwable
+     * @throws JsonException
+     */
+    protected function runTests(string $directory, array $files = []): void
     {
+        $relativeDirectory = Path::makeRelative($directory, dirname(__DIR__, 2));
         $result = $this->command->analyze(
-            [Path::makeRelative($directory, dirname(__DIR__, 2))],
+            $files !== [] ? array_map(
+                fn(string $file) => Path::join($relativeDirectory, $file),
+                $files,
+            ) : [$relativeDirectory],
             $this->output,
             $this->errorOutput,
             extension_loaded('xdebug') ? true : false,

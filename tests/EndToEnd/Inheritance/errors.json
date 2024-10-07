@@ -1,22 +1,29 @@
 {
     "errors": [
         {
-            "message": "Undefined variable: title",
-            "identifier": "variable.undefined",
+            "message": "Variable 'title' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "_layout.twig:3",
             "renderPoints": []
         },
         {
-            "message": "Variable subtitle might not be defined.",
-            "identifier": "variable.undefined",
+            "message": "Variable 'subtitle' might not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "_layout.twig:12",
             "renderPoints": []
         },
         {
-            "message": "Undefined variable: subtitle",
-            "identifier": "variable.undefined",
+            "message": "Variable 'subtitle' might not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "_layout.twig:12, case10.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Variable 'subtitle' does not exist.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "_layout.twig:12, case7.twig:1",
             "renderPoints": []

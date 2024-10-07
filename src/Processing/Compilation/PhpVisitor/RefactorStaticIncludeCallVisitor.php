@@ -13,7 +13,7 @@ final class RefactorStaticIncludeCallVisitor extends NodeVisitorAbstract
     public function enterNode(Node $node): ?Node
     {
         // Find: \Twig\Extension\CoreExtension::include($this->env, $context, "_random_footer.twig"))
-        // Replace: $this->include(get_defined_vars(), "_random_footer.twig"))
+        // Replace: $this->include($context, "_random_footer.twig"))
 
         if ( ! $node instanceof Node\Expr\StaticCall) {
             return null;
@@ -39,23 +39,7 @@ final class RefactorStaticIncludeCallVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if ( ! $node->args[1] instanceof Node\Arg) {
-            return null;
-        }
-
-        if ( ! $node->args[1]->value instanceof Node\Expr\Variable) {
-            return null;
-        }
-
-        if ($node->args[1]->value->name !== 'context') {
-            return null;
-        }
-
         unset($node->args[0]);
-
-        $node->args[1]->value = new Node\Expr\FuncCall(
-            new Node\Name('get_defined_vars'),
-        );
 
         return new Node\Expr\MethodCall(
             new Node\Expr\Variable('this'),
