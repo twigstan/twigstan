@@ -64,6 +64,9 @@ final class ConfigBuilder
             // Therefore this is a non-issue in Twig templates.
             IgnoreError::identifier('foreach.valueOverwrite'),
 
+            // We cannot guarantee that a short arrow closure uses the macros variable.
+            IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$macros\.#', 'closure.unusedUse'),
+
             // When the variable that is passed does not exist, this produces an error.
             IgnoreError::messageAndIdentifier('#CoreExtension::ensureTraversable#', 'argument.templateType'),
         ];

@@ -21,7 +21,6 @@ use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoadTemplateYieldVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorStaticIncludeCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorStaticMacroCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorYieldBlockVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RemoveAssignMacrosVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportMacroVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveParentUnsetVisitor;
@@ -72,7 +71,6 @@ final readonly class TwigCompiler
             new ReplaceWithSimplifiedTwigTemplateVisitor($this->twigGlobalsToPhpDoc),
             new RemoveUnwrapVisitor(),
             new RefactorYieldBlockVisitor(),
-            new RemoveAssignMacrosVisitor(),
             new RefactorStaticIncludeCallVisitor(),
             new RemoveImportMacroVisitor(),
             new RefactorStaticMacroCallVisitor(),

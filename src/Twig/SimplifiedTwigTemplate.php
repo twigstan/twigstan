@@ -7,11 +7,17 @@ namespace TwigStan\Twig;
 use Stringable;
 use Twig\Environment;
 use Twig\Source;
+use Twig\Template;
 
 abstract class SimplifiedTwigTemplate
 {
     protected Source $source;
     protected Environment $env;
+
+    /**
+     * @var array<string, Template>
+     */
+    protected array $macros;
 
     /**
      * @param array<mixed> $context

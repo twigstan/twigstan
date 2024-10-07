@@ -78,17 +78,6 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                     ];
                     $node->returnType = new Node\Identifier('iterable');
                     $node->flags = ($node->flags & ~Node\Stmt\Class_::MODIFIER_PROTECTED) | Node\Stmt\Class_::MODIFIER_PUBLIC;
-                    $node->stmts = array_filter(
-                        $node->stmts ?? [],
-                        function ($node) {
-                            // Remove: $macros = $this->macros;
-                            if ($node instanceof Node\Stmt\Expression && $node->expr instanceof Node\Expr\Assign && $node->expr->var instanceof Node\Expr\Variable && $node->expr->var->name === 'macros') {
-                                return false;
-                            }
-
-                            return true;
-                        },
-                    );
 
                     $node->stmts = [
                         // Add: $context = array_merge($__twigstan_globals, $context);
@@ -111,7 +100,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                                 new Node\Expr\Variable('__twigstan_globals'),
                             ],
                         ),
-                        ...$node->stmts,
+                        ...$node->stmts ?? [],
                     ];
 
                     return $node;
