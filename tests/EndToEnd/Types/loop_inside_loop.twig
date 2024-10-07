@@ -1,0 +1,20 @@
+{% types {
+    dates: 'array<int, list<DateTime>>',
+} %}
+
+{% assert_type dates "array<int, list<DateTime>>" %}
+
+{% for id, dateList in dates %}
+    {% assert_type id "int" %}
+    {% assert_type dateList "list<DateTime>" %}
+
+    {% for date in dateList %}
+        {% assert_type date "DateTime" %}
+
+        {% set result = date.getOffset() %}
+        {% assert_type result "int" %}
+
+        <p>{{ date.getOffset() }}</p>
+    {% endfor %}
+{% endfor %}
+
