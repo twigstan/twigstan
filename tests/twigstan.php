@@ -6,5 +6,5 @@ use TwigStan\Config\TwigStanConfig;
 
 return TwigStanConfig::configure()
     ->tempDirectory(__DIR__ . '/.twigstan')
-    ->phpstanConfigurationFile(__DIR__ . '/../phpstan.neon')
+    ->phpstanConfigurationFile(__DIR__ . '/phpstan.neon')
     ->twigEnvironmentLoader(__DIR__ . '/twig-loader.php');
