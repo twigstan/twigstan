@@ -16,6 +16,10 @@ jobs:
             matrix:
                 php: [ 8.3 ]
                 dependency-versions: [ lowest, highest ]
+                include:
+                    -   php: 8.4
+                        dependency-versions: highest
+                        composer-options: "--ignore-platform-req=php"
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
@@ -30,6 +34,7 @@ jobs:
                 uses: ramsey/composer-install@v3
                 with:
                     dependency-versions: '${{ matrix.dependency-versions }}'
+                    composer-options: '${{ matrix.composer-options }}'
 
             -   name: Run tests
                 run: vendor/bin/phpunit --colors=always
