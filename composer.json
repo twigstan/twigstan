@@ -58,17 +58,26 @@
         "sort-packages": true
     },
     "scripts": {
-        "cs": "@php-cs-fixer",
-        "dependencies": "vendor/bin/composer-dependency-analyser",
-        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --ansi",
-        "phpstan": "vendor/bin/phpstan",
+        "dependencies": "vendor/bin/composer-dependency-analyser @additional_args",
+        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --ansi @additional_args",
+        "phpstan": "vendor/bin/phpstan @additional_args",
         "qa": [
-            "composer normalize --diff",
+            "@composer normalize --diff",
             "@php-cs-fixer",
             "@phpstan",
             "@tests",
             "@dependencies"
         ],
         "tests": "vendor/bin/phpunit"
+    },
+    "scripts-aliases": {
+        "php-cs-fixer": [
+            "cs",
+            "fmt"
+        ],
+        "phpstan": [
+            "stan",
+            "check"
+        ]
     }
 }
