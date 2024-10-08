@@ -1,0 +1,11 @@
+{% assert_type title "'SimpleAction'" %}
+
+<h1>{{ title }}</h1>
+
+{% assert_type rows 'non-empty-list<string>' %}
+
+{% for row in rows %}
+    {{ row }}
+{% else %}
+    No rows
+{% endfor %}
