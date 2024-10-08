@@ -9,4 +9,14 @@ parameters:
 	reportUnmatchedIgnoredErrors: false
 	errorFormat: ticketswap
 	editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
-
+	bootstrapFiles:
+		- stubs/functions.php
+services:
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
+		tags:
+			- phpstan.functionParameterOutTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetAttributeReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
