@@ -6822,21 +6822,24 @@
         },
         {
             "name": "ticketswap/phpstan-error-formatter",
-            "version": "1.0.3",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/TicketSwap/phpstan-error-formatter.git",
-                "reference": "cee5a2b89e236a21a8bb7e94eded021d8fc3f63e"
+                "reference": "7caf309a9691afb51ef69db67fd698a3c7b3ef8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/TicketSwap/phpstan-error-formatter/zipball/cee5a2b89e236a21a8bb7e94eded021d8fc3f63e",
-                "reference": "cee5a2b89e236a21a8bb7e94eded021d8fc3f63e",
+                "url": "https://api.github.com/repos/TicketSwap/phpstan-error-formatter/zipball/7caf309a9691afb51ef69db67fd698a3c7b3ef8a",
+                "reference": "7caf309a9691afb51ef69db67fd698a3c7b3ef8a",
                 "shasum": ""
             },
             "require": {
-                "php": "^8.2",
-                "phpstan/phpstan": "^1.11"
+                "php": "^7.4|^8.0",
+                "phpstan/phpstan": "^1.12.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.6"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -6848,7 +6851,7 @@
             },
             "autoload": {
                 "psr-4": {
-                    "TicketSwap\\PHPstanErrorFormatter\\": "src/"
+                    "TicketSwap\\PHPStanErrorFormatter\\": "src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -6862,9 +6865,9 @@
             ],
             "support": {
                 "issues": "https://github.com/TicketSwap/phpstan-error-formatter/issues",
-                "source": "https://github.com/TicketSwap/phpstan-error-formatter/tree/1.0.3"
+                "source": "https://github.com/TicketSwap/phpstan-error-formatter/tree/1.1.3"
             },
-            "time": "2024-09-10T17:23:30+00:00"
+            "time": "2024-10-03T11:53:12+00:00"
         }
     ],
     "aliases": [],
