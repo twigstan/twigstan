@@ -10,20 +10,6 @@ use PHPStan\Command\ErrorFormatter\JsonErrorFormatter;
 use PHPStan\Command\Output;
 use TwigStan\PHPStan\Collector\ExportingCollector;
 
-/**
- * This is abusing the ErrorFormatter to write the AnalysisResult to a JSON file.
- *
- * This formatter exists, because we want to run PHPStan with --debug / --xdebug / --verbose arguments.
- * As this corrupts the written JSON, we need to isolate the JSON from the generic PHPStan output.
- *
- * Next to that, we want to work with PHPStan's Error objects again.
- *
- * Also, in the future we want to retrieve the CollectedData as well.
- *
- * Ideally this becomes a core feature in PHPStan where the AnalysisResult can be written to a JSON file.
- *
- * First step for that to happen is to make the AnalysisResult implement JsonSerializable together with a `decode` method.
- */
 final readonly class AnalysisResultToJson implements ErrorFormatter
 {
     public function __construct(
