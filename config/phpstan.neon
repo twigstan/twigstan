@@ -5,14 +5,13 @@ parameters:
 		- ../stubs/functions.php
 parametersSchema:
 	twigstan: structure([
-		twigEnvironmentLoader: schema(string(), nullable())
-		analysisResultJsonFile: schema(string(), nullable())
+		twigEnvironmentLoader: string()
+		analysisResultJsonFile: string()
 	])
 services:
 	errorFormatter.analysisResultToJson:
 		class: TwigStan\PHPStan\AnalysisResultToJson
 		arguments:
-			jsonErrorFormatter: @errorFormatter.prettyJson
 			jsonFile: %twigstan.analysisResultJsonFile%
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
