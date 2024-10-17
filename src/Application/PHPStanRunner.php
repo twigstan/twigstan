@@ -63,7 +63,7 @@ final readonly class PHPStanRunner
                     __DIR__ . '/../../config/phpstan.neon',
                 ],
                 'parameters' => $parameters,
-            ]),
+            ], true),
         );
 
         $process = new Process(
