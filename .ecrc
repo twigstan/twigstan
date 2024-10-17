@@ -1,0 +1,8 @@
+{
+    "Exclude": [
+        "^vendor\/",
+        ".twigstan\/",
+        "^\\.idea\/",
+        "\\.phar$"
+    ]
+}

@@ -58,10 +58,8 @@ jobs:
             -   name: Run PHP CS Fixer
                 run: vendor/bin/php-cs-fixer check --diff --ansi --show-progress=none
 
-            -   name: Setup editorconfig checker
-                uses: editorconfig-checker/action-editorconfig-checker@v2.0.0
             -   name: Check editorconfig
-                run: editorconfig-checker
+                run: composer run editorconfig
 
     phpstan:
         runs-on: ubuntu-latest
