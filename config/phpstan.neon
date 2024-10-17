@@ -7,12 +7,14 @@ parametersSchema:
 	twigstan: structure([
 		twigEnvironmentLoader: string()
 		analysisResultJsonFile: string()
+		collectOnly: bool()
 	])
 services:
 	errorFormatter.analysisResultToJson:
 		class: TwigStan\PHPStan\AnalysisResultToJson
 		arguments:
 			jsonFile: %twigstan.analysisResultJsonFile%
+			collectOnly: %twigstan.collectOnly%
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
 		tags:

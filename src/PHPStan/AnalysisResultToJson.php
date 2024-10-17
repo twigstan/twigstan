@@ -13,6 +13,7 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
 {
     public function __construct(
         private string $jsonFile,
+        private bool $collectOnly,
     ) {}
 
     public function formatErrors(AnalysisResult $analysisResult, Output $output): int
@@ -20,8 +21,8 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
         file_put_contents(
             $this->jsonFile,
             json_encode([
-                'fileSpecificErrors' => $analysisResult->getFileSpecificErrors(),
-                'notFileSpecificErrors' => $analysisResult->getNotFileSpecificErrors(),
+                'fileSpecificErrors' => $this->collectOnly === true ? [] : $analysisResult->getFileSpecificErrors(),
+                'notFileSpecificErrors' => $this->collectOnly === true ? [] : $analysisResult->getNotFileSpecificErrors(),
                 'collectedData' => array_filter(
                     $analysisResult->getCollectedData(),
                     // @phpstan-ignore phpstanApi.runtimeReflection
