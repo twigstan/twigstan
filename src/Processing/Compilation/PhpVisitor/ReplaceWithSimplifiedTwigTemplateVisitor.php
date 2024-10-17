@@ -57,6 +57,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                                 /**
                                  * @param %s $__twigstan_globals
                                  * @param array{} $context
+                                 * @param array{} $blocks
                                  * @return iterable<null|scalar|\Stringable>
                                  */
                                 DOC,
@@ -72,6 +73,11 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                         ),
                         new Node\Param(
                             new Node\Expr\Variable('context'),
+                            null,
+                            new Node\Identifier('array'),
+                        ),
+                        new Node\Param(
+                            new Node\Expr\Variable('blocks'),
                             null,
                             new Node\Identifier('array'),
                         ),
