@@ -46,6 +46,7 @@ final readonly class PHPStanRunner
                 'twigEnvironmentLoader' => $environmentLoader,
                 'analysisResultJsonFile' => $analysisResultJsonFile,
                 'collectOnly' => $collectOnly,
+                'debugMode' => $debugMode,
             ],
         ];
 

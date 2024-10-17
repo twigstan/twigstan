@@ -14,6 +14,7 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
     public function __construct(
         private string $jsonFile,
         private bool $collectOnly,
+        private bool $debugMode,
     ) {}
 
     public function formatErrors(AnalysisResult $analysisResult, Output $output): int
@@ -28,7 +29,7 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
                     // @phpstan-ignore phpstanApi.runtimeReflection
                     fn($collectedData) => is_a($collectedData->getCollectorType(), ExportingCollector::class, true),
                 ),
-            ]),
+            ], $this->debugMode ? JSON_PRETTY_PRINT : 0),
         );
 
         return $analysisResult->hasErrors() ? 1 : 0;

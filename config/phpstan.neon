@@ -8,6 +8,7 @@ parametersSchema:
 		twigEnvironmentLoader: string()
 		analysisResultJsonFile: string()
 		collectOnly: bool()
+		debugMode: bool()
 	])
 services:
 	errorFormatter.analysisResultToJson:
@@ -15,6 +16,7 @@ services:
 		arguments:
 			jsonFile: %twigstan.analysisResultJsonFile%
 			collectOnly: %twigstan.collectOnly%
+			debugMode: %twigstan.debugMode%
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
 		tags:
