@@ -8,6 +8,7 @@ use JsonException;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use Twig\Environment;
 use TwigStan\Application\TwigStanAnalysisResult;
 use TwigStan\Application\TwigStanError;
 
@@ -27,6 +28,19 @@ final readonly class ErrorHelper
             512,
             JSON_THROW_ON_ERROR,
         );
+
+        $versionSpecificErrorsFile = Path::join($directory, sprintf('errors.v%d.json', Environment::MAJOR_VERSION));
+        if (file_exists($versionSpecificErrorsFile)) {
+            $expectedErrors['errors'] = [
+                ...$expectedErrors['errors'],
+                ...json_decode(
+                    $filesystem->readFile($versionSpecificErrorsFile),
+                    true,
+                    512,
+                    JSON_THROW_ON_ERROR,
+                ),
+            ];
+        }
 
         // When the test only wants to check a subset of files, we should filter out other expected errors.
         // Otherwise the test will never pass. This is especially useful when debugging.

@@ -11,6 +11,7 @@ use PhpParser\NodeVisitor\NameResolver;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
+use Twig\Environment;
 use Twig\Node\ModuleNode;
 use TwigStan\PHP\PrettyPrinter;
 use TwigStan\PHP\StrictPhpParser;
@@ -18,6 +19,7 @@ use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 use TwigStan\Processing\Compilation\PhpVisitor\AppendFilePathToLineCommentVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoadTemplateYieldVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorStaticIncludeCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorStaticMacroCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorYieldBlockVisitor;
@@ -79,6 +81,7 @@ final readonly class TwigCompiler
             new RemoveParentUnsetVisitor(),
             new IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor(),
             new ReplaceExtensionsArrayDimFetchToMethodCallVisitor(),
+            ...(Environment::MAJOR_VERSION >= 4 ? [new RefactorLoopClosureVisitor()] : []),
         );
 
         $phpSource = $this->prettyPrinter->prettyPrintFile($stmts);

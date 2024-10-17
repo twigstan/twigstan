@@ -11,6 +11,8 @@ parameters:
 	editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
 	bootstrapFiles:
 		- stubs/functions.php
+	dynamicConstantNames:
+		- Twig\Environment::MAJOR_VERSION
 services:
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType

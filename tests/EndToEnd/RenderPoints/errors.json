@@ -12,15 +12,6 @@
             ]
         },
         {
-            "message": "Negated boolean expression is always false.",
-            "identifier": "booleanNot.alwaysFalse",
-            "tip": null,
-            "twigSourceLocation": "simple.html.twig:8",
-            "renderPoints": [
-                "SimpleTemplateAttributeController.php:21"
-            ]
-        },
-        {
             "message": "Variable 'error' does not exist.",
             "identifier": "offsetAccess.notFound",
             "tip": null,
