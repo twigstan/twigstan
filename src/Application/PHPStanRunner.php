@@ -60,7 +60,7 @@ final readonly class PHPStanRunner
             Neon::encode([
                 'includes' => [
                     $this->phpstanConfigurationFile,
-                    __DIR__ . '/../../config/phpstan.neon',
+                    Path::join(dirname(__DIR__, 2), 'config/phpstan.neon'),
                 ],
                 'parameters' => $parameters,
             ], true),
