@@ -6,3 +6,4 @@
 /twigstan.php
 /twigstan-baseline.php
 /twig-loader.php
+/.phpstan

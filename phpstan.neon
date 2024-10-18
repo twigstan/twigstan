@@ -6,6 +6,7 @@ parameters:
 	paths:
 		- src
 		- tests
+	tmpDir: .phpstan
 	reportUnmatchedIgnoredErrors: false
 	errorFormat: ticketswap
 	editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
