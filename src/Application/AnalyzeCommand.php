@@ -177,7 +177,7 @@ final class AnalyzeCommand extends Command
             return self::FAILURE;
         }
 
-        $output->writeln('<info>No errors found</info>');
+        $output->writeln('No errors found');
 
         return self::SUCCESS;
     }
@@ -195,6 +195,8 @@ final class AnalyzeCommand extends Command
         bool $xdebugMode,
         ?string $generateBaselineFile,
     ): TwigStanAnalysisResult {
+        $output->writeln('TwigStan by Ruud Kamphuis and contributors.');
+
         $compilationDirectory = Path::normalize($this->tempDirectory . '/compilation');
         $this->filesystem->remove($compilationDirectory);
         $this->filesystem->mkdir($compilationDirectory);
@@ -237,7 +239,7 @@ final class AnalyzeCommand extends Command
 
         $twigFileNamesToAnalyze = $twigFileNames;
 
-        $output->writeln(sprintf('<info>Finding dependencies for %d templates...</info>', count($twigFileNamesToAnalyze)));
+        $output->writeln(sprintf('Finding dependencies for %d templates...', count($twigFileNamesToAnalyze)));
 
         // Maybe this should be done using a graph later.
         $dependencies = $this->dependencyFinder->getDependencies($twigFileNames);
@@ -245,10 +247,10 @@ final class AnalyzeCommand extends Command
         $twigFileNames = $this->dependencySorter->sortByDependencies($twigFileNames);
 
         $count = count($twigFileNames);
+        $dependencyCount = $count - count($twigFileNamesToAnalyze);
+        $output->writeln(sprintf('Found %d %s...', $dependencyCount, $dependencyCount === 1 ? 'dependency' : 'dependencies'));
 
-        $output->writeln(sprintf('<info>Found %d dependencies...</info>', $count - count($twigFileNamesToAnalyze)));
-
-        $output->writeln(sprintf('<info>Compiling %d templates...</info>', $count));
+        $output->writeln(sprintf('Compiling %d templates...', $count));
 
         $progressBar = new ProgressBar($output, $count);
         $progressBar->start();
@@ -281,14 +283,14 @@ final class AnalyzeCommand extends Command
         $progressBar->finish();
         $progressBar->clear();
 
-        $output->writeln(sprintf('<info>Flattening %d templates...</info>', $count));
+        $output->writeln(sprintf('Flattening %d templates...', $count));
 
         $flatteningResults = $this->twigFlattener->flatten(
             $compilationResults,
             $flatteningDirectory,
         );
 
-        $output->writeln('<info>Collecting scopes...</info>');
+        $output->writeln('Collecting scopes...');
 
         $analysisResult = $this->phpStanRunner->run(
             $output,
@@ -351,7 +353,7 @@ final class AnalyzeCommand extends Command
             $templateToRenderPoint,
         );
 
-        $output->writeln('<info>Injecting scope into templates...</info>');
+        $output->writeln('Injecting scope into templates...');
 
         $scopeInjectionResults = $this->twigScopeInjector->inject($analysisResult->collectedData, $flatteningResults, $scopeInjectionDirectory);
 
@@ -360,7 +362,7 @@ final class AnalyzeCommand extends Command
             $twigFileNamesToAnalyze,
         );
 
-        $output->writeln('<info>Analyzing templates</info>');
+        $output->writeln('Analyzing templates');
 
         $analysisResult = $this->phpStanRunner->run(
             $output,
@@ -436,7 +438,7 @@ final class AnalyzeCommand extends Command
                 ),
             );
 
-            $output->writeln(sprintf('<info>Baseline generated with %d %s in %s.</info>', $errorsCount, $errorsCount === 1 ? 'error' : 'errors', $generateBaselineFile));
+            $output->writeln(sprintf('Baseline generated with %d %s in %s.', $errorsCount, $errorsCount === 1 ? 'error' : 'errors', $generateBaselineFile));
 
             return $result;
         }

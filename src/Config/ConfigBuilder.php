@@ -12,9 +12,11 @@ use TwigStan\Error\IgnoreError;
 
 final class ConfigBuilder
 {
+    private string $projectRootDirectory;
     private ?string $tempDirectory = null;
     private ?string $baselineFile = null;
     private bool $reportUnmatchedIgnoredErrors = true;
+    private ?string $phpstanBinPath = null;
     private ?string $phpstanConfigurationFile = null;
     private null | false | string $phpstanMemoryLimit = null;
     private ?string $twigEnvironmentLoader = null;
@@ -49,8 +51,18 @@ final class ConfigBuilder
      */
     private array $baselineErrors = [];
 
-    public function __construct()
+    public function __construct(string $projectRootDirectory)
     {
+        if ( ! file_exists($projectRootDirectory)) {
+            throw new InvalidArgumentException(sprintf('The project root directory path "%s" does not exist.', $projectRootDirectory));
+        }
+
+        if ( ! Path::isAbsolute($projectRootDirectory)) {
+            throw new InvalidArgumentException(sprintf('The project root directory path "%s" must be an absolute path.', $projectRootDirectory));
+        }
+
+        $this->projectRootDirectory = $projectRootDirectory;
+
         $this->ignoreErrors = [
             IgnoreError::identifier('isset.variable'),
 
@@ -101,10 +113,25 @@ final class ConfigBuilder
             throw new InvalidArgumentException(sprintf('The "twigEnvironmentLoader" option is required.'));
         }
 
+        if ($this->phpstanBinPath === null) {
+            $phpstanBinPath = Path::join($this->projectRootDirectory, 'vendor', 'bin', 'phpstan');
+            if ( ! file_exists($phpstanBinPath)) {
+                throw new InvalidArgumentException(sprintf('The "phpstanBinPath" option is required.'));
+            }
+
+            $this->phpstanBinPath($phpstanBinPath);
+        }
+
+        if ($this->tempDirectory === null) {
+            $this->tempDirectory(Path::join($this->projectRootDirectory, '.twigstan'));
+        }
+
         return new TwigStanConfig(
+            $this->projectRootDirectory,
             $this->tempDirectory,
             $this->baselineFile,
             $this->reportUnmatchedIgnoredErrors,
+            $this->phpstanBinPath,
             $this->phpstanConfigurationFile,
             $this->phpstanMemoryLimit,
             $this->twigEnvironmentLoader,
@@ -117,19 +144,31 @@ final class ConfigBuilder
         );
     }
 
-    /**
-     * @return $this
-     */
-    public function tempDirectory(string $tempDirectory): self
+    public function projectRootDirectory(string $projectRootDirectory): self
     {
-        $this->tempDirectory = $tempDirectory;
+        if ( ! Path::isAbsolute($projectRootDirectory)) {
+            throw new InvalidArgumentException(sprintf('The project root directory path "%s" must be an absolute path.', $projectRootDirectory));
+        }
+
+        $this->projectRootDirectory = $projectRootDirectory;
 
         return $this;
     }
 
     /**
-     * @return $this
+     * @phpstan-assert !null $this->tempDirectory
      */
+    public function tempDirectory(string $tempDirectory): self
+    {
+        if ( ! Path::isAbsolute($tempDirectory)) {
+            throw new InvalidArgumentException(sprintf('The temp directory path "%s" must be an absolute path.', $tempDirectory));
+        }
+
+        $this->tempDirectory = $tempDirectory;
+
+        return $this;
+    }
+
     public function baselineFile(string $baselineFile): self
     {
         if ( ! file_exists($baselineFile)) {
@@ -162,9 +201,6 @@ final class ConfigBuilder
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function reportUnmatchedIgnoredErrors(bool $reportUnmatchedIgnoredErrors): self
     {
         $this->reportUnmatchedIgnoredErrors = $reportUnmatchedIgnoredErrors;
@@ -173,9 +209,27 @@ final class ConfigBuilder
     }
 
     /**
-     * Path to PHPStan configuration file.
+     * Path to PHPStan binary. Usually in vendor/bin/phpstan.
      *
-     * @return $this
+     * @phpstan-assert !null $this->phpstanBinPath
+     */
+    public function phpstanBinPath(string $phpstanBinPath): self
+    {
+        if ( ! file_exists($phpstanBinPath)) {
+            throw new InvalidArgumentException(sprintf('The PHPStan binary path "%s" does not exist.', $phpstanBinPath));
+        }
+
+        if ( ! Path::isAbsolute($phpstanBinPath)) {
+            throw new InvalidArgumentException(sprintf('The PHPStan binary path "%s" must be an absolute path.', $phpstanBinPath));
+        }
+
+        $this->phpstanBinPath = $phpstanBinPath;
+
+        return $this;
+    }
+
+    /**
+     * Path to PHPStan configuration file.
      */
     public function phpstanConfigurationFile(string $phpstanConfigurationFile): self
     {
@@ -196,8 +250,6 @@ final class ConfigBuilder
      * Memory limit for when running PHPStan.
      * Should be a value accepted by PHP (e.g. 512M).
      * Use false for no limit.
-     *
-     * @return $this
      */
     public function phpstanMemoryLimit(false | string $phpstanMemoryLimit): self
     {
@@ -209,8 +261,6 @@ final class ConfigBuilder
     /**
      * TwigStan needs access to your Twig environment to analyze your templates.
      * Specify the file that returns Twig\Environment.
-     *
-     * @return $this
      */
     public function twigEnvironmentLoader(string $twigEnvironmentLoader): self
     {
@@ -229,8 +279,6 @@ final class ConfigBuilder
 
     /**
      * Used to scan for Twig templates.
-     *
-     * @return $this
      */
     public function twigPaths(string ...$paths): self
     {
@@ -260,8 +308,6 @@ final class ConfigBuilder
     /**
      * If you want to exclude certain directories/files from scanning, you can define them below.
      * You can use * as a wildcard.
-     *
-     * @return $this
      */
     public function twigExcludes(string ...$excludes): self
     {
@@ -275,8 +321,6 @@ final class ConfigBuilder
 
     /**
      * Used to scan for PHP controllers that render Twig templates.
-     *
-     * @return $this
      */
     public function phpPaths(string ...$paths): self
     {
@@ -306,8 +350,6 @@ final class ConfigBuilder
     /**
      * If you want to exclude certain directories/files from scanning, you can define them below.
      * You can use * as a wildcard.
-     *
-     * @return $this
      */
     public function phpExcludes(string ...$excludes): self
     {
@@ -319,9 +361,6 @@ final class ConfigBuilder
         return $this;
     }
 
-    /**
-     * @return $this
-     */
     public function ignoreErrors(IgnoreError ...$ignoreErrors): self
     {
         $this->ignoreErrors = [
