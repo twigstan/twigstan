@@ -53,6 +53,7 @@ final readonly class ContainerFactory
             'baselineErrors' => $this->configuration->baselineErrors,
             'baselineFile' => $this->configuration->baselineFile,
             'reportUnmatchedIgnoredErrors' => $this->configuration->reportUnmatchedIgnoredErrors,
+            'phpstanBinPath' => $this->configuration->phpstanBinPath,
             'phpstanConfigurationFile' => $this->configuration->phpstanConfigurationFile,
             'phpstanMemoryLimit' => $this->configuration->phpstanMemoryLimit,
             'twigEnvironmentLoader' => $this->configuration->twigEnvironmentLoader,

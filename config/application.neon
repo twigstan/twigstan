@@ -22,6 +22,7 @@ services:
 		)
 	)
 	- TwigStan\Application\PHPStanRunner(
+		phpstanBinPath: %phpstanBinPath%
 		phpstanConfigurationFile: %phpstanConfigurationFile%
 		phpstanMemoryLimit: %phpstanMemoryLimit%
 		currentWorkingDirectory: %currentWorkingDirectory%

@@ -16,6 +16,7 @@ final readonly class PHPStanRunner
     public function __construct(
         private Filesystem $filesystem,
         private AnalysisResultFromJsonReader $analysisResultFromJsonReader,
+        private string $phpstanBinPath,
         private string $phpstanConfigurationFile,
         private null | false | string $phpstanMemoryLimit,
         private string $currentWorkingDirectory,
@@ -68,7 +69,7 @@ final readonly class PHPStanRunner
                 PHP_BINARY,
                 $xdebugMode ? '-d zend_extension=xdebug.so' : null,
                 $this->phpstanMemoryLimit !== null ? sprintf('-d memory_limit=%s', $this->phpstanMemoryLimit !== false ? $this->phpstanMemoryLimit : '-1') : null,
-                'vendor/bin/phpstan',
+                $this->phpstanBinPath,
                 'analyse',
                 sprintf('--configuration=%s', $tempConfigFile),
                 sprintf(

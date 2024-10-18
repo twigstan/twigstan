@@ -16,6 +16,7 @@ final class ConfigBuilder
     private ?string $tempDirectory = null;
     private ?string $baselineFile = null;
     private bool $reportUnmatchedIgnoredErrors = true;
+    private ?string $phpstanBinPath = null;
     private ?string $phpstanConfigurationFile = null;
     private null | false | string $phpstanMemoryLimit = null;
     private ?string $twigEnvironmentLoader = null;
@@ -112,6 +113,15 @@ final class ConfigBuilder
             throw new InvalidArgumentException(sprintf('The "twigEnvironmentLoader" option is required.'));
         }
 
+        if ($this->phpstanBinPath === null) {
+            $phpstanBinPath = Path::join($this->projectRootDirectory, 'vendor', 'bin', 'phpstan');
+            if ( ! file_exists($phpstanBinPath)) {
+                throw new InvalidArgumentException(sprintf('The "phpstanBinPath" option is required.'));
+            }
+
+            $this->phpstanBinPath($phpstanBinPath);
+        }
+
         if ($this->tempDirectory === null) {
             $this->tempDirectory(Path::join($this->projectRootDirectory, '.twigstan'));
         }
@@ -121,6 +131,7 @@ final class ConfigBuilder
             $this->tempDirectory,
             $this->baselineFile,
             $this->reportUnmatchedIgnoredErrors,
+            $this->phpstanBinPath,
             $this->phpstanConfigurationFile,
             $this->phpstanMemoryLimit,
             $this->twigEnvironmentLoader,
@@ -193,6 +204,26 @@ final class ConfigBuilder
     public function reportUnmatchedIgnoredErrors(bool $reportUnmatchedIgnoredErrors): self
     {
         $this->reportUnmatchedIgnoredErrors = $reportUnmatchedIgnoredErrors;
+
+        return $this;
+    }
+
+    /**
+     * Path to PHPStan binary. Usually in vendor/bin/phpstan.
+     *
+     * @phpstan-assert !null $this->phpstanBinPath
+     */
+    public function phpstanBinPath(string $phpstanBinPath): self
+    {
+        if ( ! file_exists($phpstanBinPath)) {
+            throw new InvalidArgumentException(sprintf('The PHPStan binary path "%s" does not exist.', $phpstanBinPath));
+        }
+
+        if ( ! Path::isAbsolute($phpstanBinPath)) {
+            throw new InvalidArgumentException(sprintf('The PHPStan binary path "%s" must be an absolute path.', $phpstanBinPath));
+        }
+
+        $this->phpstanBinPath = $phpstanBinPath;
 
         return $this;
     }
