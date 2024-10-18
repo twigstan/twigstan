@@ -156,7 +156,7 @@ final class AnalyzeCommand extends Command
             foreach ($error->renderPoints as $renderPoint) {
                 $errorOutput->writeln(
                     sprintf(
-                        '🕹️ <href=%s>%s:%d</>',
+                        '🎯 <href=%s>%s:%d</>',
                         str_replace(
                             ['%file%', '%line%'],
                             [$renderPoint->fileName, $renderPoint->lineNumber],
