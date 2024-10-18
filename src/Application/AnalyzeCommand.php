@@ -195,6 +195,8 @@ final class AnalyzeCommand extends Command
         bool $xdebugMode,
         ?string $generateBaselineFile,
     ): TwigStanAnalysisResult {
+        $output->writeln('TwigStan by Ruud Kamphuis and contributors.');
+
         $compilationDirectory = Path::normalize($this->tempDirectory . '/compilation');
         $this->filesystem->remove($compilationDirectory);
         $this->filesystem->mkdir($compilationDirectory);
