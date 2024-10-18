@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Processing\Compilation\PhpVisitor;
 
 use PhpParser\Node;
-use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
 
 final class RemoveParentYieldVisitor extends NodeVisitorAbstract
@@ -55,6 +55,6 @@ final class RemoveParentYieldVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        return NodeTraverser::REMOVE_NODE;
+        return NodeVisitor::REMOVE_NODE;
     }
 }

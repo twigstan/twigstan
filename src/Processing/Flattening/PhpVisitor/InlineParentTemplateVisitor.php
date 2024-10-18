@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Processing\Flattening\PhpVisitor;
 
+use LogicException;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
@@ -29,12 +30,11 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        $node = $node->expr;
-        if ( ! $node instanceof Node\Expr\YieldFrom) {
+        if ( ! $node->expr instanceof Node\Expr\YieldFrom) {
             return null;
         }
 
-        $expr = $node->expr;
+        $expr = $node->expr->expr;
         if ( ! $expr instanceof Node\Expr\MethodCall) {
             return null;
         }
@@ -54,8 +54,7 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         $sourceLocation = CommentHelper::getSourceLocationFromComments($node->getComments());
 
         if ($sourceLocation === null) {
-            // @todo how to handle?
-            return null;
+            throw new LogicException('Expected source location to be set.');
         }
 
         $traverser = new NodeTraverser();
