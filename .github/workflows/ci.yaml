@@ -41,11 +41,7 @@ jobs:
 
             -   name: Setup Twig 4
                 if: ${{ matrix.twig == '4' }}
-                run: |
-                    composer require "twig/twig:4.x-dev as 3.9999"
-
-                    # Wait for 1.12.7 to be released
-                    composer require "phpstan/phpstan:1.12.x-dev"
+                run: composer require "twig/twig:4.x-dev as 3.9999"
 
             -   name: Run tests
                 run: vendor/bin/phpunit --colors=always
