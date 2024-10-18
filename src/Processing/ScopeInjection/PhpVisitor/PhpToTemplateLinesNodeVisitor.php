@@ -45,7 +45,7 @@ final class PhpToTemplateLinesNodeVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        $this->mapping[$node->getLine()] = $sourceLocation;
+        $this->mapping[$node->getStartLine()] = $sourceLocation;
 
         return null;
     }

@@ -70,7 +70,7 @@ final class RefactorLoopClosureVisitor extends NodeVisitorAbstract
         $closure->params[1]->var->name = '__context';
         $closure->params[1]->byRef = false;
 
-        $closure->uses[] = new Node\Expr\ClosureUse(new Variable('context'), true);
+        $closure->uses[] = new Node\ClosureUse(new Variable('context'), true);
 
         return $node;
     }

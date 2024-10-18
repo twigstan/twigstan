@@ -6,6 +6,7 @@ namespace TwigStan\Processing\Compilation\PhpVisitor;
 
 use PhpParser\Builder\Class_;
 use PhpParser\Comment\Doc;
+use PhpParser\Modifiers;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use TwigStan\Processing\Compilation\TwigGlobalsToPhpDoc;
@@ -83,7 +84,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                         ),
                     ];
                     $node->returnType = new Node\Identifier('iterable');
-                    $node->flags = ($node->flags & ~Node\Stmt\Class_::MODIFIER_PROTECTED) | Node\Stmt\Class_::MODIFIER_PUBLIC;
+                    $node->flags = ($node->flags & ~Modifiers::PROTECTED) | Modifiers::PUBLIC;
 
                     $node->stmts = [
                         // Add: $context = array_merge($__twigstan_globals, $context);
@@ -129,7 +130,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                         ),
                     ];
                     $node->returnType = new Node\Identifier('iterable');
-                    $node->flags = ($node->flags & ~Node\Stmt\Class_::MODIFIER_PROTECTED) | Node\Stmt\Class_::MODIFIER_PUBLIC;
+                    $node->flags = ($node->flags & ~Modifiers::PROTECTED) | Modifiers::PUBLIC;
 
                     return $node;
                 }

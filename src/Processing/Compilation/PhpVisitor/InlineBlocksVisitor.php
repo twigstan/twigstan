@@ -100,10 +100,10 @@ final class InlineBlocksVisitor extends NodeVisitorAbstract
                                 ]),
                             ],
                             'uses' => [
-                                new Node\Expr\ClosureUse(
+                                new Node\ClosureUse(
                                     new Node\Expr\Variable('context'),
                                 ),
-                                new Node\Expr\ClosureUse(
+                                new Node\ClosureUse(
                                     new Node\Expr\Variable('blocks'),
                                 ),
                             ],
