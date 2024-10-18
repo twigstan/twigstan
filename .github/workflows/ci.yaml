@@ -39,14 +39,10 @@ jobs:
                     dependency-versions: '${{ matrix.dependency-versions }}'
                     composer-options: '${{ matrix.composer-options }}'
 
-            -   name: Setup Twig 4 from fork
+            -   name: Setup Twig 4
                 if: ${{ matrix.twig == '4' }}
-                env:
-                    COMPOSER_AUTH: '{"github-oauth": {"github.com": "${{ secrets.GITHUB_TOKEN }}"}}'
                 run: |
-                    # Wait for https://github.com/twigphp/Twig/pull/4399 to be merged
-                    composer config repositories.twig '{"type": "vcs", "url": "https://github.com/ruudk/Twig"}'
-                    composer require "twig/twig:dev-inline-loop as 3.9999"
+                    composer require "twig/twig:4.x-dev as 3.9999"
 
                     # Wait for 1.12.7 to be released
                     composer require "phpstan/phpstan:1.12.x-dev"
