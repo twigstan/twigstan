@@ -42,16 +42,14 @@ final readonly class ContainerFactory
 
     public function create(): Container
     {
-        $tempDirectory = Path::makeAbsolute($this->configuration->tempDirectory ?? '.twigstan', $this->rootDirectory);
-
         $configurator = new Configurator();
-        $configurator->setTempDirectory($tempDirectory);
+        $configurator->setTempDirectory($this->configuration->tempDirectory);
         $configurator->addConfig(Path::join($this->rootDirectory, 'config/application.neon'));
         $configurator->addStaticParameters([
             'debugMode' => true,
             'rootDir' => $this->rootDirectory,
             'currentWorkingDirectory' => $this->currentWorkingDirectory,
-            'tempDirectory' => $tempDirectory,
+            'tempDirectory' => $this->configuration->tempDirectory,
             'baselineErrors' => $this->configuration->baselineErrors,
             'baselineFile' => $this->configuration->baselineFile,
             'reportUnmatchedIgnoredErrors' => $this->configuration->reportUnmatchedIgnoredErrors,

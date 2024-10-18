@@ -18,7 +18,8 @@ final readonly class TwigStanConfig
      * @param list<BaselineError> $baselineErrors
      */
     public function __construct(
-        public ?string $tempDirectory,
+        public string $projectRootDirectory,
+        public string $tempDirectory,
         public ?string $baselineFile,
         public bool $reportUnmatchedIgnoredErrors,
         public string $phpstanConfigurationFile,
@@ -32,9 +33,9 @@ final readonly class TwigStanConfig
         public array $baselineErrors,
     ) {}
 
-    public static function configure(): ConfigBuilder
+    public static function configure(string $projectRootDirectory): ConfigBuilder
     {
-        return new ConfigBuilder();
+        return new ConfigBuilder($projectRootDirectory);
     }
 
     public static function extend(string $configurationFile): ConfigBuilder

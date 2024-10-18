@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-return TwigStan\Config\TwigStanConfig::configure()
+return TwigStan\Config\TwigStanConfig::configure(__DIR__)
     // ->baselineFile(__DIR__ . '/twigstan-baseline.php')
     ->reportUnmatchedIgnoredErrors(true)
     ->phpstanConfigurationFile(__DIR__ . '/phpstan.neon')
