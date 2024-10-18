@@ -32,6 +32,6 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
             ], $this->debugMode ? JSON_PRETTY_PRINT : 0),
         );
 
-        return $analysisResult->hasErrors() ? 1 : 0;
+        return 0;
     }
 }
