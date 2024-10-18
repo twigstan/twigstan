@@ -67,12 +67,12 @@ The [AnalysisResultFromJsonReader](src/PHPStan/Analysis/AnalysisResultFromJsonRe
 ### Installation
 
 ```command
-$ composer require --dev twigstan/twigstan:dev-main
+composer require --dev twigstan/twigstan:dev-main
 ```
 
 Then run TwigStan and it will explain what to do next:
 ```command
-$ vendor/bin/twigstan
+vendor/bin/twigstan
 ```
 
 ## Usage
