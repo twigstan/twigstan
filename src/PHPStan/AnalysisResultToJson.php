@@ -23,7 +23,7 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
             $this->jsonFile,
             json_encode([
                 'fileSpecificErrors' => $this->collectOnly === true ? [] : $analysisResult->getFileSpecificErrors(),
-                'notFileSpecificErrors' => $this->collectOnly === true ? [] : $analysisResult->getNotFileSpecificErrors(),
+                'notFileSpecificErrors' => $analysisResult->getNotFileSpecificErrors(),
                 'collectedData' => array_filter(
                     $analysisResult->getCollectedData(),
                     // @phpstan-ignore phpstanApi.runtimeReflection
