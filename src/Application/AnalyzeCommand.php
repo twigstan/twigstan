@@ -247,8 +247,8 @@ final class AnalyzeCommand extends Command
         $twigFileNames = $this->dependencySorter->sortByDependencies($twigFileNames);
 
         $count = count($twigFileNames);
-
-        $output->writeln(sprintf('Found %d dependencies...', $count - count($twigFileNamesToAnalyze)));
+        $dependencyCount = $count - count($twigFileNamesToAnalyze);
+        $output->writeln(sprintf('Found %d %s...', $dependencyCount, $dependencyCount === 1 ? 'dependency' : 'dependencies'));
 
         $output->writeln(sprintf('Compiling %d templates...', $count));
 
