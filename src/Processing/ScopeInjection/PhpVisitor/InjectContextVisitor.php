@@ -23,9 +23,9 @@ final class InjectContextVisitor extends NodeVisitorAbstract
      * }> $contextBeforeBlock
      */
     public function __construct(
-        private ArrayShapeNode $contextFromTemplateRender,
-        private array $contextBeforeBlock,
-        private ArrayShapeMerger $arrayShapeMerger,
+        private readonly ArrayShapeNode $contextFromTemplateRender,
+        private readonly array $contextBeforeBlock,
+        private readonly ArrayShapeMerger $arrayShapeMerger,
     ) {}
 
     public function enterNode(Node $node): ?Node

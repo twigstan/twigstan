@@ -140,6 +140,115 @@ final class ArrayShapeMergerTest extends TestCase
         ];
 
         yield [
+            // left: array{firstName: 'Jane'|'John'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new UnionTypeNode([
+                        new ConstTypeNode(new ConstExprStringNode('Jane')),
+                        new ConstTypeNode(new ConstExprStringNode('John')),
+                    ]),
+                ),
+            ]),
+            // right: array{firstName: 'James'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new ConstTypeNode(new ConstExprStringNode('James')),
+                ),
+            ]),
+            // result: array{firstName: 'Jane'|'John'|'James'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new UnionTypeNode([
+                        new ConstTypeNode(new ConstExprStringNode('Jane')),
+                        new ConstTypeNode(new ConstExprStringNode('John')),
+                        new ConstTypeNode(new ConstExprStringNode('James')),
+                    ]),
+                ),
+            ]),
+            false,
+        ];
+
+        yield [
+            // left: array{firstName: 'James'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new ConstTypeNode(new ConstExprStringNode('James')),
+                ),
+            ]),
+            // right: array{firstName: 'Jane'|'John'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new UnionTypeNode([
+                        new ConstTypeNode(new ConstExprStringNode('Jane')),
+                        new ConstTypeNode(new ConstExprStringNode('John')),
+                    ]),
+                ),
+            ]),
+            // result: array{firstName: 'James'|'Jane'|'John'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new UnionTypeNode([
+                        new ConstTypeNode(new ConstExprStringNode('James')),
+                        new ConstTypeNode(new ConstExprStringNode('Jane')),
+                        new ConstTypeNode(new ConstExprStringNode('John')),
+                    ]),
+                ),
+            ]),
+            false,
+        ];
+
+        yield [
+            // left: array{firstName: 'Jane'|'John'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new UnionTypeNode([
+                        new ConstTypeNode(new ConstExprStringNode('Jane')),
+                        new ConstTypeNode(new ConstExprStringNode('John')),
+                    ]),
+                ),
+            ]),
+            // right: array{firstName: 'James'|'Jill'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new UnionTypeNode([
+                        new ConstTypeNode(new ConstExprStringNode('James')),
+                        new ConstTypeNode(new ConstExprStringNode('Jill')),
+                    ]),
+                ),
+            ]),
+            // result: array{firstName: 'James'|'Jane'|'John'}
+            new ArrayShapeNode([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName'),
+                    false,
+                    new UnionTypeNode([
+                        new ConstTypeNode(new ConstExprStringNode('Jane')),
+                        new ConstTypeNode(new ConstExprStringNode('John')),
+                        new ConstTypeNode(new ConstExprStringNode('James')),
+                        new ConstTypeNode(new ConstExprStringNode('Jill')),
+                    ]),
+                ),
+            ]),
+            false,
+        ];
+
+        yield [
             // left: array{firstName: 'Jane'}
             new ArrayShapeNode([
                 new ArrayShapeItemNode(
