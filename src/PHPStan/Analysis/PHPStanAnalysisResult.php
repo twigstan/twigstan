@@ -12,6 +12,7 @@ final readonly class PHPStanAnalysisResult
      * @param list<string> $notFileSpecificErrors
      */
     public function __construct(
+        public int $exitCode,
         public array $errors,
         public array $collectedData,
         public array $notFileSpecificErrors,

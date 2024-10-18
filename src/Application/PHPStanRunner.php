@@ -94,7 +94,7 @@ final readonly class PHPStanRunner
 
         $output->writeln($process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
 
-        $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
+        $exitCode = $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
             if ($type === Process::ERR) {
                 $errorOutput->write($buffer);
 
@@ -104,6 +104,9 @@ final readonly class PHPStanRunner
             $output->write($buffer);
         });
 
-        return $this->analysisResultFromJsonReader->read($analysisResultJsonFile);
+        return $this->analysisResultFromJsonReader->read(
+            $analysisResultJsonFile,
+            $exitCode,
+        );
     }
 }

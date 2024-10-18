@@ -313,6 +313,10 @@ final class AnalyzeCommand extends Command
             $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
         }
 
+        if ($analysisResult->exitCode !== 0) {
+            throw new LogicException('PHPStan exited with a non-zero exit code');
+        }
+
         if ($analysisResult->notFileSpecificErrors !== []) {
             return $result;
         }
@@ -384,6 +388,7 @@ final class AnalyzeCommand extends Command
         }
 
         $analysisResult = new PHPStanAnalysisResult(
+            $analysisResult->exitCode,
             $errors,
             $analysisResult->collectedData,
             $analysisResult->notFileSpecificErrors,
