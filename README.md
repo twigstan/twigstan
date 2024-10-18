@@ -18,6 +18,9 @@
 > [!CAUTION]
 > This is very experimental
 
+> [!NOTE]
+> This project requires a significant amount of my time and effort to develop. If you find it valuable, please consider [sponsoring me](https://github.com/sponsors/ruudk) to support its continued growth and give it a star! ⭐️ Your support is truly appreciated! 🙏
+
 # Introduction
 
 TwigStan converts Twig templates into simplified PHP code, allowing PHPStan to analyze them. It then reports any errors back to the original template and line number.
