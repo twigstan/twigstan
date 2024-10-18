@@ -372,7 +372,7 @@ final class AnalyzeCommand extends Command
             $output,
             $errorOutput,
             $this->environmentLoader,
-            $phpFileNamesToAnalyze,
+            [$scopeInjectionDirectory],
             $debugMode,
             $xdebugMode,
         );

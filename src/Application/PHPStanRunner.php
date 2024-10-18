@@ -42,6 +42,9 @@ final readonly class PHPStanRunner
         $parameters = [
             'tmpDir' => Path::join($this->tempDirectory, 'phpstan'),
             'resultCachePath' => Path::join($this->tempDirectory, 'phpstan', $collectOnly ? 'collect-only-resultCache.php' : 'resultCache.php'),
+            'paths!' => [
+                ...$pathsToAnalyze,
+            ],
             'twigstan' => [
                 'twigEnvironmentLoader' => $environmentLoader,
                 'analysisResultJsonFile' => $analysisResultJsonFile,
@@ -82,7 +85,6 @@ final readonly class PHPStanRunner
                 $debugMode ? '--debug' : null,
                 $xdebugMode ? '--xdebug' : null,
                 '--ansi',
-                ...$pathsToAnalyze,
             ], fn($value) => ! is_null($value)),
             $this->currentWorkingDirectory,
             array_filter([
