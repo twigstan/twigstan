@@ -60,6 +60,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                                  * @param array{} $context
                                  * @param array{} $blocks
                                  * @return iterable<null|scalar|\Stringable>
+                                 * @phpstan-ignore missingType.iterableValue
                                  */
                                 DOC,
                             $this->twigGlobalsToPhpDoc->getGlobals(),
@@ -119,6 +120,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                             /**
                              * @param array{} $context
                              * @return iterable<null|scalar|\Stringable>
+                             * @phpstan-ignore missingType.iterableValue
                              */
                             DOC,
                     ));
