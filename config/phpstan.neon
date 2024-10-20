@@ -5,15 +5,18 @@ parameters:
 		- ../stubs/functions.php
 parametersSchema:
 	twigstan: structure([
-		twigEnvironmentLoader: schema(string(), nullable())
-		analysisResultJsonFile: schema(string(), nullable())
+		twigEnvironmentLoader: string()
+		analysisResultJsonFile: string()
+		collectOnly: bool()
+		debugMode: bool()
 	])
 services:
 	errorFormatter.analysisResultToJson:
 		class: TwigStan\PHPStan\AnalysisResultToJson
 		arguments:
-			jsonErrorFormatter: @errorFormatter.prettyJson
 			jsonFile: %twigstan.analysisResultJsonFile%
+			collectOnly: %twigstan.collectOnly%
+			debugMode: %twigstan.debugMode%
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
 		tags:

@@ -7,6 +7,7 @@ namespace TwigStan\Application;
 use Nette\Neon\Neon;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process;
 use TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader;
 use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
@@ -20,6 +21,7 @@ final readonly class PHPStanRunner
         private string $phpstanConfigurationFile,
         private null | false | string $phpstanMemoryLimit,
         private string $currentWorkingDirectory,
+        private string $tempDirectory,
     ) {}
 
     /**
@@ -34,17 +36,20 @@ final readonly class PHPStanRunner
         bool $xdebugMode,
         bool $collectOnly = false,
     ): PHPStanAnalysisResult {
-        $tempConfigFile = tempnam(sys_get_temp_dir(), 'twigstan-phpstan-');
-        $this->filesystem->rename($tempConfigFile, $tempConfigFile . '.neon');
-        $tempConfigFile = $tempConfigFile . '.neon';
-
-        $analysisResultJsonFile = tempnam(sys_get_temp_dir(), 'twigstan-');
-        $this->filesystem->remove($analysisResultJsonFile);
+        $configFile = Path::join($this->tempDirectory, $collectOnly ? 'phpstan-collect-only.neon' : 'phpstan.neon');
+        $analysisResultJsonFile = Path::join($this->tempDirectory, 'phpstan', $collectOnly ? 'collect-only-analysis-result.json' : 'analysis-result.json');
 
         $parameters = [
+            'tmpDir' => Path::join($this->tempDirectory, 'phpstan'),
+            'resultCachePath' => Path::join($this->tempDirectory, 'phpstan', $collectOnly ? 'collect-only-resultCache.php' : 'resultCache.php'),
+            'paths!' => [
+                ...$pathsToAnalyze,
+            ],
             'twigstan' => [
                 'twigEnvironmentLoader' => $environmentLoader,
                 'analysisResultJsonFile' => $analysisResultJsonFile,
+                'collectOnly' => $collectOnly,
+                'debugMode' => $debugMode,
             ],
         ];
 
@@ -54,14 +59,14 @@ final readonly class PHPStanRunner
         }
 
         $this->filesystem->dumpFile(
-            $tempConfigFile,
+            $configFile,
             Neon::encode([
                 'includes' => [
                     $this->phpstanConfigurationFile,
-                    __DIR__ . '/../../config/phpstan.neon',
+                    Path::join(dirname(__DIR__, 2), 'config/phpstan.neon'),
                 ],
                 'parameters' => $parameters,
-            ]),
+            ], true),
         );
 
         $process = new Process(
@@ -71,7 +76,7 @@ final readonly class PHPStanRunner
                 $this->phpstanMemoryLimit !== null ? sprintf('-d memory_limit=%s', $this->phpstanMemoryLimit !== false ? $this->phpstanMemoryLimit : '-1') : null,
                 $this->phpstanBinPath,
                 'analyse',
-                sprintf('--configuration=%s', $tempConfigFile),
+                sprintf('--configuration=%s', $configFile),
                 sprintf(
                     '--error-format=%s',
                     'analysisResultToJson',
@@ -80,7 +85,6 @@ final readonly class PHPStanRunner
                 $debugMode ? '--debug' : null,
                 $xdebugMode ? '--xdebug' : null,
                 '--ansi',
-                ...$pathsToAnalyze,
             ], fn($value) => ! is_null($value)),
             $this->currentWorkingDirectory,
             array_filter([
@@ -92,7 +96,7 @@ final readonly class PHPStanRunner
 
         $output->writeln($process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
 
-        $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
+        $exitCode = $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
             if ($type === Process::ERR) {
                 $errorOutput->write($buffer);
 
@@ -102,11 +106,9 @@ final readonly class PHPStanRunner
             $output->write($buffer);
         });
 
-        $analysisResult = $this->analysisResultFromJsonReader->read($analysisResultJsonFile);
-
-        $this->filesystem->remove($tempConfigFile);
-        $this->filesystem->remove($analysisResultJsonFile);
-
-        return $analysisResult;
+        return $this->analysisResultFromJsonReader->read(
+            $analysisResultJsonFile,
+            $exitCode,
+        );
     }
 }

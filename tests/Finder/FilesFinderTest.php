@@ -20,11 +20,13 @@ final class FilesFinderTest extends TestCase
             '*.php',
             [__DIR__ . '/files'],
             ['*/exclude.php'],
+            __DIR__,
         );
         $this->twigFileFinder = new FilesFinder(
             '*.twig',
             [__DIR__ . '/files'],
             ['*/exclude.twig'],
+            __DIR__,
         );
     }
 
@@ -52,6 +54,7 @@ final class FilesFinderTest extends TestCase
             '*.twig',
             [],
             [],
+            __DIR__,
         );
 
         $files = $finder->find();

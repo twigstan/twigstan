@@ -156,7 +156,7 @@ final class AnalyzeCommand extends Command
             foreach ($error->renderPoints as $renderPoint) {
                 $errorOutput->writeln(
                     sprintf(
-                        '🕹️ <href=%s>%s:%d</>',
+                        '🎯 <href=%s>%s:%d</>',
                         str_replace(
                             ['%file%', '%line%'],
                             [$renderPoint->fileName, $renderPoint->lineNumber],
@@ -313,6 +313,10 @@ final class AnalyzeCommand extends Command
             $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
         }
 
+        if ($analysisResult->exitCode !== 0) {
+            throw new LogicException('PHPStan exited with a non-zero exit code');
+        }
+
         if ($analysisResult->notFileSpecificErrors !== []) {
             return $result;
         }
@@ -368,7 +372,7 @@ final class AnalyzeCommand extends Command
             $output,
             $errorOutput,
             $this->environmentLoader,
-            $phpFileNamesToAnalyze,
+            [$scopeInjectionDirectory],
             $debugMode,
             $xdebugMode,
         );
@@ -384,6 +388,7 @@ final class AnalyzeCommand extends Command
         }
 
         $analysisResult = new PHPStanAnalysisResult(
+            $analysisResult->exitCode,
             $errors,
             $analysisResult->collectedData,
             $analysisResult->notFileSpecificErrors,

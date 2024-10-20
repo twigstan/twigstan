@@ -13,10 +13,11 @@ final readonly class AnalysisResultFromJsonReader
         private Filesystem $filesystem,
     ) {}
 
-    public function read(string $file): PHPStanAnalysisResult
+    public function read(string $file, int $exitCode): PHPStanAnalysisResult
     {
         if ( ! file_exists($file)) {
             return new PHPStanAnalysisResult(
+                $exitCode,
                 [],
                 [],
                 [
@@ -39,6 +40,7 @@ final readonly class AnalysisResultFromJsonReader
         ));
 
         return new PHPStanAnalysisResult(
+            $exitCode,
             $errors,
             array_values(array_map(
                 CollectedData::decode(...),
