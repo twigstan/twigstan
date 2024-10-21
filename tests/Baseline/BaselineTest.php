@@ -38,7 +38,7 @@ final class BaselineTest extends TestCase
             ['tests/Baseline'],
             $this->output,
             $this->errorOutput,
-            extension_loaded('xdebug') ? true : false,
+            true,
             extension_loaded('xdebug') ? true : false,
             $baseline,
         );
@@ -55,7 +55,7 @@ final class BaselineTest extends TestCase
             ['tests/Baseline'],
             $this->output,
             $this->errorOutput,
-            extension_loaded('xdebug') ? true : false,
+            true,
             extension_loaded('xdebug') ? true : false,
             null,
         );

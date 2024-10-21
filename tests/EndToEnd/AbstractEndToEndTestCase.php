@@ -55,7 +55,7 @@ abstract class AbstractEndToEndTestCase extends TestCase
             ) : [$relativeDirectory],
             $this->output,
             $this->errorOutput,
-            extension_loaded('xdebug') ? true : false,
+            true,
             extension_loaded('xdebug') ? true : false,
             null,
         );
