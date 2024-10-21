@@ -7,3 +7,4 @@
 /twigstan-baseline.php
 /twig-loader.php
 /.phpstan
+/.castor.stub.php

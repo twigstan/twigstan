@@ -57,30 +57,5 @@
             "phpstan/extension-installer": true
         },
         "sort-packages": true
-    },
-    "scripts": {
-        "dependencies": "vendor/bin/composer-dependency-analyser @additional_args",
-        "editorconfig": "vendor/bin/ec",
-        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --ansi @additional_args",
-        "phpstan": "vendor/bin/phpstan @additional_args",
-        "qa": [
-            "@composer normalize --diff",
-            "@php-cs-fixer",
-            "@phpstan",
-            "@tests",
-            "@dependencies",
-            "@editorconfig"
-        ],
-        "tests": "vendor/bin/phpunit"
-    },
-    "scripts-aliases": {
-        "php-cs-fixer": [
-            "cs",
-            "fmt"
-        ],
-        "phpstan": [
-            "stan",
-            "check"
-        ]
     }
 }
