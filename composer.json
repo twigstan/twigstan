@@ -28,7 +28,7 @@
         "phpstan/extension-installer": "^1.4",
         "phpstan/phpstan-deprecation-rules": "^1.2",
         "phpstan/phpstan-strict-rules": "^1.6",
-        "phpunit/phpunit": "^10.5",
+        "phpunit/phpunit": "^11.4",
         "shipmonk/composer-dependency-analyser": "^1.7",
         "symfony/framework-bundle": "^7.1",
         "symfony/http-foundation": "^7.1",
@@ -57,30 +57,5 @@
             "phpstan/extension-installer": true
         },
         "sort-packages": true
-    },
-    "scripts": {
-        "dependencies": "vendor/bin/composer-dependency-analyser @additional_args",
-        "editorconfig": "vendor/bin/ec",
-        "php-cs-fixer": "vendor/bin/php-cs-fixer fix --diff --ansi @additional_args",
-        "phpstan": "vendor/bin/phpstan @additional_args",
-        "qa": [
-            "@composer normalize --diff",
-            "@php-cs-fixer",
-            "@phpstan",
-            "@tests",
-            "@dependencies",
-            "@editorconfig"
-        ],
-        "tests": "vendor/bin/phpunit"
-    },
-    "scripts-aliases": {
-        "php-cs-fixer": [
-            "cs",
-            "fmt"
-        ],
-        "phpstan": [
-            "stan",
-            "check"
-        ]
     }
 }

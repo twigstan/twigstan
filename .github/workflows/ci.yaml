@@ -32,6 +32,7 @@ jobs:
                 with:
                     php-version: '${{ matrix.php }}'
                     coverage: none
+                    tools: castor
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
@@ -44,7 +45,7 @@ jobs:
                 run: composer require "twig/twig:4.x-dev as 3.9999"
 
             -   name: Run tests
-                run: vendor/bin/phpunit --colors=always
+                run: vendor/bin/phpunit
 
     code-style:
         runs-on: ubuntu-latest
@@ -52,21 +53,27 @@ jobs:
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v4
+                with:
+                    fetch-depth: 0
 
             -   name: Set up PHP
                 uses: shivammathur/setup-php@v2
                 with:
                     php-version: '8.3'
                     coverage: none
+                    tools: castor
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
 
             -   name: Run PHP CS Fixer
-                run: vendor/bin/php-cs-fixer check --diff --ansi --show-progress=none
+                run: castor php-cs-fixer --no-fix
 
             -   name: Check editorconfig
-                run: composer run editorconfig
+                run: castor editorconfig
+
+            -   name: Check commits
+                run: castor verify-commits
 
     phpstan:
         runs-on: ubuntu-latest
@@ -85,6 +92,7 @@ jobs:
                 with:
                     php-version: '${{ matrix.php }}'
                     coverage: none
+                    tools: castor
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
@@ -96,7 +104,7 @@ jobs:
                 uses: ramsey/composer-install@v3
 
             -   name: Run PHPStan
-                run: vendor/bin/phpstan --ansi
+                run: castor phpstan
 
     composer:
         runs-on: ubuntu-latest
@@ -110,12 +118,13 @@ jobs:
                 with:
                     php-version: '8.3'
                     coverage: none
+                    tools: castor
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
 
             -   name: Normalize Composer file
-                run: composer normalize --dry-run
+                run: castor composer-normalize
 
             -   name: Analyze Composer dependencies
-                run: vendor/bin/composer-dependency-analyser
+                run: castor dependency-analyzer

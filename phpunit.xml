@@ -17,6 +17,7 @@
     failOnRisky="true"
     failOnWarning="true"
     failOnDeprecation="true"
+    failOnPhpunitDeprecation="true"
     failOnNotice="true"
     failOnSkipped="true"
     failOnIncomplete="true"
