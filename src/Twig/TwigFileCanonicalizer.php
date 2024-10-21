@@ -40,6 +40,8 @@ final class TwigFileCanonicalizer
         $this->loader ??= $this->initializeLoader();
         $this->namespacesWithinMainNamespace ??= $this->findNamespacesWithinMainNamespace();
 
+        $name = str_replace('\\', '/', $name);
+
         if (Path::isAbsolute($name)) {
             foreach ($this->loader->getNamespaces() as $namespace) {
                 foreach ($this->loader->getPaths($namespace) as $path) {

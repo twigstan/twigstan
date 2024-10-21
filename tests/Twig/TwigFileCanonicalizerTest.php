@@ -40,6 +40,7 @@ final class TwigFileCanonicalizerTest extends TestCase
     {
         // Main namespace
         yield ['sub/add.html.twig', '@__main__/sub/add.html.twig'];
+        yield ['sub\add.html.twig', '@__main__/sub/add.html.twig'];
         yield ['@__main__/sub/add.html.twig', '@__main__/sub/add.html.twig'];
         yield [__DIR__ . '/TwigFileNormalizerFixtures/templates/sub/add.html.twig', '@__main__/sub/add.html.twig'];
 
