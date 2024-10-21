@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
+use function Castor\capture;
 use function Castor\exit_code;
 use function Castor\fs;
 use function Castor\io;
@@ -82,12 +83,44 @@ function composer_normalize(): int
     return exit_code('composer normalize --diff');
 }
 
+#[AsTask(name: 'verify-commits')]
+function verify_commits(): int
+{
+    if (capture('git rev-parse --abbrev-ref HEAD') === 'main') {
+        return 0;
+    }
+
+    $commits = explode(PHP_EOL, capture('git log --oneline --pretty=format:%s origin/main..'));
+
+    $matchingCommits = [];
+    foreach ($commits as $commit) {
+        if (str_contains($commit, 'fixup!') || str_contains($commit, 'squash!')) {
+            $matchingCommits[] = $commit;
+        }
+    }
+
+    if ($matchingCommits !== []) {
+        io()->error(sprintf("Found fixup! or squash! commits:\n\n%s", implode(PHP_EOL, $matchingCommits)));
+
+        return 1;
+    }
+
+    return 0;
+}
+
 #[AsTask(name: 'qa')]
 function qa(): int
 {
     if ( ! fs()->exists('vendor')) {
         composer_install();
     }
+
+    io()->section('Running verify-commits');
+    $exitCode = verify_commits();
+    if ($exitCode !== 0) {
+        return $exitCode;
+    }
+    io()->success('No issues found');
 
     io()->section('Running composer-normalize');
     $exitCode = composer_normalize();
