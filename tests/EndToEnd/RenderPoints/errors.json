@@ -17,8 +17,8 @@
             "tip": null,
             "twigSourceLocation": "render.html.twig:7",
             "renderPoints": [
-                "RenderFromAbstractController.php:16",
-                "RenderFromAbstractController.php:24",
+                "RenderFromAbstractController.php:17",
+                "RenderFromAbstractController.php:25",
                 "RenderFromTwig.php:13"
             ]
         }

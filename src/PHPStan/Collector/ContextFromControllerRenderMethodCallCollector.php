@@ -8,7 +8,10 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\ObjectType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 
 /**
  * @implements TemplateContextCollector<Node\Expr\MethodCall>
@@ -60,7 +63,13 @@ final readonly class ContextFromControllerRenderMethodCallCollector implements T
         }
 
         if (isset($args[1])) {
-            $context = $scope->getType($args[1]->value);
+            $context = $scope->getType($args[1]->value)->traverse(function ($type) {
+                if ( ! (new ObjectType(FormInterface::class))->isSuperTypeOf($type)->yes()) {
+                    return $type;
+                }
+
+                return new ObjectType(FormView::class);
+            });
         } else {
             $context = new ConstantArrayType([], []);
         }

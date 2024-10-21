@@ -7,8 +7,11 @@ use ShipMonk\ComposerDependencyAnalyser\Config\ErrorType;
 
 $config = new Configuration();
 
-$config->ignoreErrorsOnPackageAndPaths(
-    'symfony/framework-bundle',
+$config->ignoreErrorsOnPackagesAndPaths(
+    [
+        'symfony/form',
+        'symfony/framework-bundle',
+    ],
     [
         __DIR__ . '/src/PHPStan/Collector/ContextFromControllerRenderMethodCallCollector.php',
     ],
