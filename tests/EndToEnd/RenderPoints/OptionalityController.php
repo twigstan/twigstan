@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EndToEnd\RenderPoints;
+namespace TwigStan\EndToEnd\RenderPoints;
 
 use Twig\Environment;
 
