@@ -20,7 +20,7 @@ function composer_install(): int
 #[AsTask(name: 'phpunit', aliases: ['tests', 'test'], ignoreValidationErrors: true)]
 function phpunit(
     #[AsRawTokens]
-    array $rawTokens,
+    array $rawTokens = [],
 ): int {
     if ( ! fs()->exists('vendor')) {
         composer_install();
@@ -32,7 +32,7 @@ function phpunit(
 #[AsTask(name: 'phpstan', aliases: ['stan'], ignoreValidationErrors: true)]
 function phpstan(
     #[AsRawTokens]
-    array $rawTokens,
+    array $rawTokens = [],
 ): int {
     if ( ! fs()->exists('vendor')) {
         composer_install();
