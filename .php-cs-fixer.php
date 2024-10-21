@@ -7,6 +7,7 @@ use PhpCsFixer\Finder;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 
 $finder = Finder::create()
+    ->in(__DIR__ . '/example')
     ->in(__DIR__ . '/src')
     ->in(__DIR__ . '/tests')
     ->append([
