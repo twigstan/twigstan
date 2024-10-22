@@ -38,7 +38,7 @@ function phpstan(
         composer_install();
     }
 
-    return exit_code(['vendor/bin/phpstan', ...$rawTokens]);
+    return exit_code(['vendor/bin/phpstan', '--ansi', ...$rawTokens]);
 }
 
 #[AsTask(name: 'php-cs-fixer', aliases: ['code-style', 'cs'])]
