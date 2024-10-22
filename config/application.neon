@@ -31,6 +31,7 @@ services:
 		phpstanMemoryLimit: %phpstanMemoryLimit%
 		currentWorkingDirectory: %currentWorkingDirectory%
 		tempDirectory: %tempDir%
+		twigContextCollector: %twigContextCollector%
 	)
 	- TwigStan\PHP\PrettyPrinter
 	- TwigStan\PHP\StrictPhpParser

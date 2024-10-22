@@ -14,6 +14,9 @@ use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
 
 final readonly class PHPStanRunner
 {
+    /**
+     * @param list<class-string> $twigContextCollector
+     */
     public function __construct(
         private Filesystem $filesystem,
         private AnalysisResultFromJsonReader $analysisResultFromJsonReader,
@@ -22,6 +25,7 @@ final readonly class PHPStanRunner
         private null | false | string $phpstanMemoryLimit,
         private string $currentWorkingDirectory,
         private string $tempDirectory,
+        private array $twigContextCollector = [],
     ) {}
 
     /**
@@ -58,6 +62,14 @@ final readonly class PHPStanRunner
             $parameters['customRulesetUsed'] = true;
         }
 
+        $services = [];
+        foreach ($this->twigContextCollector as $className) {
+            $services[] = [
+                'class' => $className,
+                'tags' => ['phpstan.collector'],
+            ];
+        }
+
         $this->filesystem->dumpFile(
             $configFile,
             Neon::encode([
@@ -66,6 +78,7 @@ final readonly class PHPStanRunner
                     Path::join(dirname(__DIR__, 2), 'config/phpstan.neon'),
                 ],
                 'parameters' => $parameters,
+                'services' => $services,
             ], true),
         );
 

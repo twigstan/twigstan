@@ -16,6 +16,7 @@ final readonly class TwigStanConfig
      * @param list<string> $phpExcludes
      * @param list<IgnoreError> $ignoreErrors
      * @param list<BaselineError> $baselineErrors
+     * @param list<class-string> $twigContextCollector
      */
     public function __construct(
         public string $projectRootDirectory,
@@ -32,6 +33,7 @@ final readonly class TwigStanConfig
         public array $phpExcludes,
         public array $ignoreErrors,
         public array $baselineErrors,
+        public array $twigContextCollector,
     ) {}
 
     public static function configure(string $projectRootDirectory): ConfigBuilder
