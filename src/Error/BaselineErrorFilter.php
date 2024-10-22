@@ -47,7 +47,7 @@ final readonly class BaselineErrorFilter
 
             $errors[] = new Error(
                 sprintf(
-                    "Baseline error is expected to occur %d %s, but occurred only %d %s.\n%s",
+                    "Baseline error is expected to occur %d %s, but occurred %d %s.\n%s",
                     $baselineError->count,
                     $baselineError->count === 1 ? 'time' : 'times',
                     $baselineError->hits,
