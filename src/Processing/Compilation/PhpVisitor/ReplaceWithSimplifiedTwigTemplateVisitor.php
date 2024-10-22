@@ -118,6 +118,7 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                         <<<'DOC'
                             /**
                              * @param array{} $context
+                             * @param array{} $blocks
                              * @return iterable<null|scalar|\Stringable>
                              */
                             DOC,
@@ -125,6 +126,11 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                     $node->params = [
                         new Node\Param(
                             new Node\Expr\Variable('context'),
+                            null,
+                            new Node\Identifier('array'),
+                        ),
+                        new Node\Param(
+                            new Node\Expr\Variable('blocks'),
                             null,
                             new Node\Identifier('array'),
                         ),
