@@ -367,11 +367,6 @@ final class AnalyzeCommand extends Command
 
         $scopeInjectionResults = $this->twigScopeInjector->inject($analysisResult->collectedData, $flatteningResults, $scopeInjectionDirectory);
 
-        $phpFileNamesToAnalyze = array_map(
-            fn($twigFileName) => $scopeInjectionResults->getByTwigFileName($twigFileName)->phpFile,
-            $twigFileNamesToAnalyze,
-        );
-
         $output->writeln('Analyzing templates');
 
         $analysisResult = $this->phpStanRunner->run(
