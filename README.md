@@ -143,6 +143,10 @@ If you want to dump the types for the whole context (everything that's available
 {% dump_type %}
 ```
 
+## They use TwigStan
+
+* MicroSymfony ([PR](https://github.com/strangebuzz/MicroSymfony/pull/95), [GitHub action output](https://github.com/strangebuzz/MicroSymfony/actions/runs/11447652892/job/31849461384?pr=95))
+
 ## Credits & Inspiration
 
 * [Ondřej Mirtes](https://github.com/ondrejmirtes) for creating PHPStan and providing guidance to create TwigStan.
