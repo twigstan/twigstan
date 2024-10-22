@@ -60,6 +60,8 @@ final class AnalyzeCommand extends Command
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
+        private string $configurationFile,
+        private ?string $baselineFile,
     ) {
         parent::__construct();
     }
@@ -79,12 +81,16 @@ final class AnalyzeCommand extends Command
         $generateBaselineFile = $input->getOption('generate-baseline');
 
         if ($generateBaselineFile === null) {
-            $generateBaselineFile = 'twigstan-baseline.php';
-        } elseif ($generateBaselineFile !== false && Path::getExtension($input->getOption('generate-baseline')) !== 'php') {
-            $errorOutput->writeln('<error>Baseline file must have .php extension</error>');
+            $generateBaselineFile = $this->baselineFile ?? Path::join($this->currentWorkingDirectory, 'twigstan-baseline.php');
+        } elseif ($generateBaselineFile !== false) {
+            if (Path::getExtension($input->getOption('generate-baseline')) !== 'php') {
+                $errorOutput->writeln('<error>Baseline file must have .php extension</error>');
 
-            return self::FAILURE;
-        } elseif ($generateBaselineFile === false) {
+                return self::FAILURE;
+            }
+
+            $generateBaselineFile = Path::makeAbsolute($generateBaselineFile, $this->currentWorkingDirectory);
+        } else {
             $generateBaselineFile = null;
         }
 
@@ -438,7 +444,24 @@ final class AnalyzeCommand extends Command
                 ),
             );
 
-            $output->writeln(sprintf('Baseline generated with %d %s in %s.', $errorsCount, $errorsCount === 1 ? 'error' : 'errors', $generateBaselineFile));
+            $output->writeln(sprintf(
+                'Baseline generated with %d %s in %s.',
+                $errorsCount,
+                $errorsCount === 1 ? 'error' : 'errors',
+                Path::makeRelative($generateBaselineFile, $this->currentWorkingDirectory),
+            ));
+
+            if ($this->baselineFile === null) {
+                $output->writeln('');
+
+                $output->writeln('Make sure to add the following to your configuration file:');
+                $output->writeln(sprintf(
+                    "  ->baselineFile(__DIR__ . '/%s')",
+                    Path::makeRelative($generateBaselineFile, Path::getDirectory($this->configurationFile)),
+                ));
+
+                $output->writeln('');
+            }
 
             return $result;
         }
