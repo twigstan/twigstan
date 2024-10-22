@@ -2,29 +2,31 @@
 
 declare(strict_types=1);
 
+use TwigStan\Error\BaselineError;
+
 return [
-    new TwigStan\Error\BaselineError(
+    new BaselineError(
         'If condition is always false.',
         'if.alwaysFalse',
-        __DIR__ . '/homepage.html.twig',
+        '@__main__/Baseline/homepage.html.twig',
         1,
     ),
-    new TwigStan\Error\BaselineError(
+    new BaselineError(
         'Variable \'name\' does not exist.',
         'offsetAccess.notFound',
-        __DIR__ . '/layout.html.twig',
+        '@__main__/Baseline/layout.html.twig',
         3,
     ),
-    new TwigStan\Error\BaselineError(
+    new BaselineError(
         'Variable \'email\' does not exist.',
         'offsetAccess.notFound',
-        __DIR__ . '/layout.html.twig',
+        '@__main__/Baseline/layout.html.twig',
         2,
     ),
-    new TwigStan\Error\BaselineError(
+    new BaselineError(
         'Variable \'userId\' does not exist.',
         'offsetAccess.notFound',
-        __DIR__ . '/layout.html.twig',
+        '@__main__/Baseline/layout.html.twig',
         1,
     ),
 ];

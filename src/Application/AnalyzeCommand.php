@@ -406,18 +406,13 @@ final class AnalyzeCommand extends Command
                     continue;
                 }
 
-                if ($error->sourceLocation === null) {
-                    throw new LogicException('Error without source location should not be present here');
+                if ($error->twigFile === null) {
+                    throw new LogicException('Error without twigFile should not be present here');
                 }
 
                 $errorsCount++;
 
-                $twigFilePath = Path::makeRelative(
-                    $compilationResults->getByTwigFileName($error->sourceLocation->fileName)->twigFilePath,
-                    $this->currentWorkingDirectory,
-                );
-
-                $key = $error->message . "\n" . $error->identifier . "\n" . $twigFilePath;
+                $key = $error->message . "\n" . $error->identifier . "\n" . $error->twigFile;
 
                 if (array_key_exists($key, $baselineErrors)) {
                     $baselineErrors[$key]->increaseCount();
@@ -428,12 +423,12 @@ final class AnalyzeCommand extends Command
                 $baselineErrors[$key] = new BaselineError(
                     $error->message,
                     $error->identifier,
-                    $twigFilePath,
+                    $error->twigFile,
                     1,
                 );
             }
 
-            $dumper = new PhpBaselineDumper($this->currentWorkingDirectory);
+            $dumper = new PhpBaselineDumper();
 
             $this->filesystem->dumpFile(
                 $generateBaselineFile,

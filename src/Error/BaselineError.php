@@ -12,7 +12,7 @@ final class BaselineError implements Stringable
     public function __construct(
         public string $message,
         public ?string $identifier,
-        public string $path,
+        public string $file,
         public int $count = 1,
         public int $hits = 0,
     ) {}
@@ -36,7 +36,7 @@ final class BaselineError implements Stringable
             return false;
         }
 
-        if ($this->path === $error->sourceLocation->fileName) {
+        if ($this->file !== $error->twigFile) {
             return false;
         }
 
@@ -56,6 +56,6 @@ final class BaselineError implements Stringable
             $message = sprintf('%s (%s)', $message, $this->identifier);
         }
 
-        return sprintf('%s in path %s', $message, $this->path);
+        return sprintf('%s in file %s', $message, $this->file);
     }
 }
