@@ -81,6 +81,10 @@ final class ConfigBuilder
 
             // When the variable that is passed does not exist, this produces an error.
             IgnoreError::messageAndIdentifier('#CoreExtension::ensureTraversable#', 'argument.templateType'),
+
+            // When the context has an array that is untyped, this produces an error.
+            IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'missingType.iterableValue'),
+            IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'missingType.generics'),
         ];
     }
 
