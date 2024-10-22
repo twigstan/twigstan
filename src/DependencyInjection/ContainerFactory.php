@@ -15,14 +15,13 @@ use TwigStan\Config\TwigStanConfig;
 final readonly class ContainerFactory
 {
     private string $rootDirectory;
-    private string $currentWorkingDirectory;
 
     public function __construct(
-        string $currentWorkingDirectory,
+        private string $currentWorkingDirectory,
+        private string $configurationFile,
         private TwigStanConfig $configuration,
     ) {
         $this->rootDirectory = Path::canonicalize(dirname(__DIR__, 2));
-        $this->currentWorkingDirectory = $currentWorkingDirectory;
     }
 
     public static function fromFile(string $currentWorkingDirectory, string $configurationFile): self
@@ -37,7 +36,7 @@ final readonly class ContainerFactory
             throw new InvalidArgumentException(sprintf("Configuration file \"%s\" must return an instance of %s.\n", $configurationFile, TwigStanConfig::class));
         }
 
-        return new self($currentWorkingDirectory, $configuration);
+        return new self($currentWorkingDirectory, $configurationFile, $configuration);
     }
 
     public function create(): Container
@@ -49,6 +48,7 @@ final readonly class ContainerFactory
             'debugMode' => true,
             'rootDir' => $this->rootDirectory,
             'currentWorkingDirectory' => $this->currentWorkingDirectory,
+            'configurationFile' => $this->configurationFile,
             'tempDirectory' => $this->configuration->tempDirectory,
             'baselineErrors' => $this->configuration->baselineErrors,
             'baselineFile' => $this->configuration->baselineFile,

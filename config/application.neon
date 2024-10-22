@@ -7,6 +7,8 @@ services:
 		environmentLoader: %twigEnvironmentLoader%
 		tempDirectory: %tempDir%
 		currentWorkingDirectory: %currentWorkingDirectory%
+		configurationFile: %configurationFile%
+		baselineFile: %baselineFile%
 		phpFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.php
 			paths: %phpPaths%
