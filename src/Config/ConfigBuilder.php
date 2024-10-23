@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Config;
 
 use InvalidArgumentException;
+use PhpParser\Node;
 use RuntimeException;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Error\BaselineError;
@@ -22,7 +23,7 @@ final class ConfigBuilder
     private null | false | string $phpstanMemoryLimit = null;
     private ?string $twigEnvironmentLoader = null;
     /**
-     * @var list<class-string<TemplateContextCollector>>
+     * @var list<class-string<TemplateContextCollector<Node>>>
      */
     private array $twigContextCollectors = [];
 
@@ -384,7 +385,7 @@ final class ConfigBuilder
     }
 
     /**
-     * @param class-string<TemplateContextCollector> ...$classNames
+     * @param class-string<TemplateContextCollector<Node>> ...$classNames
      */
     public function twigContextCollector(string ...$classNames): self
     {

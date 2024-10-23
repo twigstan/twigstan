@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Application;
 
 use Nette\Neon\Neon;
+use PhpParser\Node;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -16,7 +17,7 @@ use TwigStan\PHPStan\Collector\TemplateContextCollector;
 final readonly class PHPStanRunner
 {
     /**
-     * @param list<class-string<TemplateContextCollector>> $twigContextCollectors
+     * @param list<class-string<TemplateContextCollector<Node>>> $twigContextCollectors
      */
     public function __construct(
         private Filesystem $filesystem,
