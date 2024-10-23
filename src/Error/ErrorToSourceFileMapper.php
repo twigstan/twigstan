@@ -35,7 +35,7 @@ final readonly class ErrorToSourceFileMapper
                 }
 
                 return $error->withTwigFileAndSourceLocation(
-                    $transformResult->twigFileName,
+                    $transformResult->twigFilePath,
                     $sourceLocation,
                 );
             },
