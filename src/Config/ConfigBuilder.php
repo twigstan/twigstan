@@ -22,9 +22,9 @@ final class ConfigBuilder
     private null | false | string $phpstanMemoryLimit = null;
     private ?string $twigEnvironmentLoader = null;
     /**
-     * @var list<class-string>
+     * @var list<class-string<TemplateContextCollector>>
      */
-    private array $twigContextCollector = [];
+    private array $twigContextCollectors = [];
 
     /**
      * @var list<string>
@@ -152,7 +152,7 @@ final class ConfigBuilder
             $this->phpExcludes,
             $this->ignoreErrors,
             $this->baselineErrors,
-            $this->twigContextCollector,
+            $this->twigContextCollectors,
         );
     }
 
@@ -384,7 +384,7 @@ final class ConfigBuilder
     }
 
     /**
-     * @param class-string ...$classNames
+     * @param class-string<TemplateContextCollector> ...$classNames
      */
     public function twigContextCollector(string ...$classNames): self
     {
@@ -392,7 +392,7 @@ final class ConfigBuilder
             if ( ! is_a($className, TemplateContextCollector::class, true)) {
                 throw new RuntimeException(sprintf('Class %s does not implement %s interface.', $className, TemplateContextCollector::class));
             }
-            $this->twigContextCollector[] = $className;
+            $this->twigContextCollectors[] = $className;
         }
 
         return $this;

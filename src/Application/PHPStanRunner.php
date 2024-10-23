@@ -11,11 +11,12 @@ use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process;
 use TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader;
 use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
+use TwigStan\PHPStan\Collector\TemplateContextCollector;
 
 final readonly class PHPStanRunner
 {
     /**
-     * @param list<class-string> $twigContextCollector
+     * @param list<class-string<TemplateContextCollector>> $twigContextCollectors
      */
     public function __construct(
         private Filesystem $filesystem,
@@ -25,7 +26,7 @@ final readonly class PHPStanRunner
         private null | false | string $phpstanMemoryLimit,
         private string $currentWorkingDirectory,
         private string $tempDirectory,
-        private array $twigContextCollector = [],
+        private array $twigContextCollectors,
     ) {}
 
     /**
@@ -63,7 +64,7 @@ final readonly class PHPStanRunner
         }
 
         $services = [];
-        foreach ($this->twigContextCollector as $className) {
+        foreach ($this->twigContextCollectors as $className) {
             $services[] = [
                 'class' => $className,
                 'tags' => ['phpstan.collector'],

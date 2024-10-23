@@ -62,7 +62,7 @@ final readonly class ContainerFactory
             'phpPaths' => $this->configuration->phpPaths,
             'phpExcludes' => $this->configuration->phpExcludes,
             'ignoreErrors' => $this->configuration->ignoreErrors,
-            'twigContextCollector' => $this->configuration->twigContextCollector,
+            'twigContextCollectors' => $this->configuration->twigContextCollectors,
         ]);
         $configurator->addDynamicParameters([
             'env' => getenv(),
