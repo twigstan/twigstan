@@ -101,6 +101,7 @@ final class TwigFileCanonicalizer
                     if ( ! str_starts_with($path, $mainPath)) {
                         continue;
                     }
+
                     $namespacesWithinMainNamespace[$namespace][] = ltrim(substr($path, strlen($mainPath)), DIRECTORY_SEPARATOR);
                 }
             }

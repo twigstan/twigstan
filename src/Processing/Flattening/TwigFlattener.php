@@ -112,6 +112,7 @@ final readonly class TwigFlattener
 
                 continue;
             }
+
             $this->filesystem->copy(
                 $compilationResult->phpFile,
                 Path::join($targetDirectory, basename($compilationResult->phpFile)),

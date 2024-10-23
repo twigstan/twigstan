@@ -66,6 +66,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         if (count($typeStrings) !== 1) {
             return new MixedType();
         }
+
         $type = $typeStrings[0]->getValue();
 
         if (in_array($type, [\Twig\Template::ANY_CALL, \Twig\Template::ARRAY_CALL], true)) {

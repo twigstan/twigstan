@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use ErickSkrauch\PhpCsFixer\Fixers;
 use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
@@ -18,10 +19,12 @@ $finder = Finder::create()
 return (new Config())
     ->setCacheFile('.php_cs.cache')
     ->setRiskyAllowed(true)
+    ->registerCustomFixers(new Fixers())
     ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules(
         [
             '@PER-CS2.0' => true,
+            'ErickSkrauch/line_break_after_statements' => true,
 
             // Rules (keep sorted A-Z)
             'align_multiline_comment' => true,

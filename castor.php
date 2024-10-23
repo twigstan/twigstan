@@ -121,6 +121,7 @@ function qa(): int
     if ($exitCode !== 0) {
         return $exitCode;
     }
+
     io()->success('No issues found');
 
     io()->section('Running composer-normalize');
@@ -129,6 +130,7 @@ function qa(): int
     if ($exitCode !== 0) {
         return $exitCode;
     }
+
     io()->success('No issues found');
 
     io()->section('Running editorconfig');
@@ -137,6 +139,7 @@ function qa(): int
     if ($exitCode !== 0) {
         return $exitCode;
     }
+
     io()->success('No issues found');
 
     io()->section('Running PHP-CS-Fixer');
@@ -145,6 +148,7 @@ function qa(): int
     if ($exitCode !== 0) {
         return $exitCode;
     }
+
     io()->writeln('');
     io()->success('No issues found');
 
@@ -154,6 +158,7 @@ function qa(): int
     if ($exitCode !== 0) {
         return $exitCode;
     }
+
     io()->writeln('');
     io()->success('No issues found');
 
@@ -163,6 +168,7 @@ function qa(): int
     if ($exitCode !== 0) {
         return $exitCode;
     }
+
     io()->success('No issues found');
 
     io()->section('Running Composer Dependency Analyzer');
@@ -171,6 +177,7 @@ function qa(): int
     if ($exitCode !== 0) {
         return $exitCode;
     }
+
     io()->success('No issues found');
     io()->writeln('');
 

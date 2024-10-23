@@ -342,6 +342,7 @@ final class AnalyzeCommand extends Command
                         if ($flatteningResults->hasPhpFile($data->filePath)) {
                             $filePath = $flatteningResults->getByPhpFile($data->filePath)->twigFileName;
                         }
+
                         $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
                         $templateToRenderPoint[$template][$filePath][] = $renderData['startLine'];
                     } catch (UnableToCanonicalizeTwigFileException) {

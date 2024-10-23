@@ -75,6 +75,7 @@ final readonly class ErrorHelper
 
             $expectedButNotActual[] = $expectedError;
         }
+
         $actualErrorsNotExpected = array_values($actualErrorsNotExpected);
 
         Assert::assertTrue(

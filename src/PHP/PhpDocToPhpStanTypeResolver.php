@@ -41,6 +41,7 @@ final readonly class PhpDocToPhpStanTypeResolver
             if ($optional) {
                 $optionalKeys[] = $keyId;
             }
+
             $keyTypes[$keyId] = new ConstantStringType($key);
             $valueTypes[$keyId] = $this->resolve($phpDocType);
             $keyId++;

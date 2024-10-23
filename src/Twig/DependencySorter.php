@@ -40,6 +40,7 @@ final readonly class DependencySorter
                 foreach ($dependants[$file] as $dependency) {
                     $visit($dependency);
                 }
+
                 $sorted[] = $file;
             }
         };
