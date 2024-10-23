@@ -394,6 +394,7 @@ final class ConfigBuilder
             if ( ! is_a($className, TemplateContextCollector::class, true)) {
                 throw new RuntimeException(sprintf('Class %s does not implement %s interface.', $className, TemplateContextCollector::class));
             }
+
             $this->twigContextCollectors[] = $className;
         }
 
