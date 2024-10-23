@@ -322,7 +322,7 @@ final class AnalyzeCommand extends Command
         }
 
         if ($analysisResult->exitCode !== 0) {
-            throw new LogicException('PHPStan exited with a non-zero exit code');
+            throw new LogicException('PHPStan exited with a non-zero exit code.');
         }
 
         if ($analysisResult->notFileSpecificErrors !== []) {
@@ -411,7 +411,7 @@ final class AnalyzeCommand extends Command
                 }
 
                 if ($error->twigFile === null) {
-                    throw new LogicException('Error without twigFile should not be present here');
+                    throw new LogicException('Error without twigFile should not be present here.');
                 }
 
                 $errorsCount++;

@@ -50,7 +50,7 @@ final class FilesFinder
                 continue;
             }
 
-            throw new InvalidArgumentException(sprintf('Path %s is not a file or directory', $path));
+            throw new InvalidArgumentException(sprintf('Path %s is not a file or directory.', $path));
         }
 
         if ($files === [] && $directories === []) {

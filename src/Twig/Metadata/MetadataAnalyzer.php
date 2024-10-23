@@ -31,7 +31,7 @@ final readonly class MetadataAnalyzer
         $template = $this->twigNodeParser->parse($template);
 
         if ($template->getSourceContext() === null) {
-            throw new RuntimeException('Template has no source context');
+            throw new RuntimeException('Template has no source context.');
         }
 
         $parentLineNumber = null;
@@ -133,6 +133,6 @@ final readonly class MetadataAnalyzer
             }
         }
 
-        throw new RuntimeException(sprintf('Parent node "%s" is not a constant expression', $node::class));
+        throw new RuntimeException(sprintf('Parent node "%s" is not a constant expression.', $node::class));
     }
 }

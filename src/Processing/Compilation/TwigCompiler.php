@@ -46,7 +46,7 @@ final readonly class TwigCompiler
         $template = $this->twigNodeParser->parse($template);
 
         if ($template->getSourceContext() === null) {
-            throw new RuntimeException('Template does not have a source context');
+            throw new RuntimeException('Template does not have a source context.');
         }
 
         $twigFilePath = $template->getSourceContext()->getPath();

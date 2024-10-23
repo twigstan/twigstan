@@ -70,7 +70,7 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
         }
 
         if ($sourceLocation === null) {
-            throw new ShouldNotHappenException(sprintf('Could not find Twig line number on %s:%d', $scope->getFile(), $node->getStartLine()));
+            throw new ShouldNotHappenException(sprintf('Could not find Twig line number on %s:%d.', $scope->getFile(), $node->getStartLine()));
         }
 
         return [

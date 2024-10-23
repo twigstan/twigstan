@@ -103,7 +103,7 @@ final class ConfigBuilder
         $configuration = include $configurationFile;
 
         if ( ! $configuration instanceof ConfigBuilder) {
-            throw new RuntimeException(sprintf('Configuration is not an instance of %s', self::class));
+            throw new RuntimeException(sprintf('Configuration is not an instance of %s.', self::class));
         }
 
         return $configuration;

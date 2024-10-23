@@ -40,7 +40,7 @@ final readonly class TwigFactory
         unset($_SERVER['SHELL_VERBOSITY']);
 
         if ( ! $twig instanceof Environment) {
-            throw new InvalidArgumentException(sprintf('Environment loader "%s" must return an instance of %s, got: %s. ', $this->environmentLoader, Environment::class, get_debug_type($twig)));
+            throw new InvalidArgumentException(sprintf('Environment loader "%s" must return an instance of %s, got: %s.', $this->environmentLoader, Environment::class, get_debug_type($twig)));
         }
 
         $twig->getExtension(EscaperExtension::class)->setDefaultStrategy(false);

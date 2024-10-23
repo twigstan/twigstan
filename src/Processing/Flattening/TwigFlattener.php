@@ -59,7 +59,7 @@ final readonly class TwigFlattener
 
                     // Inline the body of the `main` function from the parent template
                     if ( ! $results->hasTwigFileName($parent)) {
-                        throw new RuntimeException(sprintf('Parent template %s not found in mapping', $parent));
+                        throw new RuntimeException(sprintf('Parent template %s not found in mapping.', $parent));
                     }
 
                     $parentTransformResult = $results->getByTwigFileName($parent);

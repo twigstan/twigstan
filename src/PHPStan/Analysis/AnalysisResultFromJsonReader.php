@@ -29,7 +29,7 @@ final readonly class AnalysisResultFromJsonReader
         $content = $this->filesystem->readFile($file);
 
         if ( ! json_validate($content)) {
-            throw new InvalidArgumentException(sprintf('File "%s" is not a valid JSON file', $file));
+            throw new InvalidArgumentException(sprintf('File "%s" is not a valid JSON file.', $file));
         }
 
         $result = json_decode($content, true);

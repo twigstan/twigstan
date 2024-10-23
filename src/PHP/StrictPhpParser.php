@@ -28,7 +28,7 @@ final readonly class StrictPhpParser
         $stmts = $this->phpParser->parse($code);
 
         if ($stmts === null) {
-            throw new RuntimeException('Failed to parse PHP code');
+            throw new RuntimeException('Failed to parse PHP code.');
         }
 
         return array_values($stmts);

@@ -68,7 +68,7 @@ final readonly class ScopeInjectionResultCollection implements IteratorAggregate
             }
         }
 
-        throw new InvalidArgumentException(sprintf('No ScopeInjectionResult found for PHP file "%s"', $phpFile));
+        throw new InvalidArgumentException(sprintf('No ScopeInjectionResult found for PHP file "%s".', $phpFile));
     }
 
     public function hasTwigFileName(string $fileName): bool
@@ -78,6 +78,6 @@ final readonly class ScopeInjectionResultCollection implements IteratorAggregate
 
     public function getByTwigFileName(string $fileName): ScopeInjectionResult
     {
-        return $this->results[$fileName] ?? throw new InvalidArgumentException(sprintf('No ScopeInjectionResult found for Twig file "%s"', $fileName));
+        return $this->results[$fileName] ?? throw new InvalidArgumentException(sprintf('No ScopeInjectionResult found for Twig file "%s".', $fileName));
     }
 }

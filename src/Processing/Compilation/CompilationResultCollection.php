@@ -68,7 +68,7 @@ final readonly class CompilationResultCollection implements IteratorAggregate
             }
         }
 
-        throw new InvalidArgumentException(sprintf('No CompilationResult found for PHP file "%s"', $phpFile));
+        throw new InvalidArgumentException(sprintf('No CompilationResult found for PHP file "%s".', $phpFile));
     }
 
     public function hasTwigFileName(string $fileName): bool
@@ -78,6 +78,6 @@ final readonly class CompilationResultCollection implements IteratorAggregate
 
     public function getByTwigFileName(string $fileName): CompilationResult
     {
-        return $this->results[$fileName] ?? throw new InvalidArgumentException(sprintf('No CompilationResult found for Twig file "%s"', $fileName));
+        return $this->results[$fileName] ?? throw new InvalidArgumentException(sprintf('No CompilationResult found for Twig file "%s".', $fileName));
     }
 }

@@ -16,7 +16,7 @@ final class IgnoreError
         public int $hits = 0,
     ) {
         if ($message !== null && @preg_match($message, '') === false) {
-            throw new InvalidArgumentException(sprintf('Invalid pattern "%s"', $message));
+            throw new InvalidArgumentException(sprintf('Invalid pattern "%s".', $message));
         }
     }
 

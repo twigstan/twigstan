@@ -18,13 +18,13 @@ final class SimpleIncludeNode extends IncludeNode
         $expr = $node->getNode('expr');
 
         if ( ! $expr instanceof AbstractExpression) {
-            throw new InvalidArgumentException('The "expr" node must be an instance of AbstractExpression');
+            throw new InvalidArgumentException('The "expr" node must be an instance of AbstractExpression.');
         }
 
         $variables = $node->hasNode('variables') ? $node->getNode('variables') : null;
 
         if ($variables !== null && ! $variables instanceof AbstractExpression) {
-            throw new InvalidArgumentException('The "variables" node must be an instance of AbstractExpression');
+            throw new InvalidArgumentException('The "variables" node must be an instance of AbstractExpression.');
         }
 
         return new self(

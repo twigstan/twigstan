@@ -76,7 +76,7 @@ final class TwigFileCanonicalizer
             return $name;
         }
 
-        throw new UnableToCanonicalizeTwigFileException(sprintf('Unable to resolve path for "%s"', $name));
+        throw new UnableToCanonicalizeTwigFileException(sprintf('Unable to resolve path for "%s".', $name));
     }
 
     /**

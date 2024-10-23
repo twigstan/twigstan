@@ -33,7 +33,7 @@ final readonly class ContainerFactory
         }
 
         if ( ! $configuration instanceof TwigStanConfig) {
-            throw new InvalidArgumentException(sprintf("Configuration file \"%s\" must return an instance of %s.\n", $configurationFile, TwigStanConfig::class));
+            throw new InvalidArgumentException(sprintf('Configuration file "%s" must return an instance of %s.', $configurationFile, TwigStanConfig::class));
         }
 
         return new self($currentWorkingDirectory, $configurationFile, $configuration);
@@ -72,7 +72,7 @@ final readonly class ContainerFactory
         $container = new $class();
 
         if ( ! $container instanceof Container) {
-            throw new RuntimeException('Container is not an instance of Nette\DI\Container');
+            throw new RuntimeException('Container is not an instance of Nette\DI\Container.');
         }
 
         return $container;
