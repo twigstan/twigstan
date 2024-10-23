@@ -11,6 +11,7 @@ use Twig\Node\Expression\ArrayExpression;
 use Twig\Node\Expression\Binary\ConcatBinary;
 use Twig\Node\Expression\ConditionalExpression;
 use Twig\Node\Expression\ConstantExpression;
+use Twig\Node\Expression\NameExpression;
 use Twig\Node\Expression\ParentExpression;
 use Twig\Node\Node;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
@@ -97,9 +98,9 @@ final readonly class MetadataAnalyzer
             return [$node->getAttribute('value')];
         }
 
-        // if ($node instanceof NameExpression) {
-        //    return ['$' . $node->getAttribute('name')];
-        // }
+        if ($node instanceof NameExpression) {
+            return [];
+        }
 
         if ($node instanceof ArrayExpression) {
             $strings = [];

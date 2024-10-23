@@ -101,6 +101,11 @@ final class ConfigBuilder
             // When the context has an array that is untyped, this produces an error.
             IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'missingType.iterableValue'),
             IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'missingType.generics'),
+
+            // Currently Dynamic Inheritance is not (yet) supported. Ignoring the errors for now.
+            // @see https://github.com/twigstan/twigstan/issues/6
+            IgnoreError::messageAndIdentifier('#Access to an undefined property __TwigTemplate_\w+::\$blocks\.#', 'property.notFound'),
+            IgnoreError::messageAndIdentifier('#Call to an undefined method __TwigTemplate_\w+::getParent\(\)\.#', 'method.notFound'),
         ];
     }
 
