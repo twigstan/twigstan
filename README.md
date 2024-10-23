@@ -145,7 +145,7 @@ If you want to dump the types for the whole context (everything that's available
 
 ## They use TwigStan
 
-* MicroSymfony ([PR](https://github.com/strangebuzz/MicroSymfony/pull/95), [GitHub action output](https://github.com/strangebuzz/MicroSymfony/actions/runs/11447652892/job/31849461384?pr=95))
+* MicroSymfony ([PR](https://github.com/strangebuzz/MicroSymfony/pull/95), [GitHub action output](https://github.com/strangebuzz/MicroSymfony/pull/95/checks))
 
 ## Credits & Inspiration
 
