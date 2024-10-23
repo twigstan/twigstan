@@ -129,7 +129,7 @@ final class AnalyzeCommand extends Command
                         preg_replace(
                             '/(\.html)?\.twig\.\w+\.php$/',
                             '',
-                            Path::getDirectory($error->phpFile),
+                            basename($error->phpFile),
                         ),
                     ),
                     $error->phpLine,
