@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace TwigStan\Config;
 
 use InvalidArgumentException;
+use PhpParser\Node;
 use RuntimeException;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Error\BaselineError;
 use TwigStan\Error\IgnoreError;
+use TwigStan\PHPStan\Collector\TemplateContextCollector;
 
 final class ConfigBuilder
 {
@@ -20,6 +22,11 @@ final class ConfigBuilder
     private ?string $phpstanConfigurationFile = null;
     private null | false | string $phpstanMemoryLimit = null;
     private ?string $twigEnvironmentLoader = null;
+
+    /**
+     * @var list<class-string<TemplateContextCollector<Node>>>
+     */
+    private array $twigContextCollectors = [];
 
     /**
      * @var list<string>
@@ -148,6 +155,7 @@ final class ConfigBuilder
             $this->phpExcludes,
             $this->ignoreErrors,
             $this->baselineErrors,
+            $this->twigContextCollectors,
         );
     }
 
@@ -374,6 +382,22 @@ final class ConfigBuilder
             ...$this->ignoreErrors,
             ...array_values($ignoreErrors),
         ];
+
+        return $this;
+    }
+
+    /**
+     * @param class-string<TemplateContextCollector<Node>> ...$classNames
+     */
+    public function twigContextCollector(string ...$classNames): self
+    {
+        foreach ($classNames as $className) {
+            if ( ! is_a($className, TemplateContextCollector::class, true)) {
+                throw new RuntimeException(sprintf('Class %s does not implement %s interface.', $className, TemplateContextCollector::class));
+            }
+
+            $this->twigContextCollectors[] = $className;
+        }
 
         return $this;
     }

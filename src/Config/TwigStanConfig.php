@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace TwigStan\Config;
 
+use PhpParser\Node;
 use TwigStan\Error\BaselineError;
 use TwigStan\Error\IgnoreError;
+use TwigStan\PHPStan\Collector\TemplateContextCollector;
 
 final readonly class TwigStanConfig
 {
@@ -16,6 +18,7 @@ final readonly class TwigStanConfig
      * @param list<string> $phpExcludes
      * @param list<IgnoreError> $ignoreErrors
      * @param list<BaselineError> $baselineErrors
+     * @param list<class-string<TemplateContextCollector<Node>>> $twigContextCollectors
      */
     public function __construct(
         public string $projectRootDirectory,
@@ -32,6 +35,7 @@ final readonly class TwigStanConfig
         public array $phpExcludes,
         public array $ignoreErrors,
         public array $baselineErrors,
+        public array $twigContextCollectors,
     ) {}
 
     public static function configure(string $projectRootDirectory): ConfigBuilder

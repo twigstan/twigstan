@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace TwigStan\Application;
 
 use Nette\Neon\Neon;
+use PhpParser\Node;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process;
 use TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader;
 use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
+use TwigStan\PHPStan\Collector\TemplateContextCollector;
 
 final readonly class PHPStanRunner
 {
+    /**
+     * @param list<class-string<TemplateContextCollector<Node>>> $twigContextCollectors
+     */
     public function __construct(
         private Filesystem $filesystem,
         private AnalysisResultFromJsonReader $analysisResultFromJsonReader,
@@ -22,6 +27,7 @@ final readonly class PHPStanRunner
         private null | false | string $phpstanMemoryLimit,
         private string $currentWorkingDirectory,
         private string $tempDirectory,
+        private array $twigContextCollectors,
     ) {}
 
     /**
@@ -53,9 +59,18 @@ final readonly class PHPStanRunner
             ],
         ];
 
+        $services = [];
+
         if ($collectOnly) {
             $parameters['level'] = null;
             $parameters['customRulesetUsed'] = true;
+
+            foreach ($this->twigContextCollectors as $className) {
+                $services[] = [
+                    'class' => $className,
+                    'tags' => ['phpstan.collector'],
+                ];
+            }
         }
 
         $this->filesystem->dumpFile(
@@ -66,6 +81,7 @@ final readonly class PHPStanRunner
                     Path::join(dirname(__DIR__, 2), 'config/phpstan.neon'),
                 ],
                 'parameters' => $parameters,
+                'services' => $services,
             ], true),
         );
 
