@@ -25,12 +25,10 @@ use TwigStan\Processing\Compilation\PhpVisitor\RefactorStaticMacroCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorYieldBlockVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportMacroVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RemoveParentUnsetVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveParentYieldVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveUnwrapVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\ReplaceExtensionsArrayDimFetchToMethodCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\ReplaceWithSimplifiedTwigTemplateVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\UnsetParentAfterForLoopVisitor;
 
 final readonly class TwigCompiler
 {
@@ -79,10 +77,8 @@ final readonly class TwigCompiler
             new RefactorStaticMacroCallVisitor(),
             new RefactorLoadTemplateYieldVisitor(),
             new RemoveParentYieldVisitor(),
-            new RemoveParentUnsetVisitor(),
             new IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor(),
             new ReplaceExtensionsArrayDimFetchToMethodCallVisitor(),
-            ...(Environment::MAJOR_VERSION === 3 ? [new UnsetParentAfterForLoopVisitor()] : []),
             ...(Environment::MAJOR_VERSION >= 4 ? [new RefactorLoopClosureVisitor()] : []),
         );
 
