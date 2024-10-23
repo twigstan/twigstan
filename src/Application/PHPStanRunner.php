@@ -58,17 +58,17 @@ final readonly class PHPStanRunner
             ],
         ];
 
+        $services = [];
         if ($collectOnly) {
             $parameters['level'] = null;
             $parameters['customRulesetUsed'] = true;
-        }
 
-        $services = [];
-        foreach ($this->twigContextCollectors as $className) {
-            $services[] = [
-                'class' => $className,
-                'tags' => ['phpstan.collector'],
-            ];
+            foreach ($this->twigContextCollectors as $className) {
+                $services[] = [
+                    'class' => $className,
+                    'tags' => ['phpstan.collector'],
+                ];
+            }
         }
 
         $this->filesystem->dumpFile(
