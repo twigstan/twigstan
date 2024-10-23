@@ -19,7 +19,8 @@
             "renderPoints": [
                 "RenderFromAbstractController.php:17",
                 "RenderFromAbstractController.php:25",
-                "RenderFromTwig.php:13"
+                "RenderFromTwig.php:15",
+                "RenderFromTwig.php:23"
             ]
         }
     ],
