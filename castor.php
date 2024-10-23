@@ -41,7 +41,7 @@ function phpstan(
     return exit_code(['vendor/bin/phpstan', '--ansi', ...$rawTokens]);
 }
 
-#[AsTask(name: 'php-cs-fixer', aliases: ['code-style', 'cs'])]
+#[AsTask(name: 'php-cs-fixer', aliases: ['code-style', 'cs', 'fmt'])]
 function phpcsfixer(
     #[AsOption(mode: InputOption::VALUE_NEGATABLE)]
     bool $fix = true,
