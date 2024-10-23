@@ -121,6 +121,7 @@ final class ConfigBuilder
 
         if ($this->phpstanBinPath === null) {
             $phpstanBinPath = Path::join($this->projectRootDirectory, 'vendor', 'bin', 'phpstan');
+
             if ( ! file_exists($phpstanBinPath)) {
                 throw new InvalidArgumentException(sprintf('The "phpstanBinPath" option is required.'));
             }

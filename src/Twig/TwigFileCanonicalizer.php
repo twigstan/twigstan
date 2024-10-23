@@ -46,8 +46,10 @@ final class TwigFileCanonicalizer
             foreach ($this->loader->getNamespaces() as $namespace) {
                 foreach ($this->loader->getPaths($namespace) as $path) {
                     $path = rtrim($path, DIRECTORY_SEPARATOR);
+
                     if (str_starts_with($name, $path)) {
                         $twigPath = sprintf('@%s/%s', $namespace, ltrim(substr($name, strlen($path)), DIRECTORY_SEPARATOR));
+
                         if ($this->loader->exists($twigPath)) {
                             return $twigPath;
                         }
@@ -65,6 +67,7 @@ final class TwigFileCanonicalizer
 
             foreach ($this->namespacesWithinMainNamespace[$namespace] ?? [] as $path) {
                 $nameWithinMain = sprintf('@%s/%s', FilesystemLoader::MAIN_NAMESPACE, Path::join($path, $fileName));
+
                 if ($this->loader->exists($nameWithinMain)) {
                     return $nameWithinMain;
                 }

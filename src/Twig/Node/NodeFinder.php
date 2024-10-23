@@ -19,6 +19,7 @@ final readonly class NodeFinder
             }
 
             $found = $this->findInstanceOf($child, $class);
+
             if ($found !== null) {
                 return $found;
             }

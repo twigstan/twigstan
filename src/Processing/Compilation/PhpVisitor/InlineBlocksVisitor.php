@@ -27,11 +27,13 @@ final class InlineBlocksVisitor extends NodeVisitorAbstract
         }
 
         $node = $node->expr;
+
         if ( ! $node instanceof Node\Expr\YieldFrom) {
             return null;
         }
 
         $expr = $node->expr;
+
         if ( ! $expr instanceof Node\Expr\MethodCall) {
             return null;
         }
@@ -71,6 +73,7 @@ final class InlineBlocksVisitor extends NodeVisitorAbstract
         }
 
         $blockName = $blockNameArg->value->value;
+
         if ( ! isset($this->blocks[$blockName])) {
             return null;
         }

@@ -117,6 +117,7 @@ function qa(): int
 
     io()->section('Running verify-commits');
     $exitCode = verify_commits();
+
     if ($exitCode !== 0) {
         return $exitCode;
     }
@@ -124,6 +125,7 @@ function qa(): int
 
     io()->section('Running composer-normalize');
     $exitCode = composer_normalize();
+
     if ($exitCode !== 0) {
         return $exitCode;
     }
@@ -131,6 +133,7 @@ function qa(): int
 
     io()->section('Running editorconfig');
     $exitCode = editorconfig();
+
     if ($exitCode !== 0) {
         return $exitCode;
     }
@@ -138,6 +141,7 @@ function qa(): int
 
     io()->section('Running PHP-CS-Fixer');
     $exitCode = phpcsfixer();
+
     if ($exitCode !== 0) {
         return $exitCode;
     }
@@ -146,6 +150,7 @@ function qa(): int
 
     io()->section('Running PHPUnit');
     $exitCode = phpunit();
+
     if ($exitCode !== 0) {
         return $exitCode;
     }
@@ -154,6 +159,7 @@ function qa(): int
 
     io()->section('Running PHPStan');
     $exitCode = phpstan();
+
     if ($exitCode !== 0) {
         return $exitCode;
     }
@@ -161,6 +167,7 @@ function qa(): int
 
     io()->section('Running Composer Dependency Analyzer');
     $exitCode = dependencies();
+
     if ($exitCode !== 0) {
         return $exitCode;
     }

@@ -338,6 +338,7 @@ final class AnalyzeCommand extends Command
                 foreach ($data->data as $renderData) {
                     try {
                         $filePath = $data->filePath;
+
                         if ($flatteningResults->hasPhpFile($data->filePath)) {
                             $filePath = $flatteningResults->getByPhpFile($data->filePath)->twigFileName;
                         }
@@ -472,6 +473,7 @@ final class AnalyzeCommand extends Command
         foreach ($analysisResult->errors as $error) {
             $twigSourceLocation = null;
             $renderPoints = [];
+
             if ($error->sourceLocation !== null) {
                 $lastTwigFileName = null;
                 foreach ($error->sourceLocation as $sourceLocation) {

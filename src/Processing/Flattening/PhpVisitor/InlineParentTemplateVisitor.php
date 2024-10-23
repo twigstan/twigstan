@@ -35,6 +35,7 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         }
 
         $expr = $node->expr->expr;
+
         if ( ! $expr instanceof Node\Expr\MethodCall) {
             return null;
         }

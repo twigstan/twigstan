@@ -63,6 +63,7 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
         $sourceLocation = null;
         foreach ($node->getComments() as $comment) {
             $sourceLocation = CommentHelper::getSourceLocationFromComment($comment->getText());
+
             if ($sourceLocation !== null) {
                 break;
             }

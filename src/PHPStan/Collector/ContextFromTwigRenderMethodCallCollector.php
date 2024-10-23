@@ -36,16 +36,19 @@ final readonly class ContextFromTwigRenderMethodCallCollector implements Templat
         }
 
         $varType = $scope->getType($node->var);
+
         if ( ! (new ObjectType(Environment::class))->isSuperTypeOf($varType)->yes()) {
             return null;
         }
 
         $args = $node->getArgs();
+
         if ( ! isset($args[0])) {
             return null;
         }
 
         $views = $scope->getType($args[0]->value)->getConstantStrings();
+
         if (count($views) === 0) {
             return null;
         }

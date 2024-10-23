@@ -36,6 +36,7 @@ final readonly class MetadataAnalyzer
 
         $parentLineNumber = null;
         $parents = [];
+
         if ($template->hasNode('parent')) {
             $parentLineNumber = $template->getNode('parent')->getTemplateLine();
             $parents = array_map(
@@ -69,6 +70,7 @@ final readonly class MetadataAnalyzer
             $blocks[] = $blockName;
 
             $parentExpression = $this->nodeFinder->findInstanceOf($block, ParentExpression::class);
+
             if ($parentExpression !== null) {
                 $parentBlocks[] = $blockName;
             }

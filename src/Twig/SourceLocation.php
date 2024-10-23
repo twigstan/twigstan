@@ -32,6 +32,7 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
         $nodes = iterator_to_array($current);
 
         $last = $nodes[array_key_last($nodes)];
+
         if ($last->fileName === $toAppend->fileName && $last->lineNumber === $toAppend->lineNumber) {
             return $current;
         }

@@ -54,6 +54,7 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
         $context = $context[0];
 
         $templates = $scope->getType($args[1]->value)->getConstantStrings();
+
         if (count($templates) === 0) {
             return null;
         }

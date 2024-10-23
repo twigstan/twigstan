@@ -53,11 +53,13 @@ final readonly class ContextFromControllerRenderMethodCallCollector implements T
         }
 
         $args = $node->getArgs();
+
         if ( ! isset($args[0])) {
             return null;
         }
 
         $views = $scope->getType($args[0]->value)->getConstantStrings();
+
         if (count($views) === 0) {
             return null;
         }

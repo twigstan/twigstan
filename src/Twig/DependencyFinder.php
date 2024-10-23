@@ -37,6 +37,7 @@ final readonly class DependencyFinder
         $dependants = [];
 
         $metadata = $this->metadataRegistry->getMetadata($twigFileName);
+
         if ($metadata->hasResolvableParents()) {
             foreach ($metadata->parents as $parentTwigFileName) {
                 if (in_array($parentTwigFileName, $dependants, true)) {

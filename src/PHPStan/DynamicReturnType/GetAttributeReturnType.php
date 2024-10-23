@@ -53,6 +53,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
             $propertyOrMethod = $propertyOrMethodType->getValue();
         } else {
             $constantStringTypes = $propertyOrMethodType->getConstantStrings();
+
             if ($constantStringTypes === []) {
                 return new MixedType();
             }
@@ -61,6 +62,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         }
 
         $typeStrings = $scope->getType($arguments['type'])->getConstantStrings();
+
         if (count($typeStrings) !== 1) {
             return new MixedType();
         }
@@ -73,6 +75,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         }
 
         $nullable = false;
+
         if ($objectType->isNull()->maybe()) {
             $nullable = true;
             $objectType = $objectType->tryRemove(new NullType());
@@ -89,6 +92,7 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         if (in_array($type, [\Twig\Template::ANY_CALL], true)) {
             if ($objectType->hasProperty((string) $propertyOrMethod)->yes()) {
                 $property = $objectType->getProperty((string) $propertyOrMethod, $scope);
+
                 if ($property->isPublic()) {
                     // if ($nullable) {
                     //    return new UnionType([$property->getReadableType(), new NullType()]);

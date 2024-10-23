@@ -52,6 +52,7 @@ final class BaselineError implements Stringable
     public function __toString(): string
     {
         $message = $this->message;
+
         if ($this->identifier !== null) {
             $message = sprintf('%s (%s)', $message, $this->identifier);
         }

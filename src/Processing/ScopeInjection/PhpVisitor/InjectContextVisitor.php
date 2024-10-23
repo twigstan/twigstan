@@ -43,6 +43,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         }
 
         $phpDoc = $node->getDocComment();
+
         if ($phpDoc === null) {
             return null;
         }

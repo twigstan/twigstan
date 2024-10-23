@@ -30,6 +30,7 @@ final readonly class ErrorHelper
         );
 
         $versionSpecificErrorsFile = Path::join($directory, sprintf('errors.v%d.json', Environment::MAJOR_VERSION));
+
         if (file_exists($versionSpecificErrorsFile)) {
             $expectedErrors['errors'] = [
                 ...$expectedErrors['errors'],
@@ -65,6 +66,7 @@ final readonly class ErrorHelper
         $actualErrorsNotExpected = $actual['errors'];
         foreach ($expectedErrors['errors'] as $expectedError) {
             $key = array_search($expectedError, $actualErrorsNotExpected, true);
+
             if ($key !== false) {
                 unset($actualErrorsNotExpected[$key]);
 

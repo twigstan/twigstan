@@ -36,11 +36,13 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
         }
 
         $template = $this->getTemplateFromAttribute($node, $classReflection);
+
         if ($template === null) {
             return null;
         }
 
         $returnStatements = $node->getReturnStatements();
+
         if ($returnStatements === []) {
             return null;
         }
@@ -48,6 +50,7 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
         $data = [];
         foreach ($returnStatements as $returnStatement) {
             $returnNode = $returnStatement->getReturnNode();
+
             if ($returnNode->expr === null) {
                 continue;
             }
