@@ -83,6 +83,9 @@ final class ConfigBuilder
             // Therefore this is a non-issue in Twig templates.
             IgnoreError::identifier('foreach.valueOverwrite'),
 
+            // There is no try catch in twig files.
+            IgnoreError::identifier('missingType.checkedException'),
+
             // We cannot guarantee that a short arrow closure uses the context/macros/blocks variable.
             IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$context\.#', 'closure.unusedUse'),
             IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$macros\.#', 'closure.unusedUse'),
