@@ -7,10 +7,13 @@ namespace TwigStan\DependencyInjection;
 use InvalidArgumentException;
 use Nette\Bootstrap\Configurator;
 use Nette\DI\Container;
+use Nette\DI\Definitions\Statement;
 use RuntimeException;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\Config\ConfigBuilder;
 use TwigStan\Config\TwigStanConfig;
+use TwigStan\Error\BaselineError;
+use TwigStan\Error\IgnoreError;
 
 final readonly class ContainerFactory
 {
@@ -50,7 +53,6 @@ final readonly class ContainerFactory
             'currentWorkingDirectory' => $this->currentWorkingDirectory,
             'configurationFile' => $this->configurationFile,
             'tempDirectory' => $this->configuration->tempDirectory,
-            'baselineErrors' => $this->configuration->baselineErrors,
             'baselineFile' => $this->configuration->baselineFile,
             'reportUnmatchedIgnoredErrors' => $this->configuration->reportUnmatchedIgnoredErrors,
             'phpstanBinPath' => $this->configuration->phpstanBinPath,
@@ -61,8 +63,54 @@ final readonly class ContainerFactory
             'twigExcludes' => $this->configuration->twigExcludes,
             'phpPaths' => $this->configuration->phpPaths,
             'phpExcludes' => $this->configuration->phpExcludes,
-            'ignoreErrors' => $this->configuration->ignoreErrors,
             'twigContextCollectors' => $this->configuration->twigContextCollectors,
+            'baselineErrors' => array_map(
+                fn(BaselineError $error) => new Statement(
+                    BaselineError::class,
+                    [
+                        $error->message,
+                        $error->identifier,
+                        $error->path,
+                    ],
+                ),
+                $this->configuration->baselineErrors,
+            ),
+            'ignoreErrors' => array_map(
+                function (IgnoreError $error) {
+                    return match (true) {
+                        $error->message !== null && $error->identifier !== null && $error->path !== null => new Statement(
+                            sprintf('%s::create', IgnoreError::class),
+                            [$error->message, $error->identifier, $error->path],
+                        ),
+                        $error->message !== null && $error->identifier !== null && $error->path === null => new Statement(
+                            sprintf('%s::messageAndIdentifier', IgnoreError::class),
+                            [$error->message, $error->identifier],
+                        ),
+                        $error->message !== null && $error->identifier === null && $error->path === null => new Statement(
+                            sprintf('%s::message', IgnoreError::class),
+                            [$error->message],
+                        ),
+                        $error->message !== null && $error->identifier === null && $error->path !== null => new Statement(
+                            sprintf('%s::messageAndPath', IgnoreError::class),
+                            [$error->message, $error->path],
+                        ),
+                        $error->message === null && $error->identifier === null && $error->path !== null => new Statement(
+                            sprintf('%s::path', IgnoreError::class),
+                            [$error->path],
+                        ),
+                        $error->message === null && $error->identifier !== null && $error->path === null => new Statement(
+                            sprintf('%s::identifier', IgnoreError::class),
+                            [$error->identifier],
+                        ),
+                        $error->message === null && $error->identifier !== null && $error->path !== null => new Statement(
+                            sprintf('%s::identifierAndPath', IgnoreError::class),
+                            [$error->identifier, $error->path],
+                        ),
+                        default => throw new RuntimeException('Impossible to create IgnoreError statement.'),
+                    };
+                },
+                $this->configuration->ignoreErrors,
+            ),
         ]);
         $configurator->addDynamicParameters([
             'env' => getenv(),

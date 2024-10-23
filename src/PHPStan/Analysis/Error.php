@@ -8,6 +8,9 @@ use TwigStan\Twig\SourceLocation;
 
 final readonly class Error
 {
+    /**
+     * @param null|string $twigFile Absolute path to Twig file
+     */
     public function __construct(
         public string $message,
         public ?string $phpFile,
@@ -49,13 +52,13 @@ final readonly class Error
         );
     }
 
-    public function withTwigFileAndSourceLocation(string $fileName, SourceLocation $sourceLocation): self
+    public function withTwigFileAndSourceLocation(string $twigFile, SourceLocation $sourceLocation): self
     {
         return new self(
             $this->message,
             $this->phpFile,
             $this->phpLine,
-            $fileName,
+            $twigFile,
             $sourceLocation,
             $this->identifier,
             $this->tip,

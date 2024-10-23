@@ -9,10 +9,13 @@ use TwigStan\PHPStan\Analysis\Error;
 
 final class BaselineError implements Stringable
 {
+    /**
+     * @param string $path Absolute path to Twig file
+     */
     public function __construct(
-        public string $message,
-        public ?string $identifier,
-        public string $file,
+        public readonly string $message,
+        public readonly ?string $identifier,
+        public readonly string $path,
         public int $count = 1,
         public int $hits = 0,
     ) {}
@@ -36,7 +39,7 @@ final class BaselineError implements Stringable
             return false;
         }
 
-        if ($this->file !== $error->twigFile) {
+        if ($this->path !== $error->twigFile) {
             return false;
         }
 
@@ -57,6 +60,6 @@ final class BaselineError implements Stringable
             $message = sprintf('%s (%s)', $message, $this->identifier);
         }
 
-        return sprintf('%s in file %s', $message, $this->file);
+        return sprintf('%s in path %s', $message, $this->path);
     }
 }

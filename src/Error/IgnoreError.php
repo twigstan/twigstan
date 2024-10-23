@@ -9,11 +9,14 @@ use TwigStan\PHPStan\Analysis\Error;
 
 final class IgnoreError
 {
+    /**
+     * @param null|string $path Path to Twig file or directory. This can contain wildcards.
+     */
     private function __construct(
-        public ?string $message = null,
-        public ?string $identifier = null,
-        public ?string $path = null,
-        public int $hits = 0,
+        public readonly ?string $message = null,
+        public readonly ?string $identifier = null,
+        public readonly ?string $path = null,
+        private int $hits = 0,
     ) {
         if ($message !== null && @preg_match($message, '') === false) {
             throw new InvalidArgumentException(sprintf('Invalid pattern "%s".', $message));
@@ -35,6 +38,9 @@ final class IgnoreError
         return new self(identifier: $identifier);
     }
 
+    /**
+     * @param string $path Path to Twig file or directory. This can contain wildcards.
+     */
     public static function path(string $path): self
     {
         return new self(path: $path);
@@ -45,11 +51,17 @@ final class IgnoreError
         return new self(message: $message, identifier: $identifier);
     }
 
+    /**
+     * @param string $path Path to Twig file or directory. This can contain wildcards.
+     */
     public static function messageAndPath(string $message, string $path): self
     {
         return new self(message: $message, path: $path);
     }
 
+    /**
+     * @param string $path Path to Twig file or directory. This can contain wildcards.
+     */
     public static function identifierAndPath(string $identifier, string $path): self
     {
         return new self(identifier: $identifier, path: $path);
@@ -65,7 +77,7 @@ final class IgnoreError
             return false;
         }
 
-        if ($this->path !== null && ($error->sourceLocation === null || ! fnmatch($this->path, $error->sourceLocation->fileName, FNM_NOESCAPE))) {
+        if ($this->path !== null && ($error->twigFile === null || ! fnmatch($this->path, $error->twigFile, FNM_NOESCAPE))) {
             return false;
         }
 

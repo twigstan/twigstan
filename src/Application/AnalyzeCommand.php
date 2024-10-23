@@ -412,7 +412,7 @@ final class AnalyzeCommand extends Command
                 }
 
                 if ($error->twigFile === null) {
-                    throw new LogicException('Error without twigFile should not be present here.');
+                    throw new LogicException('Error without Twig file should not be present here.');
                 }
 
                 $errorsCount++;
