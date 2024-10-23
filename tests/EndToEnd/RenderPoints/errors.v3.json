@@ -5,6 +5,7 @@
         "tip": null,
         "twigSourceLocation": "simple.html.twig:8",
         "renderPoints": [
+            "CustomRenderPointController.php:17",
             "SimpleTemplateAttributeController.php:21"
         ]
     }
