@@ -28,6 +28,7 @@ final class AppendFilePathToLineCommentVisitor extends NodeVisitorAbstract
         foreach ($node->getComments() as $comment) {
             if (preg_match('#// line (?<line_number>\d+)+#', $comment->getText(), $matches) !== 1) {
                 $comments[] = $comment;
+
                 continue;
             }
 

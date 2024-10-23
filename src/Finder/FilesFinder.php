@@ -36,6 +36,7 @@ final class FilesFinder
         foreach ($this->paths as $path) {
             if (is_dir($path)) {
                 $directories[] = $path;
+
                 continue;
             }
 
@@ -45,6 +46,7 @@ final class FilesFinder
                     basename(Path::makeRelative($path, $this->currentWorkingDirectory)),
                     Path::makeRelative($path, $this->currentWorkingDirectory),
                 );
+
                 continue;
             }
 

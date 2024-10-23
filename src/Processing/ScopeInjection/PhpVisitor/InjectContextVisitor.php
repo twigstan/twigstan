@@ -89,6 +89,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
 
             if ($context === null) {
                 $context = $contextBeforeBlock['context'];
+
                 continue;
             }
 

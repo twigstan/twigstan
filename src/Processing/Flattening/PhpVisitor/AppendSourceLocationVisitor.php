@@ -30,6 +30,7 @@ final class AppendSourceLocationVisitor extends NodeVisitorAbstract
             $sourceLocation = CommentHelper::getSourceLocationFromComment($comment->getText());
             if ($sourceLocation === null) {
                 $comments[] = $comment;
+
                 continue;
             }
 

@@ -120,6 +120,7 @@ final readonly class TwigScopeInjector
 
                 if ($newContext === null) {
                     $newContext = $contextShape;
+
                     continue;
                 }
 

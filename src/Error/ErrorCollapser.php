@@ -22,6 +22,7 @@ final readonly class ErrorCollapser
         foreach ($errors as $error) {
             if ($error->sourceLocation === null) {
                 $collapsed[] = $error;
+
                 continue;
             }
 

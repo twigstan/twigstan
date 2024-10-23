@@ -28,7 +28,7 @@ return (new Config())
             'array_indentation' => true,
             'array_syntax' => ['syntax' => 'short'],
             'binary_operator_spaces' => true,
-            'blank_line_before_statement' => ['statements' => ['return']],
+            'blank_line_before_statement' => ['statements' => ['break', 'continue', 'declare', 'return', 'throw', 'try']],
             'blank_line_between_import_groups' => false,
             'braces_position' => ['allow_single_line_anonymous_functions' => true, 'allow_single_line_empty_anonymous_classes' => true],
             'cast_spaces' => true,

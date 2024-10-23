@@ -226,11 +226,13 @@ final class AnalyzeCommand extends Command
         foreach ($files as $file) {
             if ($file->getExtension() === 'php') {
                 $phpFileNames[] = $file->getRealPath();
+
                 continue;
             }
 
             if ($file->getExtension() === 'twig') {
                 $twigFileNames[] = $this->twigFileCanonicalizer->canonicalize($file->getRealPath());
+
                 continue;
             }
 

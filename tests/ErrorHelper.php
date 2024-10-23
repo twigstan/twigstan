@@ -67,6 +67,7 @@ final readonly class ErrorHelper
             $key = array_search($expectedError, $actualErrorsNotExpected, true);
             if ($key !== false) {
                 unset($actualErrorsNotExpected[$key]);
+
                 continue;
             }
 

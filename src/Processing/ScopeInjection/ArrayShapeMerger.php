@@ -43,6 +43,7 @@ final readonly class ArrayShapeMerger
                     $append ? $rightItem->optional : true,
                     $rightItem->valueType,
                 );
+
                 continue;
             }
 
@@ -52,6 +53,7 @@ final readonly class ArrayShapeMerger
                     $append ? $leftItem->optional : true,
                     $leftItem->valueType,
                 );
+
                 continue;
             }
 
