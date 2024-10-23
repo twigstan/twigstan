@@ -86,6 +86,10 @@ final class ConfigBuilder
             // There is no try catch in twig files.
             IgnoreError::identifier('missingType.checkedException'),
 
+            // MissingType error does not make sens on auto generated files.
+            IgnoreError::identifier('missingType.parameter'),
+            IgnoreError::identifier('missingType.return'),
+
             // We cannot guarantee that a short arrow closure uses the context/macros/blocks variable.
             IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$context\.#', 'closure.unusedUse'),
             IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$macros\.#', 'closure.unusedUse'),
