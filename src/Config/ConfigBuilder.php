@@ -22,6 +22,7 @@ final class ConfigBuilder
     private ?string $phpstanConfigurationFile = null;
     private null | false | string $phpstanMemoryLimit = null;
     private ?string $twigEnvironmentLoader = null;
+
     /**
      * @var list<class-string<TemplateContextCollector<Node>>>
      */

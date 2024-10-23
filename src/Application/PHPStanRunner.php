@@ -60,6 +60,7 @@ final readonly class PHPStanRunner
         ];
 
         $services = [];
+
         if ($collectOnly) {
             $parameters['level'] = null;
             $parameters['customRulesetUsed'] = true;
