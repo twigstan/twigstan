@@ -121,57 +121,39 @@ final class AnalyzeCommand extends Command
             }
 
             if ($error->phpFile !== null && $error->phpLine !== null) {
-                $errorOutput->writeln(
+                $errorOutput->write('🐘 ');
+                $errorOutput->writeln($this->linkify(
+                    $error->phpFile,
                     sprintf(
-                        '🐘 <href=%s>%s:%d</>',
-                        str_replace(
-                            ['%file%', '%line%'],
-                            [$error->phpFile, $error->phpLine],
-                            'phpstorm://open?file=%file%&line=%line%',
+                        'compiled_%s.php',
+                        preg_replace(
+                            '/(\.html)?\.twig\.\w+\.php$/',
+                            '',
+                            Path::getDirectory($error->phpFile),
                         ),
-                        sprintf(
-                            'compiled_%s.php',
-                            preg_replace(
-                                '/(\.html)?\.twig\.\w+\.php$/',
-                                '',
-                                basename($error->phpFile),
-                            ),
-                        ),
-                        $error->phpLine,
                     ),
-                );
+                    $error->phpLine,
+                ));
             }
 
             if ($error->twigSourceLocation !== null) {
                 foreach ($error->twigSourceLocation as $sourceLocation) {
-                    $errorOutput->writeln(
-                        sprintf(
-                            '🌱 <href=%s>%s:%d</>',
-                            str_replace(
-                                ['%file%', '%line%'],
-                                [$sourceLocation->fileName, $sourceLocation->lineNumber],
-                                'phpstorm://open?file=%file%&line=%line%',
-                            ),
-                            Path::makeRelative($sourceLocation->fileName, $this->currentWorkingDirectory),
-                            $sourceLocation->lineNumber,
-                        ),
-                    );
+                    $errorOutput->write('🌱 ');
+                    $errorOutput->writeln($this->linkify(
+                        $sourceLocation->fileName,
+                        Path::makeRelative($sourceLocation->fileName, $this->currentWorkingDirectory),
+                        $sourceLocation->lineNumber,
+                    ));
                 }
             }
 
             foreach ($error->renderPoints as $renderPoint) {
-                $errorOutput->writeln(
-                    sprintf(
-                        '🎯 <href=%s>%s:%d</>',
-                        str_replace(
-                            ['%file%', '%line%'],
-                            [$renderPoint->fileName, $renderPoint->lineNumber],
-                            'phpstorm://open?file=%file%&line=%line%',
-                        ),
-                        Path::makeRelative($renderPoint->fileName, $this->currentWorkingDirectory),
-                        $renderPoint->lineNumber,
-                    ),
-                );
+                $errorOutput->write('🎯 ');
+                $errorOutput->writeln($this->linkify(
+                    $renderPoint->fileName,
+                    Path::makeRelative($renderPoint->fileName, $this->currentWorkingDirectory),
+                    $renderPoint->lineNumber,
+                ));
             }
 
             $errorOutput->writeln('');
@@ -517,5 +499,23 @@ final class AnalyzeCommand extends Command
         }
 
         return $result;
+    }
+
+    private function linkify(string $fileName, string $relativeFileName, int $lineNumber): string
+    {
+        if (isset($_SERVER['TERMINAL_EMULATOR']) && $_SERVER['TERMINAL_EMULATOR'] === 'JetBrains-JediTerm') {
+            return sprintf('file://%s:%d', $fileName, $lineNumber);
+        }
+
+        return sprintf(
+            '<href=%s>%s:%d</>',
+            str_replace(
+                ['%file%', '%line%'],
+                [$fileName, $lineNumber],
+                'phpstorm://open?file=%file%&line=%line%',
+            ),
+            $relativeFileName,
+            $lineNumber,
+        );
     }
 }
