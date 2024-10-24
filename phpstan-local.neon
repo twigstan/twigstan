@@ -1,0 +1,16 @@
+includes:
+	- phpstan.neon
+parameters:
+	todo_by:
+		ticket:
+			enabled: true
+			tracker: github
+services:
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
+		tags:
+			- phpstan.functionParameterOutTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetAttributeReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
