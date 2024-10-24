@@ -6,6 +6,7 @@ namespace TwigStan\Application;
 
 use Nette\Neon\Neon;
 use PhpParser\Node;
+use ReflectionClass;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -45,11 +46,25 @@ final readonly class PHPStanRunner
         $configFile = Path::join($this->tempDirectory, $collectOnly ? 'phpstan-collect-only.neon' : 'phpstan.neon');
         $analysisResultJsonFile = Path::join($this->tempDirectory, 'phpstan', $collectOnly ? 'collect-only-analysis-result.json' : 'analysis-result.json');
 
+        $services = [];
+
+        if ($collectOnly) {
+            foreach ($this->twigContextCollectors as $className) {
+                $reflection = new ReflectionClass($className);
+
+                $services[$reflection->getFileName()] = [
+                    'class' => $className,
+                    'tags' => ['phpstan.collector'],
+                ];
+            }
+        }
+
         $parameters = [
             'tmpDir' => Path::join($this->tempDirectory, 'phpstan'),
             'resultCachePath' => Path::join($this->tempDirectory, 'phpstan', $collectOnly ? 'collect-only-resultCache.php' : 'resultCache.php'),
             'paths!' => [
                 ...$pathsToAnalyze,
+                ...array_keys($services),
             ],
             'twigstan' => [
                 'twigEnvironmentLoader' => $environmentLoader,
@@ -59,18 +74,9 @@ final readonly class PHPStanRunner
             ],
         ];
 
-        $services = [];
-
         if ($collectOnly) {
             $parameters['level'] = null;
             $parameters['customRulesetUsed'] = true;
-
-            foreach ($this->twigContextCollectors as $className) {
-                $services[] = [
-                    'class' => $className,
-                    'tags' => ['phpstan.collector'],
-                ];
-            }
         }
 
         $this->filesystem->dumpFile(
@@ -81,7 +87,7 @@ final readonly class PHPStanRunner
                     Path::join(dirname(__DIR__, 2), 'config/phpstan.neon'),
                 ],
                 'parameters' => $parameters,
-                'services' => $services,
+                'services' => array_values($services),
             ], true),
         );
 
