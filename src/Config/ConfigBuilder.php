@@ -82,6 +82,9 @@ final class ConfigBuilder
             // It's perfectly fine to do `if(var)` in Twig.
             IgnoreError::identifier('if.condNotBoolean'),
 
+            // It's perfectly fine to do `var ?: default` in Twig.
+            IgnoreError::identifier('ternary.shortNotAllowed'),
+
             // The context is backed up before a loop and restored after it.
             // Therefore this is a non-issue in Twig templates.
             IgnoreError::identifier('foreach.valueOverwrite'),

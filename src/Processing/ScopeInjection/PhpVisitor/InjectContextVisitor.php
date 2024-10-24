@@ -54,24 +54,27 @@ final class InjectContextVisitor extends NodeVisitorAbstract
                 $match['parent'] !== '',
             );
 
-            $context = $this->arrayShapeMerger->merge(
-                $this->contextFromTemplateRender,
-                $contextBeforeBlock,
-                true,
-            );
+            $context = $contextBeforeBlock;
         } elseif ($node->name->name === 'main') {
             $context = $this->contextFromTemplateRender;
         } else {
             return null;
         }
 
-        $node->setDocComment(new Doc(
-            str_replace(
-                'array{} $context',
-                sprintf('%s $context', (new Printer())->print($context)),
-                $phpDoc->getText(),
+        $node->setDocComment(
+            new Doc(
+                sprintf(
+                    <<<'DOC'
+                        /**
+                         * @param %s $context
+                         * @param array{} $blocks
+                         * @return iterable<null|scalar|\Stringable>
+                         */
+                        DOC,
+                    (new Printer())->print($context),
+                ),
             ),
-        ));
+        );
 
         return $node;
     }

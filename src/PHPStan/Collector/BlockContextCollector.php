@@ -76,7 +76,7 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
         return [
             'blockName' => $blockName,
             'sourceLocation' => $sourceLocation,
-            'context' => (new Printer())->print($context->toPhpDocNode()), // or this?: $context->describe(VerbosityLevel::cache()),
+            'context' => (new Printer())->print($context->toPhpDocNode()),
             'parent' => $node->expr->name->name === 'yieldParentBlock',
         ];
     }

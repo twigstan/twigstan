@@ -9,6 +9,7 @@ use PhpParser\Comment\Doc;
 use PhpParser\Modifiers;
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\PhpDocParser\Printer\Printer;
 use TwigStan\Processing\Compilation\TwigGlobalsToPhpDoc;
 use TwigStan\Twig\SimplifiedTwigTemplate;
 
@@ -56,22 +57,16 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                         sprintf(
                             <<<'DOC'
                                 /**
-                                 * @param %s $__twigstan_globals
-                                 * @param array{} $context
+                                 * @param %s $context
                                  * @param array{} $blocks
                                  * @return iterable<null|scalar|\Stringable>
                                  */
                                 DOC,
-                            $this->twigGlobalsToPhpDoc->getGlobals(),
+                            (new Printer())->print($this->twigGlobalsToPhpDoc->getGlobals()),
                         ),
                     ));
                     $node->name = new Node\Identifier('main');
                     $node->params = [
-                        new Node\Param(
-                            new Node\Expr\Variable('__twigstan_globals'),
-                            null,
-                            new Node\Identifier('array'),
-                        ),
                         new Node\Param(
                             new Node\Expr\Variable('context'),
                             null,
@@ -85,30 +80,6 @@ final class ReplaceWithSimplifiedTwigTemplateVisitor extends NodeVisitorAbstract
                     ];
                     $node->returnType = new Node\Identifier('iterable');
                     $node->flags = ($node->flags & ~Modifiers::PROTECTED) | Modifiers::PUBLIC;
-
-                    $node->stmts = [
-                        // Add: $context = array_merge($__twigstan_globals, $context);
-                        new Node\Stmt\Expression(
-                            new Node\Expr\Assign(
-                                new Node\Expr\Variable('context'),
-                                new Node\Expr\FuncCall(
-                                    new Node\Name('array_merge'),
-                                    [
-                                        new Node\Arg(new Node\Expr\Variable('__twigstan_globals')),
-                                        new Node\Arg(new Node\Expr\Variable('context')),
-                                    ],
-                                ),
-                            ),
-                        ),
-
-                        // Add: unset($__twigstan_globals);
-                        new Node\Stmt\Unset_(
-                            [
-                                new Node\Expr\Variable('__twigstan_globals'),
-                            ],
-                        ),
-                        ...$node->stmts ?? [],
-                    ];
 
                     return $node;
                 }
