@@ -12,8 +12,8 @@ final class RefactorLoopClosureVisitor extends NodeVisitorAbstract
 {
     public function enterNode(Node $node): ?Node
     {
-        // Find: yield from ($__internal_compile_1 = function ($iterator, &$context, $blocks, $recurseFunc, $depth) {
-        // Replace: yield from ($__internal_compile_1 = function ($iterator, $__context, $blocks, $recurseFunc, $depth) use (&$context) {
+        // Find: yield from ($_v1 = function ($iterator, &$context, $blocks, $recurseFunc, $depth) {
+        // Replace: yield from ($_v1 = function ($iterator, $__context, $blocks, $recurseFunc, $depth) use (&$context) {
 
         if ( ! $node instanceof Node\Expr\YieldFrom) {
             return null;
@@ -37,7 +37,7 @@ final class RefactorLoopClosureVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if ( ! str_starts_with($funcCall->name->var->name, '__internal_compile_')) {
+        if ( ! str_starts_with($funcCall->name->var->name, '_v')) {
             return null;
         }
 

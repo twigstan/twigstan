@@ -25,11 +25,15 @@ final class AssertTypeNode extends Node
     {
         $compiler
             ->addDebugInfo($this)
+            ->write("\PHPStan\Testing\assertType(\n")
+            ->indent()
+            ->write('')
+            ->repr($this->getAttribute('expectedType'))
+            ->raw(",\n")
             ->write("// @phpstan-ignore offsetAccess.notFound\n")
-            ->write('\PHPStan\Testing\assertType(')
-            ->string($this->getAttribute('expectedType'))
-            ->raw(', ')
-            ->subcompile($this->getNode('name'))
-            ->raw(");\n");
+            ->subcompile($this->getNode('name'), false)
+            ->write("\n")
+            ->outdent()
+            ->write(");\n");
     }
 }

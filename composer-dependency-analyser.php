@@ -31,4 +31,8 @@ $config->ignoreErrorsOnPackagesAndPaths(
 
 $config->addPathRegexToExclude('#\.twigstan/#');
 
+$config->ignoreUnknownClasses([
+    Twig\Node\Expression\Variable\ContextVariable::class,
+]);
+
 return $config;

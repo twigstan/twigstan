@@ -13,6 +13,7 @@ use Twig\Node\Expression\ConditionalExpression;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\NameExpression;
 use Twig\Node\Expression\ParentExpression;
+use Twig\Node\Expression\Variable\ContextVariable;
 use Twig\Node\Node;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 use TwigStan\Twig\Node\NodeFinder;
@@ -98,7 +99,8 @@ final readonly class MetadataAnalyzer
             return [$node->getAttribute('value')];
         }
 
-        if ($node instanceof NameExpression) {
+        // @phpstan-ignore class.notFound
+        if ($node instanceof NameExpression || $node instanceof ContextVariable) {
             return [];
         }
 
