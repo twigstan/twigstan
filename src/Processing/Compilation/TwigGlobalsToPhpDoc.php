@@ -8,23 +8,20 @@ use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
-use PHPStan\PhpDocParser\Printer\Printer;
 use Twig\Environment;
 
 final class TwigGlobalsToPhpDoc
 {
-    private string $globals;
+    private ArrayShapeNode $globals;
 
     public function __construct(private Environment $twig) {}
 
-    public function getGlobals(): string
+    public function getGlobals(): ArrayShapeNode
     {
-        $this->globals ??= $this->generateGlobals();
-
-        return $this->globals;
+        return $this->globals ??= $this->generateGlobals();
     }
 
-    private function generateGlobals(): string
+    private function generateGlobals(): ArrayShapeNode
     {
         $globals = [];
         foreach ($this->twig->getGlobals() as $name => $value) {
@@ -41,8 +38,6 @@ final class TwigGlobalsToPhpDoc
             );
         }
 
-        $node = new ArrayShapeNode($globals);
-
-        return (new Printer())->print($node);
+        return new ArrayShapeNode($globals);
     }
 }

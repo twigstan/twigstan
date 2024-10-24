@@ -23,6 +23,7 @@ use TwigStan\PHP\StrictPhpParser;
 use TwigStan\PHPStan\Analysis\CollectedData;
 use TwigStan\PHPStan\Collector\BlockContextCollector;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
+use TwigStan\Processing\Compilation\TwigGlobalsToPhpDoc;
 use TwigStan\Processing\Flattening\FlatteningResultCollection;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
@@ -38,6 +39,7 @@ final readonly class TwigScopeInjector
         private StrictPhpParser $phpParser,
         private ArrayShapeMerger $arrayShapeMerger,
         private TwigFileCanonicalizer $twigFileCanonicalizer,
+        private TwigGlobalsToPhpDoc $twigGlobalsToPhpDoc,
     ) {}
 
     /**
@@ -143,7 +145,11 @@ final readonly class TwigScopeInjector
                 $this->phpParser->parseFile($flatteningResult->phpFile),
                 new NameResolver(),
                 new InjectContextVisitor(
-                    $templateRenderContext[$flatteningResult->twigFileName] ?? new ArrayShapeNode([]),
+                    $this->arrayShapeMerger->merge(
+                        $this->twigGlobalsToPhpDoc->getGlobals(),
+                        $templateRenderContext[$flatteningResult->twigFileName] ?? new ArrayShapeNode([]),
+                        true,
+                    ),
                     $contextBeforeBlockRelatedToTemplate,
                     $this->arrayShapeMerger,
                 ),
