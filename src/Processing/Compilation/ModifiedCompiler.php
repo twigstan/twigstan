@@ -16,6 +16,7 @@ final class ModifiedCompiler extends Compiler
 
     public function addDebugInfo(Node $node): self
     {
+        // TODO: twig/twig:v3.15.0 Remove NameExpression check and bump minimum required Twig version to 3.15
         // @phpstan-ignore class.notFound
         if ($node instanceof NameExpression || $node instanceof ContextVariable) {
             return $this;

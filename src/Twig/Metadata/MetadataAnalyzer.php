@@ -99,6 +99,7 @@ final readonly class MetadataAnalyzer
             return [$node->getAttribute('value')];
         }
 
+        // TODO: twig/twig:v3.15.0 Remove NameExpression check and bump minimum required Twig version to 3.15
         // @phpstan-ignore class.notFound
         if ($node instanceof NameExpression || $node instanceof ContextVariable) {
             return [];
