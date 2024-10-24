@@ -15,12 +15,3 @@ parameters:
 	dynamicConstantNames:
 		- Twig\Environment::MAJOR_VERSION
 		- Twig\Environment::VERSION_ID
-services:
-	-
-		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
-		tags:
-			- phpstan.functionParameterOutTypeExtension
-	-
-		class: TwigStan\PHPStan\DynamicReturnType\GetAttributeReturnType
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension

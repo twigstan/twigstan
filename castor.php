@@ -29,16 +29,20 @@ function phpunit(
     return exit_code(['vendor/bin/phpunit', ...$rawTokens]);
 }
 
-#[AsTask(name: 'phpstan', aliases: ['stan'], ignoreValidationErrors: true)]
+#[AsTask(name: 'phpstan', aliases: ['stan'])]
 function phpstan(
-    #[AsRawTokens]
-    array $rawTokens = [],
+    #[AsOption(mode: InputOption::VALUE_NEGATABLE)]
+    bool $local = true,
 ): int {
     if ( ! fs()->exists('vendor')) {
         composer_install();
     }
 
-    return exit_code(['vendor/bin/phpstan', '--ansi', ...$rawTokens]);
+    return exit_code([
+        'vendor/bin/phpstan',
+        '--ansi',
+        sprintf('--configuration=%s', $local ? 'phpstan-local.neon' : 'phpstan.neon'),
+    ]);
 }
 
 #[AsTask(name: 'php-cs-fixer', aliases: ['code-style', 'cs', 'fmt'])]
