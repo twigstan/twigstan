@@ -16,18 +16,12 @@ use Twig\Node\ModuleNode;
 use TwigStan\PHP\PrettyPrinter;
 use TwigStan\PHP\StrictPhpParser;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
+use TwigStan\Processing\Compilation\PhpVisitor\AddTypeCommentsToTemplateVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AppendFilePathToLineCommentVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoadTemplateYieldVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\MakeFinalVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RefactorStaticMacroCallVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RefactorYieldBlockVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportMacroVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RemoveParentYieldVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RemoveUnwrapVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\ReplaceExtensionsArrayDimFetchToMethodCallVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\ReplaceWithSimplifiedTwigTemplateVisitor;
 
 final readonly class TwigCompiler
 {
@@ -66,17 +60,11 @@ final readonly class TwigCompiler
         $stmts = $this->applyVisitors(
             $stmts,
             new NameResolver(),
+            new MakeFinalVisitor(),
             new AppendFilePathToLineCommentVisitor($template->getSourceContext()->getName()),
             new RemoveImportsVisitor(),
-            new ReplaceWithSimplifiedTwigTemplateVisitor($this->twigGlobalsToPhpDoc),
-            new RemoveUnwrapVisitor(),
-            new RefactorYieldBlockVisitor(),
-            new RemoveImportMacroVisitor(),
-            new RefactorStaticMacroCallVisitor(),
-            new RefactorLoadTemplateYieldVisitor(),
-            new RemoveParentYieldVisitor(),
+            new AddTypeCommentsToTemplateVisitor($this->twigGlobalsToPhpDoc),
             new IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor(),
-            new ReplaceExtensionsArrayDimFetchToMethodCallVisitor(),
             ...(Environment::MAJOR_VERSION >= 4 ? [new RefactorLoopClosureVisitor()] : []),
         );
 

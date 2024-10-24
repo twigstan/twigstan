@@ -24,31 +24,59 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
      */
     public function leaveNode(Node $node): ?array
     {
-        // Find: yield from $this->yieldTemplate($context, "@EndToEnd/_layout.twig", "@EndToEnd/case5.twig", 1);
+        // Find: $this->parent = $this->loadTemplate("@EndToEnd/Inheritance/_layout.twig", "@__main__/EndToEnd/Inheritance/case5.twig", 1);
 
         if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
         }
 
-        if ( ! $node->expr instanceof Node\Expr\YieldFrom) {
+        if ( ! $node->expr instanceof Node\Expr\Assign) {
             return null;
         }
 
-        $expr = $node->expr->expr;
+        $assign = $node->expr;
 
-        if ( ! $expr instanceof Node\Expr\MethodCall) {
+        if ( ! $assign->var instanceof Node\Expr\PropertyFetch) {
             return null;
         }
 
-        if ( ! $expr->name instanceof Node\Identifier) {
+        if ( ! $assign->var->var instanceof Node\Expr\Variable) {
             return null;
         }
 
-        if ($expr->name->name !== 'yieldTemplate') {
+        if ($assign->var->var->name !== 'this') {
             return null;
         }
 
-        if (count($expr->args) !== 4) {
+        if ( ! $assign->var->name instanceof Node\Identifier) {
+            return null;
+        }
+
+        if ($assign->var->name->name !== 'parent') {
+            return null;
+        }
+
+        if ( ! $assign->expr instanceof Node\Expr\MethodCall) {
+            return null;
+        }
+
+        if ( ! $assign->expr->var instanceof Node\Expr\Variable) {
+            return null;
+        }
+
+        if ($assign->expr->var->name !== 'this') {
+            return null;
+        }
+
+        if ( ! $assign->expr->name instanceof Node\Identifier) {
+            return null;
+        }
+
+        if ($assign->expr->name->name !== 'loadTemplate') {
+            return null;
+        }
+
+        if (count($assign->expr->args) !== 3) {
             return null;
         }
 
@@ -61,6 +89,9 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new AppendSourceLocationVisitor($sourceLocation));
 
-        return $traverser->traverse($this->stmts);
+        return [
+            $node,
+            ...$traverser->traverse($this->stmts),
+        ];
     }
 }
