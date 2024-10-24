@@ -1,0 +1,122 @@
+<?php
+
+declare(strict_types=1);
+
+namespace TwigStan\Processing\Compilation\PhpVisitor;
+
+use PhpParser\Comment\Doc;
+use PhpParser\Node;
+use PhpParser\NodeVisitorAbstract;
+use PHPStan\PhpDocParser\Printer\Printer;
+use TwigStan\Processing\Compilation\TwigGlobalsToPhpDoc;
+
+final class AddTypeCommentsToTemplateVisitor extends NodeVisitorAbstract
+{
+    public function __construct(
+        private TwigGlobalsToPhpDoc $twigGlobalsToPhpDoc,
+    ) {}
+
+    public function leaveNode(Node $node): ?Node
+    {
+        if ( ! $node instanceof Node\Stmt\Class_) {
+            return null;
+        }
+
+        if ($node->name === null) {
+            return null;
+        }
+
+        $node->stmts = array_map(
+            function ($node) {
+                if ($node instanceof Node\Stmt\Property) {
+                    if ($node->props[0]->name->name === 'macros') {
+                        $node->setDocComment(new Doc(
+                            <<<'DOC'
+                                /**
+                                 * @var array<string, \Twig\Template>
+                                 */
+                                DOC,
+                        ));
+
+                        return $node;
+                    }
+                }
+
+                if ( ! $node instanceof Node\Stmt\ClassMethod) {
+                    return $node;
+                }
+
+                if ($node->name->name === '__construct') {
+                    // TODO: twigphp/Twig#4416 Remove when PR is merged and tagged
+                    $node->stmts = [
+                        new Node\Stmt\Expression(
+                            new Node\Expr\Assign(
+                                new Node\Expr\Variable('macros'),
+                                new Node\Expr\PropertyFetch(
+                                    new Node\Expr\Variable('this'),
+                                    'macros',
+                                ),
+                            ),
+                        ),
+                        ...$node->stmts ?? [],
+                    ];
+                }
+
+                if ($node->name->name === 'doDisplay') {
+                    $node->setDocComment(new Doc(
+                        sprintf(
+                            <<<'DOC'
+                                /**
+                                 * @param %s $context
+                                 * @param array{} $blocks
+                                 * @return iterable<null|scalar|\Stringable>
+                                 */
+                                DOC,
+                            (new Printer())->print($this->twigGlobalsToPhpDoc->getGlobals()),
+                        ),
+                    ));
+
+                    $node->stmts[] = new Node\Stmt\Expression(
+                        new Node\Expr\YieldFrom(
+                            new Node\Expr\Array_(),
+                        ),
+                    );
+
+                    return $node;
+                }
+
+                if (str_starts_with($node->name->name, 'block_')) {
+                    $node->setDocComment(new Doc(
+                        <<<'DOC'
+                            /**
+                             * @param array{} $context
+                             * @param array{} $blocks
+                             * @return iterable<null|scalar|\Stringable>
+                             */
+                            DOC,
+                    ));
+
+                    return $node;
+                }
+
+                // TODO: twig/twig:v3.15.0 This is no longer needed.
+                if ($node->name->name === 'getDebugInfo') {
+                    $node->setDocComment(new Doc(
+                        <<<'DOC'
+                            /**
+                             * @return array<int, int>
+                             */
+                            DOC,
+                    ));
+
+                    return $node;
+                }
+
+                return $node;
+            },
+            $node->stmts,
+        );
+
+        return $node;
+    }
+}

@@ -55,7 +55,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
             );
 
             $context = $contextBeforeBlock;
-        } elseif ($node->name->name === 'main') {
+        } elseif ($node->name->name === 'doDisplay') {
             $context = $this->contextFromTemplateRender;
         } else {
             return null;
