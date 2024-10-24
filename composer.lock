@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "60c3c9a3c2b896d69577b08d9eac3157",
+    "content-hash": "e8c046c1b73a8d9836bb62f57ce612ea",
     "packages": [
         {
             "name": "nette/bootstrap",
@@ -1724,6 +1724,73 @@
     ],
     "packages-dev": [
         {
+            "name": "beberlei/assert",
+            "version": "v3.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/beberlei/assert.git",
+                "reference": "cb70015c04be1baee6f5f5c953703347c0ac1655"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/beberlei/assert/zipball/cb70015c04be1baee6f5f5c953703347c0ac1655",
+                "reference": "cb70015c04be1baee6f5f5c953703347c0ac1655",
+                "shasum": ""
+            },
+            "require": {
+                "ext-ctype": "*",
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "ext-simplexml": "*",
+                "php": "^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "*",
+                "phpstan/phpstan": "*",
+                "phpunit/phpunit": ">=6.0.0",
+                "yoast/phpunit-polyfills": "^0.1.0"
+            },
+            "suggest": {
+                "ext-intl": "Needed to allow Assertion::count(), Assertion::isCountable(), Assertion::minCount(), and Assertion::maxCount() to operate on ResourceBundles"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "lib/Assert/functions.php"
+                ],
+                "psr-4": {
+                    "Assert\\": "lib/Assert"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Richard Quadling",
+                    "email": "rquadling@gmail.com",
+                    "role": "Collaborator"
+                }
+            ],
+            "description": "Thin assertion library for input validation in business models.",
+            "keywords": [
+                "assert",
+                "assertion",
+                "validation"
+            ],
+            "support": {
+                "issues": "https://github.com/beberlei/assert/issues",
+                "source": "https://github.com/beberlei/assert/tree/v3.3.2"
+            },
+            "time": "2021-12-16T21:41:27+00:00"
+        },
+        {
             "name": "clue/ndjson-react",
             "version": "v1.3.0",
             "source": {
@@ -2936,6 +3003,67 @@
                 }
             ],
             "time": "2024-06-12T14:39:25+00:00"
+        },
+        {
+            "name": "nikolaposa/version",
+            "version": "4.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nikolaposa/version.git",
+                "reference": "003fefa14f47cd44917546285e39d196af062a95"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nikolaposa/version/zipball/003fefa14f47cd44917546285e39d196af062a95",
+                "reference": "003fefa14f47cd44917546285e39d196af062a95",
+                "shasum": ""
+            },
+            "require": {
+                "beberlei/assert": "^3.2",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.44",
+                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan-beberlei-assert": "^1.1",
+                "phpstan/phpstan-phpunit": "^1.3",
+                "phpunit/phpunit": "^10.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Version\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nikola Poša",
+                    "email": "posa.nikola@gmail.com",
+                    "homepage": "https://www.nikolaposa.in.rs"
+                }
+            ],
+            "description": "Value Object that represents a SemVer-compliant version number.",
+            "homepage": "https://github.com/nikolaposa/version",
+            "keywords": [
+                "semantic",
+                "semver",
+                "version",
+                "versioning"
+            ],
+            "support": {
+                "issues": "https://github.com/nikolaposa/version/issues",
+                "source": "https://github.com/nikolaposa/version/tree/4.2.0"
+            },
+            "time": "2023-12-29T22:07:54+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -5361,6 +5489,74 @@
                 "source": "https://github.com/shipmonk-rnd/composer-dependency-analyser/tree/1.7.0"
             },
             "time": "2024-08-08T08:12:32+00:00"
+        },
+        {
+            "name": "staabm/phpstan-todo-by",
+            "version": "0.1.32",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/staabm/phpstan-todo-by.git",
+                "reference": "81a55caa8af4451082c5688f9e69089275332d9a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/staabm/phpstan-todo-by/zipball/81a55caa8af4451082c5688f9e69089275332d9a",
+                "reference": "81a55caa8af4451082c5688f9e69089275332d9a",
+                "shasum": ""
+            },
+            "require": {
+                "composer-runtime-api": "^2",
+                "composer/semver": "^3.4",
+                "ext-curl": "*",
+                "ext-json": "*",
+                "nikolaposa/version": "^4.1",
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpstan": "^1.10"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.64",
+                "nikic/php-parser": "^4.0",
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan-deprecation-rules": "^1.2",
+                "phpunit/phpunit": "^9 || ^10.5",
+                "redaxo/php-cs-fixer-config": "^1.0"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "staabm\\PHPStanTodoBy\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "keywords": [
+                "PHPStan",
+                "comments",
+                "dev",
+                "expiration",
+                "phpstan-extension",
+                "static analysis"
+            ],
+            "support": {
+                "issues": "https://github.com/staabm/phpstan-todo-by/issues",
+                "source": "https://github.com/staabm/phpstan-todo-by/tree/0.1.32"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/staabm",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-10-08T10:08:28+00:00"
         },
         {
             "name": "symfony/cache",
