@@ -6,6 +6,7 @@ namespace TwigStan\Processing\Compilation\TwigVisitor;
 
 use Twig\Environment;
 use Twig\Node\Expression\NameExpression;
+use Twig\Node\Expression\Variable\ContextVariable;
 use Twig\Node\Node;
 use Twig\NodeVisitor\NodeVisitorInterface;
 
@@ -13,7 +14,8 @@ final readonly class MarkNameExpressionAsAlwaysDefinedVisitor implements NodeVis
 {
     public function enterNode(Node $node, Environment $env): Node
     {
-        if ($node::class !== NameExpression::class) {
+        // @phpstan-ignore class.notFound
+        if ($node::class !== (Environment::VERSION_ID <= 31400 ? NameExpression::class : ContextVariable::class)) {
             return $node;
         }
 

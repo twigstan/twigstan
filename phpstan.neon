@@ -14,6 +14,7 @@ parameters:
 		- stubs/functions.php
 	dynamicConstantNames:
 		- Twig\Environment::MAJOR_VERSION
+		- Twig\Environment::VERSION_ID
 services:
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
