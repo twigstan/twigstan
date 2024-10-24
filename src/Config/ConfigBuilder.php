@@ -79,6 +79,9 @@ final class ConfigBuilder
             // It's perfectly fine to do `a != b ? 'no' : 'yes'` in Twig.
             IgnoreError::identifier('notEqual.notAllowed'),
 
+            // It's perfectly fine to do `if(var)` in Twig.
+            IgnoreError::identifier('if.condNotBoolean'),
+
             // The context is backed up before a loop and restored after it.
             // Therefore this is a non-issue in Twig templates.
             IgnoreError::identifier('foreach.valueOverwrite'),
@@ -98,9 +101,11 @@ final class ConfigBuilder
             // When the variable that is passed does not exist, this produces an error.
             IgnoreError::messageAndIdentifier('#CoreExtension::ensureTraversable#', 'argument.templateType'),
 
-            // When the context has an array that is untyped, this produces an error.
+            // The context can contain anything, so we don't want to be strict here.
             IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'missingType.iterableValue'),
             IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'missingType.generics'),
+            IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'parameter.deprecatedClass'),
+            IgnoreError::messageAndIdentifier('#Parameter \$context of method __TwigTemplate_\w+::\w+\(\) has typehint#', 'parameter.deprecatedClass'),
 
             // Currently Dynamic Inheritance is not (yet) supported. Ignoring the errors for now.
             // @see https://github.com/twigstan/twigstan/issues/6
