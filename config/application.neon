@@ -63,7 +63,6 @@ services:
 	- TwigStan\Twig\Metadata\MetadataAnalyzer
 	- TwigStan\Twig\Metadata\MetadataRegistry
 	- TwigStan\Twig\Node\NodeFinder
-	- TwigStan\Twig\Node\NodeMapper
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
