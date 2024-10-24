@@ -7,6 +7,7 @@ namespace TwigStan\Processing\Compilation\TwigVisitor;
 use InvalidArgumentException;
 use Twig\Attribute\YieldReady;
 use Twig\Compiler;
+use Twig\Extension\CoreExtension;
 use Twig\Node\Expression\AbstractExpression;
 use Twig\Node\IncludeNode;
 
@@ -38,8 +39,8 @@ final class SimpleIncludeNode extends IncludeNode
 
     public function compile(Compiler $compiler): void
     {
-        $compiler->write('$this->include(')
-            ->raw('$context, ')
+        $compiler->write(sprintf('%s::include(', CoreExtension::class))
+            ->raw('$this->env, $context, ')
             ->subcompile($this->getNode('expr'))
             ->raw(', ');
 

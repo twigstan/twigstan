@@ -76,20 +76,4 @@ abstract class SimplifiedTwigTemplate
     ): mixed {
         return '';
     }
-
-    /**
-     * @param array<mixed> $context
-     * @param list<string>|string $template
-     * @param array<mixed> $variables
-     */
-    public function include(
-        array $context,
-        array | string $template,
-        array $variables = [],
-        bool $withContext = true,
-        bool $ignoreMissing = false,
-        bool $sandboxed = false,
-    ): string {
-        return '';
-    }
 }

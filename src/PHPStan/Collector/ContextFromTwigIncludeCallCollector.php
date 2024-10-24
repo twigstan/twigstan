@@ -7,27 +7,29 @@ namespace TwigStan\PHPStan\Collector;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
+use Twig\Extension\CoreExtension;
 
 /**
- * @implements TemplateContextCollector<Node\Expr\MethodCall>
+ * @implements TemplateContextCollector<Node\Expr\StaticCall>
  */
 final readonly class ContextFromTwigIncludeCallCollector implements TemplateContextCollector
 {
     public function getNodeType(): string
     {
-        return Node\Expr\MethodCall::class;
+        return Node\Expr\StaticCall::class;
     }
 
     public function processNode(Node $node, Scope $scope): ?array
     {
-        // Find: $this->include(\get_defined_vars(), "@EndToEnd/Include/footer.twig", [], \false, \false);
+        // Find: yield \Twig\Extension\CoreExtension::include($this->env, $context, "@EndToEnd/Include/footer.twig", ["title" => "Hello, World!"], \false);
 
-        if ( ! $node->var instanceof Node\Expr\Variable) {
+        if ( ! $node->class instanceof Node\Name\FullyQualified) {
             return null;
         }
 
-        if ($node->var->name !== 'this') {
+        if ($node->class->toString() !== CoreExtension::class) {
             return null;
         }
 
@@ -41,25 +43,25 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
 
         $args = $node->getArgs();
 
-        if (count($args) < 4) {
+        if (count($args) < 3) {
             return null;
         }
 
-        $context = $scope->getType($args[0]->value)->getConstantArrays();
+        $contexts = $scope->getType($args[1]->value)->getConstantArrays();
 
-        if (count($context) !== 1) {
+        if (count($contexts) !== 1) {
             return null;
         }
 
-        $context = $context[0];
+        $context = $contexts[0];
 
-        $templates = $scope->getType($args[1]->value)->getConstantStrings();
+        $templates = $scope->getType($args[2]->value)->getConstantStrings();
 
         if (count($templates) === 0) {
             return null;
         }
 
-        $variables = $scope->getType($args[2]->value)->getConstantArrays();
+        $variables = isset($args[3]) ? $scope->getType($args[3]->value)->getConstantArrays() : [new ConstantArrayType([], [])];
 
         if (count($variables) !== 1) {
             return null;
@@ -67,7 +69,7 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
 
         $variables = $variables[0];
 
-        $withContext = $scope->getType($args[3]->value)->isTrue()->yes();
+        $withContext = ! isset($args[4]) || $scope->getType($args[4]->value)->isTrue()->yes();
 
         if ($withContext) {
             $builder = ConstantArrayTypeBuilder::createFromConstantArray($context);

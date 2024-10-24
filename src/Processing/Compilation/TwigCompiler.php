@@ -20,7 +20,6 @@ use TwigStan\Processing\Compilation\PhpVisitor\AppendFilePathToLineCommentVisito
 use TwigStan\Processing\Compilation\PhpVisitor\IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoadTemplateYieldVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
-use TwigStan\Processing\Compilation\PhpVisitor\RefactorStaticIncludeCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorStaticMacroCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorYieldBlockVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportMacroVisitor;
@@ -72,7 +71,6 @@ final readonly class TwigCompiler
             new ReplaceWithSimplifiedTwigTemplateVisitor($this->twigGlobalsToPhpDoc),
             new RemoveUnwrapVisitor(),
             new RefactorYieldBlockVisitor(),
-            new RefactorStaticIncludeCallVisitor(),
             new RemoveImportMacroVisitor(),
             new RefactorStaticMacroCallVisitor(),
             new RefactorLoadTemplateYieldVisitor(),
