@@ -13,7 +13,7 @@ use TwigStan\Twig\CommentHelper;
 use TwigStan\Twig\SourceLocation;
 
 /**
- * @implements Collector<Node\Expr\YieldFrom, array{
+ * @implements Collector<Node\Stmt\Expression, array{
  *     blockName: string,
  *     sourceLocation: SourceLocation,
  *     context: string,
@@ -24,41 +24,45 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
 {
     public function getNodeType(): string
     {
-        return Node\Expr\YieldFrom::class;
+        return Node\Stmt\Expression::class;
     }
 
     public function processNode(Node $node, Scope $scope): ?array
     {
-        if ( ! $node->expr instanceof Node\Expr\MethodCall) {
+        if ( ! $node->expr instanceof Node\Expr\YieldFrom) {
             return null;
         }
 
-        if ( ! $node->expr->name instanceof Node\Identifier) {
+        if ( ! $node->expr->expr instanceof Node\Expr\MethodCall) {
             return null;
         }
 
-        if ( ! in_array($node->expr->name->name, ['yieldBlock', 'yieldParentBlock'], true)) {
+        if ( ! $node->expr->expr->name instanceof Node\Identifier) {
             return null;
         }
 
-        if (count($node->expr->args) < 2) {
+        if ( ! in_array($node->expr->expr->name->name, ['yieldBlock', 'yieldParentBlock'], true)) {
             return null;
         }
 
-        if ( ! $node->expr->args[0] instanceof Node\Arg) {
+        if (count($node->expr->expr->args) < 2) {
             return null;
         }
 
-        if ( ! $node->expr->args[0]->value instanceof Node\Scalar\String_) {
+        if ( ! $node->expr->expr->args[0] instanceof Node\Arg) {
             return null;
         }
 
-        if ( ! $node->expr->args[1] instanceof Node\Arg) {
+        if ( ! $node->expr->expr->args[0]->value instanceof Node\Scalar\String_) {
             return null;
         }
 
-        $blockName = $node->expr->args[0]->value->value;
-        $context = $scope->getVariableType('context');
+        if ( ! $node->expr->expr->args[1] instanceof Node\Arg) {
+            return null;
+        }
+
+        $blockName = $node->expr->expr->args[0]->value->value;
+        $context = $scope->getType($node->expr->expr->args[1]->value);
 
         $sourceLocation = null;
         foreach ($node->getComments() as $comment) {
@@ -77,7 +81,7 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             'blockName' => $blockName,
             'sourceLocation' => $sourceLocation,
             'context' => (new Printer())->print($context->toPhpDocNode()),
-            'parent' => $node->expr->name->name === 'yieldParentBlock',
+            'parent' => $node->expr->expr->name->name === 'yieldParentBlock',
         ];
     }
 }
