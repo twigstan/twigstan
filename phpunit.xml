@@ -1,38 +1,45 @@
-<?xml version="1.0"?>
-<phpunit
-    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    bootstrap="tests/bootstrap.php"
-    colors="true"
-    backupGlobals="false"
-    beStrictAboutChangesToGlobalState="true"
-    beStrictAboutOutputDuringTests="true"
-    beStrictAboutTestsThatDoNotTestAnything="true"
-    displayDetailsOnTestsThatTriggerWarnings="true"
-    displayDetailsOnTestsThatTriggerNotices="true"
-    displayDetailsOnTestsThatTriggerErrors="true"
-    displayDetailsOnTestsThatTriggerDeprecations="true"
-    displayDetailsOnSkippedTests="true"
-    displayDetailsOnIncompleteTests="true"
-    failOnRisky="true"
-    failOnWarning="true"
-    failOnDeprecation="true"
-    failOnPhpunitDeprecation="true"
-    failOnNotice="true"
-    failOnSkipped="true"
-    failOnIncomplete="true"
-    cacheDirectory=".phpunit.cache"
-    backupStaticProperties="false"
->
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         cacheDirectory=".phpunit.cache"
+         executionOrder="depends,defects"
+         shortenArraysForExportThreshold="10"
+         beStrictAboutOutputDuringTests="true"
+         displayDetailsOnPhpunitDeprecations="true"
+         failOnPhpunitDeprecation="true"
+         failOnRisky="true"
+         failOnWarning="true"
+         colors="true"
+         beStrictAboutChangesToGlobalState="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnSkippedTests="true"
+         displayDetailsOnIncompleteTests="true"
+         failOnDeprecation="true"
+         failOnNotice="true"
+         failOnSkipped="true"
+         failOnIncomplete="true">
     <testsuites>
         <testsuite name="TwigStan">
-            <directory suffix="Test.php">tests</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <logging/>
-    <source>
+
+    <source ignoreIndirectDeprecations="true"
+            restrictNotices="true"
+            restrictWarnings="true"
+            ignoreSuppressionOfDeprecations="true"
+            ignoreSuppressionOfPhpDeprecations="true"
+            ignoreSuppressionOfErrors="true"
+            ignoreSuppressionOfNotices="true"
+            ignoreSuppressionOfPhpNotices="true"
+            ignoreSuppressionOfWarnings="true"
+            ignoreSuppressionOfPhpWarnings="true">
         <include>
-            <directory suffix=".php">./src</directory>
+            <directory>src</directory>
         </include>
     </source>
 </phpunit>
