@@ -1,9 +1,9 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method TwigStan\\\\Twig\\\\Node\\\\NodeFinder\\:\\:findInstanceOf\\(\\) should return Twig\\\\Node\\\\Node\\|null but returns class\\-string\\<Twig\\\\Node\\\\Node\\>\\|Twig\\\\Node\\\\Node\\.$#"
+			message: "#^Creating new PHPStan\\\\Type\\\\Accessory\\\\AccessoryArrayListType is not covered by backward compatibility promise\\. The class might change in a minor PHPStan version\\.$#"
 			count: 1
-			path: src/Twig/Node/NodeFinder.php
+			path: src/PHPStan/DynamicReturnType/Filter/SplitReturnType.php
 
 		-
 			message: "#^Method TwigStan\\\\Twig\\\\TwigFileCanonicalizer\\:\\:findNamespacesWithinMainNamespace\\(\\) should return array\\<string, list\\<string\\>\\> but returns array\\<int\\|string, non\\-empty\\-list\\<string\\>\\>\\.$#"
