@@ -19,7 +19,7 @@
 > This is very experimental
 
 > [!NOTE]
-> This project requires a significant amount of my time and effort to develop. If you find it valuable, please consider [sponsoring me](https://github.com/sponsors/ruudk) to support its continued growth and give it a star! ⭐️ Your support is truly appreciated! 🙏
+> This project requires a significant amount of my time and effort to develop. If you find it valuable, please consider [sponsoring me](https://github.com/sponsors/twigstan) to support its continued growth and give it a star! ⭐️ Your support is truly appreciated! 🙏
 
 # Introduction
 
