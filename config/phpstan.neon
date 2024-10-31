@@ -7,7 +7,7 @@ parametersSchema:
 	twigstan: structure([
 		twigEnvironmentLoader: string()
 		analysisResultJsonFile: string()
-		collectOnly: bool()
+		mode: string()
 		debugMode: bool()
 	])
 services:
@@ -15,42 +15,5 @@ services:
 		class: TwigStan\PHPStan\AnalysisResultToJson
 		arguments:
 			jsonFile: %twigstan.analysisResultJsonFile%
-			collectOnly: %twigstan.collectOnly%
+			mode: %twigstan.mode%
 			debugMode: %twigstan.debugMode%
-	-
-		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
-		tags:
-			- phpstan.functionParameterOutTypeExtension
-	-
-		class: TwigStan\PHPStan\DynamicReturnType\GetAttributeReturnType
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
-	-
-		class: TwigStan\PHPStan\Collector\BlockContextCollector
-		tags:
-			- phpstan.collector
-	-
-		class: TwigStan\PHPStan\Collector\ContextFromControllerRenderMethodCallCollector
-		tags:
-			- phpstan.collector
-	-
-		class: TwigStan\PHPStan\Collector\ContextFromReturnedArrayWithTemplateAttributeCollector
-		tags:
-			- phpstan.collector
-	-
-		class: TwigStan\PHPStan\Collector\ContextFromTwigIncludeCallCollector
-		tags:
-			- phpstan.collector
-	-
-		class: TwigStan\PHPStan\Collector\ContextFromTwigRenderMethodCallCollector
-		tags:
-			- phpstan.collector
-	-
-		class: Twig\Environment
-		factory: @TwigStan\Twig\TwigFactory::create
-	- TwigStan\PHP\PhpDocToPhpStanTypeResolver
-	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
-	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.twigEnvironmentLoader%)
-	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
-	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
-	- TwigStan\Twig\TokenParser\DumpTypeTokenParser

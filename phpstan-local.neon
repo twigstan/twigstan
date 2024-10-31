@@ -1,5 +1,6 @@
 includes:
 	- phpstan.neon
+	- config/phpstan.extensions.neon
 parameters:
 	todo_by:
 		ticket:
@@ -7,10 +8,6 @@ parameters:
 			tracker: github
 services:
 	-
-		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
-		tags:
-			- phpstan.functionParameterOutTypeExtension
-	-
-		class: TwigStan\PHPStan\DynamicReturnType\GetAttributeReturnType
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+		class: Twig\Environment
+		factory: @TwigStan\Twig\TwigFactory::create
+	- TwigStan\Twig\TwigFactory(environmentLoader: 'tests/twig-loader.php')

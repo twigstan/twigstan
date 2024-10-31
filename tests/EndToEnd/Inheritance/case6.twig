@@ -1,5 +1,5 @@
-{% use "_layout.twig" %}
-{% use "_other.twig" with main as other_main %}
+{% use "@EndToEnd/Inheritance/_layout.twig" %}
+{% use "@EndToEnd/Inheritance/_other.twig" with main as other_main %}
 
 {% set subtitle = 'Hello' %}
 {% assert_type subtitle "'Hello'" %}

@@ -14,7 +14,7 @@ use TwigStan\Twig\SourceLocation;
 
 /**
  * @implements Collector<Node\Stmt\Expression, array{
- *     blockName: string,
+ *     blockName: null|string,
  *     sourceLocation: SourceLocation,
  *     context: string,
  *     parent: bool,
@@ -29,6 +29,8 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
 
     public function processNode(Node $node, Scope $scope): ?array
     {
+        // Find: yield from $this->unwrap()->yieldBlock('footer', $context, $blocks);
+
         if ( ! $node->expr instanceof Node\Expr\YieldFrom) {
             return null;
         }
@@ -41,7 +43,7 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             return null;
         }
 
-        if ( ! in_array($node->expr->expr->name->name, ['yieldBlock', 'yieldParentBlock'], true)) {
+        if ( ! in_array($node->expr->expr->name->name, ['yield', 'yieldBlock', 'yieldParentBlock'], true)) {
             return null;
         }
 
@@ -49,20 +51,32 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             return null;
         }
 
-        if ( ! $node->expr->expr->args[0] instanceof Node\Arg) {
-            return null;
-        }
+        $blockName = null;
 
-        if ( ! $node->expr->expr->args[0]->value instanceof Node\Scalar\String_) {
-            return null;
-        }
+        if ($node->expr->expr->name->name === 'yield') {
+            if ( ! $node->expr->expr->args[0] instanceof Node\Arg) {
+                return null;
+            }
 
-        if ( ! $node->expr->expr->args[1] instanceof Node\Arg) {
-            return null;
-        }
+            $context = $scope->getType($node->expr->expr->args[0]->value);
+        } else {
+            // yieldBlock, yieldParentBlock
 
-        $blockName = $node->expr->expr->args[0]->value->value;
-        $context = $scope->getType($node->expr->expr->args[1]->value);
+            if ( ! $node->expr->expr->args[0] instanceof Node\Arg) {
+                return null;
+            }
+
+            if ( ! $node->expr->expr->args[0]->value instanceof Node\Scalar\String_) {
+                return null;
+            }
+
+            if ( ! $node->expr->expr->args[1] instanceof Node\Arg) {
+                return null;
+            }
+
+            $blockName = $node->expr->expr->args[0]->value->value;
+            $context = $scope->getType($node->expr->expr->args[1]->value);
+        }
 
         $sourceLocation = null;
         foreach ($node->getComments() as $comment) {

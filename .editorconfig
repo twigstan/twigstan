@@ -10,3 +10,6 @@ indent_size = 4
 
 [*.neon]
 indent_style = tab
+
+[*.xml]
+indent_style = unset

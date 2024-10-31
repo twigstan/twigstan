@@ -9,6 +9,7 @@ services:
 		currentWorkingDirectory: %currentWorkingDirectory%
 		configurationFile: %configurationFile%
 		baselineFile: %baselineFile%
+		onlyAnalyzeTemplatesWithContext: %onlyAnalyzeTemplatesWithContext%
 		phpFilesFinder: TwigStan\Finder\FilesFinder(
 			namePattern: *.php
 			paths: %phpPaths%
@@ -49,7 +50,6 @@ services:
 	- TwigStan\Processing\Compilation\ModifiedCompiler
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
 	- TwigStan\Processing\Compilation\TwigCompiler
-	- TwigStan\Processing\Compilation\TwigGlobalsToPhpDoc
 	- TwigStan\Processing\Compilation\TwigVisitor\DisableGetAttributeOptimizationVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\RemoveProfilingNodeVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceIncludeNodeNodeVisitor

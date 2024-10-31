@@ -24,13 +24,13 @@ final class MainMethodFinderVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if ($node->name->name !== 'main') {
+        if ($node->name->name !== 'doDisplay') {
             return null;
         }
 
-        // Take the statements, but skip the first two:
-        // $context = array_merge($__twigstan_globals, $context);
-        // unset($__twigstan_globals);;
+        // Take the statements, but skip the first:
+        // $context += $this->env->getGlobals();
+        // $macros = $this->macros;
         $this->stmts = array_values(array_slice($node->stmts, 2));
 
         return null;

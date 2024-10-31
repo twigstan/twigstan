@@ -9,7 +9,7 @@ use TwigStan\Twig\SourceLocation;
 final readonly class TwigStanError
 {
     /**
-     * @param list<SourceLocation> $renderPoints
+     * @param list<RenderPoint> $renderPoints
      */
     public function __construct(
         public string $message,

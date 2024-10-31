@@ -4,14 +4,7 @@
             "message": "Variable 'title' does not exist.",
             "identifier": "offsetAccess.notFound",
             "tip": null,
-            "twigSourceLocation": "_layout.twig:3",
-            "renderPoints": []
-        },
-        {
-            "message": "Variable 'subtitle' might not exist.",
-            "identifier": "offsetAccess.notFound",
-            "tip": null,
-            "twigSourceLocation": "_layout.twig:12",
+            "twigSourceLocation": "_layout.twig:3, case10.twig:1",
             "renderPoints": []
         },
         {
