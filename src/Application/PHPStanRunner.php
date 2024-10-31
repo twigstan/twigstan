@@ -32,23 +32,25 @@ final readonly class PHPStanRunner
     ) {}
 
     /**
-     * @param list<string> $pathsToAnalyze
+     * @param list<string> $filesToAnalyze
+     * @param list<string> $directoriesToAnalyze
      */
     public function run(
         OutputInterface $output,
         OutputInterface $errorOutput,
         string $environmentLoader,
-        array $pathsToAnalyze,
+        array $filesToAnalyze,
+        array $directoriesToAnalyze,
         bool $debugMode,
         bool $xdebugMode,
-        bool $collectOnly = false,
+        PHPStanRunMode $mode,
     ): PHPStanAnalysisResult {
-        $configFile = Path::join($this->tempDirectory, $collectOnly ? 'phpstan-collect-only.neon' : 'phpstan.neon');
-        $analysisResultJsonFile = Path::join($this->tempDirectory, 'phpstan', $collectOnly ? 'collect-only-analysis-result.json' : 'analysis-result.json');
+        $configFile = Path::join($this->tempDirectory, sprintf('phpstan.%s.neon', $mode->value));
+        $analysisResultJsonFile = Path::join($this->tempDirectory, 'phpstan', sprintf('%s.result.json', $mode->value));
 
         $services = [];
 
-        if ($collectOnly) {
+        if ($mode === PHPStanRunMode::CollectPhpRenderPoints) {
             foreach ($this->twigContextCollectors as $className) {
                 $reflection = new ReflectionClass($className);
 
@@ -61,34 +63,38 @@ final readonly class PHPStanRunner
 
         $parameters = [
             'tmpDir' => Path::join($this->tempDirectory, 'phpstan'),
-            'resultCachePath' => Path::join($this->tempDirectory, 'phpstan', $collectOnly ? 'collect-only-resultCache.php' : 'resultCache.php'),
+            'resultCachePath' => Path::join($this->tempDirectory, 'phpstan', sprintf('%s.resultCache.php', $mode->value)),
             'paths!' => [
-                ...$pathsToAnalyze,
+                ...$filesToAnalyze,
+                ...$directoriesToAnalyze,
                 ...array_keys($services),
             ],
+            'scanDirectories' => $directoriesToAnalyze,
             'twigstan' => [
                 'twigEnvironmentLoader' => $environmentLoader,
                 'analysisResultJsonFile' => $analysisResultJsonFile,
-                'collectOnly' => $collectOnly,
+                'mode' => $mode->value,
                 'debugMode' => $debugMode,
             ],
         ];
 
-        if ($collectOnly) {
+        if ($mode === PHPStanRunMode::CollectPhpRenderPoints || $mode === PHPStanRunMode::CollectTwigRenderPoints) {
             $parameters['level'] = null;
             $parameters['customRulesetUsed'] = true;
         }
 
+        $config = [
+            'includes' => [
+                $this->phpstanConfigurationFile,
+                Path::join(dirname(__DIR__, 2), 'config', sprintf('phpstan.%s.neon', $mode->value)),
+            ],
+            'parameters' => $parameters,
+            'services' => array_values($services),
+        ];
+
         $this->filesystem->dumpFile(
             $configFile,
-            Neon::encode([
-                'includes' => [
-                    $this->phpstanConfigurationFile,
-                    Path::join(dirname(__DIR__, 2), 'config/phpstan.neon'),
-                ],
-                'parameters' => $parameters,
-                'services' => array_values($services),
-            ], true),
+            Neon::encode($config, true),
         );
 
         $process = new Process(

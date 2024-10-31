@@ -1,0 +1,10 @@
+{% import "@EndToEnd/Macros/macros.twig" as greeter %}
+
+{% macro copyright(year) %}
+    Copyright {{ year }}
+{% endmacro %}
+
+{{ greeter.greet('John', 'Doe') }}
+{{ greeter.greet('John') }}
+
+{{ _self.copyright(2024) }}

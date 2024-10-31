@@ -1,0 +1,33 @@
+services:
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
+		tags:
+			- phpstan.functionParameterOutTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetAttributeReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\CallMacroReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\LoadTemplateReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetTemplateForMacroReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\UnwrapReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetParentReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetGlobalsReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension

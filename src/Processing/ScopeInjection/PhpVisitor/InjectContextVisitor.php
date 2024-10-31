@@ -23,7 +23,6 @@ final class InjectContextVisitor extends NodeVisitorAbstract
      * }> $contextBeforeBlock
      */
     public function __construct(
-        private readonly ArrayShapeNode $contextFromTemplateRender,
         private readonly array $contextBeforeBlock,
         private readonly ArrayShapeMerger $arrayShapeMerger,
     ) {}
@@ -55,8 +54,6 @@ final class InjectContextVisitor extends NodeVisitorAbstract
             );
 
             $context = $contextBeforeBlock;
-        } elseif ($node->name->name === 'main') {
-            $context = $this->contextFromTemplateRender;
         } else {
             return null;
         }

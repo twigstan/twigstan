@@ -55,6 +55,7 @@ final readonly class ContainerFactory
             'tempDirectory' => $this->configuration->tempDirectory,
             'baselineFile' => $this->configuration->baselineFile,
             'reportUnmatchedIgnoredErrors' => $this->configuration->reportUnmatchedIgnoredErrors,
+            'onlyAnalyzeTemplatesWithContext' => $this->configuration->onlyAnalyzeTemplatesWithContext,
             'phpstanBinPath' => $this->configuration->phpstanBinPath,
             'phpstanConfigurationFile' => $this->configuration->phpstanConfigurationFile,
             'phpstanMemoryLimit' => $this->configuration->phpstanMemoryLimit,

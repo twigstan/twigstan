@@ -62,6 +62,7 @@ final class AnalyzeCommand extends Command
         private string $currentWorkingDirectory,
         private string $configurationFile,
         private ?string $baselineFile,
+        private bool $onlyAnalyzeTemplatesWithContext,
     ) {
         parent::__construct();
     }
@@ -154,13 +155,18 @@ final class AnalyzeCommand extends Command
                     Path::makeRelative($renderPoint->fileName, $this->currentWorkingDirectory),
                     $renderPoint->lineNumber,
                 ));
+
+                if ($output->isVeryVerbose()) {
+                    $errorOutput->write('📝 ');
+                    $errorOutput->writeln($renderPoint->context);
+                }
             }
 
             $errorOutput->writeln('');
         }
 
         if (count($result->errors) > 0) {
-            $output->writeln(sprintf('<error>Found %d errors</error>', count($result->errors)));
+            $output->writeln(sprintf('<error>Found %d %s</error>', count($result->errors), count($result->errors) === 1 ? 'error' : 'errors'));
 
             return self::FAILURE;
         }
@@ -240,6 +246,73 @@ final class AnalyzeCommand extends Command
         $dependencyCount = $count - count($twigFileNamesToAnalyze);
         $output->writeln(sprintf('Found %d %s...', $dependencyCount, $dependencyCount === 1 ? 'dependency' : 'dependencies'));
 
+        $output->writeln('Collecting scopes from render points...');
+
+        $analysisResult = $this->phpStanRunner->run(
+            $output,
+            $errorOutput,
+            $this->environmentLoader,
+            $phpFileNames,
+            [],
+            $debugMode,
+            $xdebugMode,
+            PHPStanRunMode::CollectPhpRenderPoints,
+        );
+
+        $result = new TwigStanAnalysisResult();
+
+        foreach ($analysisResult->notFileSpecificErrors as $fileSpecificError) {
+            $result = $result->withFileSpecificError($fileSpecificError);
+
+            $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
+        }
+
+        if ($analysisResult->exitCode !== 0) {
+            throw new LogicException('PHPStan exited with a non-zero exit code.');
+        }
+
+        if ($analysisResult->notFileSpecificErrors !== []) {
+            return $result;
+        }
+
+        /**
+         * @var array<string, array<string, array<int, string>>> $templateToRenderPoint
+         */
+        $templateToRenderPoint = [];
+        foreach ($analysisResult->collectedData as $data) {
+            if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
+                foreach ($data->data as $renderData) {
+                    try {
+                        $filePath = $data->filePath;
+
+                        $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
+
+                        $templateToRenderPoint[$template][$filePath][$renderData['startLine']] = $renderData['context'];
+                    } catch (UnableToCanonicalizeTwigFileException $exception) {
+                        if ($debugMode) {
+                            throw $exception;
+                        }
+                        // Ignore
+                    }
+                }
+            }
+        }
+
+        // Make sure the render points are sorted by file name and line number
+        $templateToRenderPoint = array_map(
+            function ($renderPoints) {
+                uksort($renderPoints, function ($a, $b) {
+                    return strnatcmp($a, $b);
+                });
+                foreach ($renderPoints as &$lineNumberToContext) {
+                    ksort($lineNumberToContext);
+                }
+
+                return $renderPoints;
+            },
+            $templateToRenderPoint,
+        );
+
         $output->writeln(sprintf('Compiling %d templates...', $count));
 
         $progressBar = new ProgressBar($output, $count);
@@ -252,6 +325,7 @@ final class AnalyzeCommand extends Command
                     $this->twigCompiler->compile(
                         $twigFile,
                         $compilationDirectory,
+                        $analysisResult->collectedData,
                     ),
                 );
             } catch (Throwable $error) {
@@ -280,19 +354,17 @@ final class AnalyzeCommand extends Command
             $flatteningDirectory,
         );
 
-        $output->writeln('Collecting scopes...');
+        $output->writeln('Collecting scopes from Twig...');
 
         $analysisResult = $this->phpStanRunner->run(
             $output,
             $errorOutput,
             $this->environmentLoader,
-            [
-                ...$phpFileNames,
-                $flatteningDirectory,
-            ],
+            [],
+            [$flatteningDirectory],
             $debugMode,
             $xdebugMode,
-            collectOnly: true,
+            PHPStanRunMode::CollectTwigRenderPoints,
         );
 
         $result = new TwigStanAnalysisResult();
@@ -311,44 +383,6 @@ final class AnalyzeCommand extends Command
             return $result;
         }
 
-        /**
-         * @var array<string, array<string, list<int>>> $templateToRenderPoint
-         */
-        $templateToRenderPoint = [];
-        foreach ($analysisResult->collectedData as $data) {
-            if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
-                foreach ($data->data as $renderData) {
-                    try {
-                        $filePath = $data->filePath;
-
-                        if ($flatteningResults->hasPhpFile($data->filePath)) {
-                            $filePath = $flatteningResults->getByPhpFile($data->filePath)->twigFileName;
-                        }
-
-                        $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
-                        $templateToRenderPoint[$template][$filePath][] = $renderData['startLine'];
-                    } catch (UnableToCanonicalizeTwigFileException) {
-                        // Ignore
-                    }
-                }
-            }
-        }
-
-        // Make sure the render points are sorted by file name and line number
-        $templateToRenderPoint = array_map(
-            function ($renderPoints) {
-                uksort($renderPoints, function ($a, $b) {
-                    return strnatcmp($a, $b);
-                });
-                foreach ($renderPoints as &$lineNumbers) {
-                    sort($lineNumbers);
-                }
-
-                return $renderPoints;
-            },
-            $templateToRenderPoint,
-        );
-
         $output->writeln('Injecting scope into templates...');
 
         $scopeInjectionResults = $this->twigScopeInjector->inject($analysisResult->collectedData, $flatteningResults, $scopeInjectionDirectory);
@@ -359,9 +393,11 @@ final class AnalyzeCommand extends Command
             $output,
             $errorOutput,
             $this->environmentLoader,
+            [],
             [$scopeInjectionDirectory],
             $debugMode,
             $xdebugMode,
+            PHPStanRunMode::AnalyzeTwigTemplates,
         );
 
         // Transform PHPStan errors to TwigStan errors
@@ -369,6 +405,29 @@ final class AnalyzeCommand extends Command
         $errors = $this->errorFilter->filter($errors);
         $errors = $this->errorCollapser->collapse($errors);
         $errors = $this->errorTransformer->transform($errors);
+
+        if ($this->onlyAnalyzeTemplatesWithContext) {
+            // Filter out errors for templates that don't have a render point.
+            $errors = array_values(array_filter($errors, function ($error) use ($errorOutput, $templateToRenderPoint) {
+                if ($error->twigFile === null) {
+                    return true;
+                }
+
+                $hasRenderPoint = array_key_exists(
+                    $this->twigFileCanonicalizer->canonicalize($error->twigFile),
+                    $templateToRenderPoint,
+                );
+
+                if ( ! $hasRenderPoint) {
+                    $errorOutput->writeln(
+                        sprintf('Ignoring template "%s" because it does not has any render points.', $error->twigFile),
+                        OutputInterface::VERBOSITY_VERY_VERBOSE,
+                    );
+                }
+
+                return $hasRenderPoint;
+            }));
+        }
 
         if ($generateBaselineFile === null) {
             $errors = $this->baselineErrorFilter->filter($errors);
@@ -475,11 +534,12 @@ final class AnalyzeCommand extends Command
                     );
                 }
 
-                foreach ($templateToRenderPoint[$lastTwigFileName] ?? [] as $renderPointFileName => $lineNumbers) {
-                    foreach ($lineNumbers as $lineNumber) {
-                        $renderPoints[] = new SourceLocation(
+                foreach ($templateToRenderPoint[$lastTwigFileName] ?? [] as $renderPointFileName => $lineNumberToContext) {
+                    foreach ($lineNumberToContext as $lineNumber => $context) {
+                        $renderPoints[] = new RenderPoint(
                             $renderPointFileName,
                             $lineNumber,
+                            $context,
                         );
                     }
                 }

@@ -52,6 +52,18 @@ final readonly class DependencyFinder
             }
         }
 
+        foreach ($metadata->macros as $macro) {
+            if (in_array($macro, $dependants, true)) {
+                continue;
+            }
+
+            array_push(
+                $dependants,
+                $macro,
+                ...$this->findDependantsForFile($macro),
+            );
+        }
+
         return $dependants;
     }
 }

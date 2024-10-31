@@ -22,14 +22,10 @@ use TwigStan\PHP\PrettyPrinter;
 use TwigStan\PHP\StrictPhpParser;
 use TwigStan\PHPStan\Analysis\CollectedData;
 use TwigStan\PHPStan\Collector\BlockContextCollector;
-use TwigStan\PHPStan\Collector\TemplateContextCollector;
-use TwigStan\Processing\Compilation\TwigGlobalsToPhpDoc;
 use TwigStan\Processing\Flattening\FlatteningResultCollection;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
 use TwigStan\Twig\SourceLocation;
-use TwigStan\Twig\TwigFileCanonicalizer;
-use TwigStan\Twig\UnableToCanonicalizeTwigFileException;
 
 final readonly class TwigScopeInjector
 {
@@ -38,8 +34,6 @@ final readonly class TwigScopeInjector
         private Filesystem $filesystem,
         private StrictPhpParser $phpParser,
         private ArrayShapeMerger $arrayShapeMerger,
-        private TwigFileCanonicalizer $twigFileCanonicalizer,
-        private TwigGlobalsToPhpDoc $twigGlobalsToPhpDoc,
     ) {}
 
     /**
@@ -82,59 +76,6 @@ final readonly class TwigScopeInjector
             ),
         );
 
-        $templateRenderContexts = [];
-        foreach ($collectedData as $data) {
-            if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
-                foreach ($data->data as $renderData) {
-                    try {
-                        $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
-
-                        $templateRenderContexts[$template][] = $renderData['context'];
-                    } catch (UnableToCanonicalizeTwigFileException) {
-                        // Ignore
-                    }
-                }
-            }
-        }
-
-        $templateRenderContext = [];
-        foreach ($templateRenderContexts as $template => $contexts) {
-            $newContext = null;
-            foreach (array_unique($contexts) as $context) {
-                $contextShape = new ArrayShapeNode([]);
-
-                if ($context !== 'array{}') {
-                    $phpDocNode = $phpDocParser->parseTagValue(
-                        new TokenIterator($lexer->tokenize($context)),
-                        '@var',
-                    );
-
-                    if ( ! $phpDocNode instanceof VarTagValueNode) {
-                        continue;
-                    }
-
-                    $contextShape = $phpDocNode->type;
-
-                    if ( ! $contextShape instanceof ArrayShapeNode) {
-                        $contextShape = new ArrayShapeNode([]);
-                    }
-                }
-
-                if ($newContext === null) {
-                    $newContext = $contextShape;
-
-                    continue;
-                }
-
-                $newContext = $this->arrayShapeMerger->merge(
-                    $newContext,
-                    $contextShape,
-                );
-            }
-
-            $templateRenderContext[$template] = $newContext;
-        }
-
         $results = new ScopeInjectionResultCollection();
         foreach ($collection as $flatteningResult) {
             $contextBeforeBlockRelatedToTemplate = array_values(array_filter(
@@ -145,11 +86,6 @@ final readonly class TwigScopeInjector
                 $this->phpParser->parseFile($flatteningResult->phpFile),
                 new NameResolver(),
                 new InjectContextVisitor(
-                    $this->arrayShapeMerger->merge(
-                        $this->twigGlobalsToPhpDoc->getGlobals(),
-                        $templateRenderContext[$flatteningResult->twigFileName] ?? new ArrayShapeNode([]),
-                        true,
-                    ),
                     $contextBeforeBlockRelatedToTemplate,
                     $this->arrayShapeMerger,
                 ),

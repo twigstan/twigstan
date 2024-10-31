@@ -14,6 +14,7 @@ use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\NameExpression;
 use Twig\Node\Expression\ParentExpression;
 use Twig\Node\Expression\Variable\ContextVariable;
+use Twig\Node\ImportNode;
 use Twig\Node\Node;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 use TwigStan\Twig\Node\NodeFinder;
@@ -71,10 +72,20 @@ final readonly class MetadataAnalyzer
             $blockName = $block->getNode('0')->getAttribute('name');
             $blocks[] = $blockName;
 
-            $parentExpression = $this->nodeFinder->findInstanceOf($block, ParentExpression::class);
+            $parentExpression = $this->nodeFinder->findFirstInstanceOf($block, ParentExpression::class);
 
             if ($parentExpression !== null) {
                 $parentBlocks[] = $blockName;
+            }
+        }
+
+        $macros = [];
+        foreach ([$template->getNode('body'), ...$template->getNode('blocks')] as $node) {
+            foreach ($this->nodeFinder->findInstanceOf($node, ImportNode::class) as $importNode) {
+                $macros = [...$macros, ...array_map(
+                    $this->twigFileCanonicalizer->canonicalize(...),
+                    $this->getStringsFromExpression($importNode->getNode('expr')),
+                )];
             }
         }
 
@@ -87,6 +98,7 @@ final readonly class MetadataAnalyzer
             $traits,
             $blocks,
             $parentBlocks,
+            array_values(array_unique($macros)),
         );
     }
 

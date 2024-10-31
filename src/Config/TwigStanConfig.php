@@ -25,6 +25,7 @@ final readonly class TwigStanConfig
         public string $tempDirectory,
         public ?string $baselineFile,
         public bool $reportUnmatchedIgnoredErrors,
+        public bool $onlyAnalyzeTemplatesWithContext,
         public string $phpstanBinPath,
         public string $phpstanConfigurationFile,
         public null | false | string $phpstanMemoryLimit,

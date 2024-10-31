@@ -1,0 +1,16 @@
+includes:
+	- phpstan.neon
+	- phpstan.extensions.neon
+services:
+	-
+		class: TwigStan\PHPStan\Collector\BlockContextCollector
+		tags:
+			- phpstan.collector
+	-
+		class: Twig\Environment
+		factory: @TwigStan\Twig\TwigFactory::create
+	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
+	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.twigEnvironmentLoader%)
+	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
+	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
+	- TwigStan\Twig\TokenParser\DumpTypeTokenParser

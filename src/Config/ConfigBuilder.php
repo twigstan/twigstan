@@ -18,6 +18,7 @@ final class ConfigBuilder
     private ?string $tempDirectory = null;
     private ?string $baselineFile = null;
     private bool $reportUnmatchedIgnoredErrors = true;
+    private bool $onlyAnalyzeTemplatesWithContext = false;
     private ?string $phpstanBinPath = null;
     private ?string $phpstanConfigurationFile = null;
     private null | false | string $phpstanMemoryLimit = null;
@@ -82,6 +83,10 @@ final class ConfigBuilder
             // It's perfectly fine to do `if(var)` in Twig.
             IgnoreError::identifier('if.condNotBoolean'),
 
+            IgnoreError::identifier('ternary.condNotBoolean'),
+
+            IgnoreError::identifier('booleanAnd.leftNotBoolean'),
+
             // It's perfectly fine to do `var ?: default` in Twig.
             IgnoreError::identifier('ternary.shortNotAllowed'),
 
@@ -89,12 +94,12 @@ final class ConfigBuilder
             // Therefore this is a non-issue in Twig templates.
             IgnoreError::identifier('foreach.valueOverwrite'),
 
-            // There is no try catch in twig files.
+            // These identifiers don't make sense for compiled Twig templates.
             IgnoreError::identifier('missingType.checkedException'),
-
-            // MissingType error does not make sens on auto generated files.
             IgnoreError::identifier('missingType.parameter'),
             IgnoreError::identifier('missingType.return'),
+            IgnoreError::identifier('method.missingOverride'),
+            IgnoreError::identifier('return.unusedType'),
 
             // We cannot guarantee that a short arrow closure uses the context/macros/blocks variable.
             IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$context\.#', 'closure.unusedUse'),
@@ -110,10 +115,19 @@ final class ConfigBuilder
             IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'parameter.deprecatedClass'),
             IgnoreError::messageAndIdentifier('#Parameter \$context of method __TwigTemplate_\w+::\w+\(\) has typehint#', 'parameter.deprecatedClass'),
 
+            // We cannot guarantee that the property will be used in the compiled template.
+            IgnoreError::messageAndIdentifier('#Property __TwigTemplate_\w+::\$source is never read, only written\.#', 'property.onlyWritten'),
+
+            // This happens because the parent method accepts an array.
+            IgnoreError::messageAndIdentifier("#Parameter .* of method __TwigTemplate_\w+::doDisplay\(\) should be contravariant with parameter#", 'method.childParameterType'),
+
             // Currently Dynamic Inheritance is not (yet) supported. Ignoring the errors for now.
             // @see https://github.com/twigstan/twigstan/issues/6
             IgnoreError::messageAndIdentifier('#Access to an undefined property __TwigTemplate_\w+::\$blocks\.#', 'property.notFound'),
             IgnoreError::messageAndIdentifier('#Call to an undefined method __TwigTemplate_\w+::getParent\(\)\.#', 'method.notFound'),
+
+            // @see https://github.com/twigphp/Twig/pull/4415
+            IgnoreError::messageAndIdentifier('#Cannot call method unwrap\(\) on Twig\\\Template\|Twig\\\TemplateWrapper\|false\.#', 'method.nonObject'),
         ];
     }
 
@@ -165,6 +179,7 @@ final class ConfigBuilder
             $this->tempDirectory,
             $this->baselineFile,
             $this->reportUnmatchedIgnoredErrors,
+            $this->onlyAnalyzeTemplatesWithContext,
             $this->phpstanBinPath,
             $this->phpstanConfigurationFile,
             $this->phpstanMemoryLimit,
@@ -239,6 +254,13 @@ final class ConfigBuilder
     public function reportUnmatchedIgnoredErrors(bool $reportUnmatchedIgnoredErrors): self
     {
         $this->reportUnmatchedIgnoredErrors = $reportUnmatchedIgnoredErrors;
+
+        return $this;
+    }
+
+    public function onlyAnalyzeTemplatesWithContext(): self
+    {
+        $this->onlyAnalyzeTemplatesWithContext = true;
 
         return $this;
     }

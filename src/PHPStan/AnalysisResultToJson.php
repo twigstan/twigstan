@@ -7,22 +7,29 @@ namespace TwigStan\PHPStan;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\ErrorFormatter\ErrorFormatter;
 use PHPStan\Command\Output;
+use TwigStan\Application\PHPStanRunMode;
 use TwigStan\PHPStan\Collector\ExportingCollector;
 
 final readonly class AnalysisResultToJson implements ErrorFormatter
 {
+    private PHPStanRunMode $mode;
+
     public function __construct(
         private string $jsonFile,
-        private bool $collectOnly,
+        string $mode,
         private bool $debugMode,
-    ) {}
+    ) {
+        $this->mode = PHPStanRunMode::from($mode);
+    }
 
     public function formatErrors(AnalysisResult $analysisResult, Output $output): int
     {
+        $output->writeLineFormatted(sprintf('<info>Writing analysis result to JSON file: "%s"</info>', $this->jsonFile));
+
         file_put_contents(
             $this->jsonFile,
             json_encode([
-                'fileSpecificErrors' => $this->collectOnly === true ? [] : $analysisResult->getFileSpecificErrors(),
+                'fileSpecificErrors' => $this->mode === PHPStanRunMode::AnalyzeTwigTemplates ? $analysisResult->getFileSpecificErrors() : [],
                 'notFileSpecificErrors' => $analysisResult->getNotFileSpecificErrors(),
                 'collectedData' => array_filter(
                     $analysisResult->getCollectedData(),
