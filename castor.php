@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Castor\Attribute\AsArgument;
 use Castor\Attribute\AsOption;
 use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
@@ -31,6 +32,12 @@ function phpunit(
 
 #[AsTask(name: 'phpstan', aliases: ['stan'])]
 function phpstan(
+    #[AsOption]
+    bool $debug = false,
+    #[AsOption]
+    bool $xdebug = false,
+    #[AsArgument]
+    array $paths = [],
     #[AsOption(mode: InputOption::VALUE_NEGATABLE)]
     bool $local = true,
 ): int {
@@ -39,9 +46,14 @@ function phpstan(
     }
 
     return exit_code([
+        ...$xdebug ? ['php', '-dzend_extension=xdebug.so'] : [],
         'vendor/bin/phpstan',
         '--ansi',
+        ...$debug || $xdebug ? ['--debug'] : [],
+        ...$xdebug ? ['--xdebug'] : [],
         sprintf('--configuration=%s', $local ? 'phpstan-local.neon' : 'phpstan.neon'),
+        'analyze',
+        ...$paths,
     ]);
 }
 
