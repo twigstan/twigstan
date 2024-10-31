@@ -7,6 +7,7 @@ namespace TwigStan\EndToEnd;
 use JsonException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Path;
 use Throwable;
 use TwigStan\Application\AnalyzeCommand;
@@ -47,6 +48,8 @@ abstract class AbstractEndToEndTestCase extends TestCase
      */
     protected function runTests(string $directory, array $files = []): void
     {
+        $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
+
         $relativeDirectory = Path::makeRelative($directory, dirname(__DIR__, 2));
         $result = $this->command->analyze(
             $files !== [] ? array_map(
