@@ -1,0 +1,48 @@
+https://twig.symfony.com/doc/3.x/filters/join.html
+\Twig\Extension\CoreExtension::join
+{% assert_type ['John', 'Doe'] | join(',') 'string' %}
+{% assert_type 'John Doe' | join(',') 'string' %}
+
+https://twig.symfony.com/doc/3.x/filters/split.html
+\Twig\Extension\CoreExtension::split
+{% assert_type null | split(' ') 'non-empty-list<string>' %}
+{% assert_type 'John Doe' | split(' ') 'non-empty-list<string>' %}
+
+https://twig.symfony.com/doc/3.x/filters/sort.html
+\Twig\Extension\CoreExtension::sort
+{% types {
+    someList: 'list<string>'
+} %}
+{% assert_type ['John', 'Doe'] | sort 'non-empty-list<string>' %}
+{% assert_type someList | sort 'array<int<0, max>, string>' %}
+
+https://twig.symfony.com/doc/3.x/filters/merge.html
+\Twig\Extension\CoreExtension::merge
+{% assert_type ['John'] | merge(['Doe'], ['Jane']) "array{'John', 'Doe', 'Jane'}" %}
+
+https://twig.symfony.com/doc/3.x/filters/batch.html
+\Twig\Extension\CoreExtension::batch
+{% assert_type ['John', 'Jane', 'Doe'] | batch(2) "array{array{'John', 'Jane'}, array{'Doe'}}" %}
+
+https://twig.symfony.com/doc/3.x/filters/column.html
+\Twig\Extension\CoreExtension::column
+{% assert_type [{name: 'John'}, {name: 'Jane'}] | column('name') "array{'John', 'Jane'}" %}
+
+https://twig.symfony.com/doc/3.x/filters/filter.html
+\Twig\Extension\CoreExtension::filter
+{% assert_type ['John', 'Jane'] | filter(v => v == 'John') 'array<int, string>' %}
+
+https://twig.symfony.com/doc/3.x/filters/map.html
+\Twig\Extension\CoreExtension::map
+{% assert_type [
+    {first: "John", last: "Doe"},
+    {first: "Jane", last: "Doe"},
+] | map(p => "#{p.first} #{p.last}") 'array<0|1, non-falsy-string>' %}
+
+https://twig.symfony.com/doc/3.x/filters/reduce.html
+\Twig\Extension\CoreExtension::reduce
+{% assert_type [1, 2, 3] | reduce((carry, v, k) => carry + v * k) '(float|int)' %}
+
+https://twig.symfony.com/doc/3.x/filters/find.html
+\Twig\Extension\CoreExtension::find
+{% assert_type ['John', 'Jane'] | find(v => v == 'John') "'Jane'|'John'|null" %}

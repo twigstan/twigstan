@@ -31,3 +31,42 @@ services:
 		class: TwigStan\PHPStan\DynamicReturnType\GetGlobalsReturnType
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
+
+
+	# Filter
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\FindReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\ReduceReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\MapReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\FilterReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\ColumnReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\SplitReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\SortReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\BatchReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\MergeReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
