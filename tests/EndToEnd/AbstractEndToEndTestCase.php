@@ -61,5 +61,9 @@ abstract class AbstractEndToEndTestCase extends TestCase
         );
 
         ErrorHelper::assertAnalysisResultMatchesJsonFile($result, $directory, $files);
+
+        if ($files !== []) {
+            self::markTestIncomplete('This test was limited to selected files, therefore the test is not complete.');
+        }
     }
 }
