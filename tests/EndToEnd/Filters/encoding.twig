@@ -1,0 +1,13 @@
+https://twig.symfony.com/doc/3.x/filters/url_encode.html
+\Twig\Extension\CoreExtension::urlencode
+{% assert_type 'Hello' | url_encode 'string' %}
+{% assert_type {'name': 'Fabien', 'city': 'Paris'} | url_encode 'string' %}
+
+https://twig.symfony.com/doc/3.x/filters/json_encode.html
+\Twig\Extension\CoreExtension::json_encode
+{% assert_type data | json_encode 'non-empty-string|false' %}
+{% assert_type data | json_encode(constant('JSON_THROW_ON_ERROR')) 'non-empty-string' %}
+
+https://twig.symfony.com/doc/3.x/filters/convert_encoding.html
+\Twig\Extension\CoreExtension::convertEncoding
+{% assert_type data|convert_encoding('UTF-8', 'iso-2022-jp') 'string' %}
