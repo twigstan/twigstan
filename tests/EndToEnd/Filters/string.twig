@@ -1,0 +1,30 @@
+https://twig.symfony.com/doc/3.x/filters/title.html
+\Twig\Extension\CoreExtension::titleCase
+{% assert_type 'my first car' | title 'string' %}
+
+https://twig.symfony.com/doc/3.x/filters/capitalize.html
+\Twig\Extension\CoreExtension::capitalize
+{% assert_type 'my first car' | capitalize 'string' %}
+
+https://twig.symfony.com/doc/3.x/filters/upper.html
+\Twig\Extension\CoreExtension::upper
+{% assert_type 'my first car' | upper 'string' %}
+
+https://twig.symfony.com/doc/3.x/filters/lower.html
+\Twig\Extension\CoreExtension::lower
+{% assert_type 'my first car' | lower 'string' %}
+
+https://twig.symfony.com/doc/3.x/filters/striptags.html
+\Twig\Extension\CoreExtension::striptags
+{% assert_type 'html' | striptags "string" %}
+
+https://twig.symfony.com/doc/3.x/filters/trim.html
+\Twig\Extension\CoreExtension::trim
+{% assert_type '  I like Twig.  '|trim "string" %}
+{% assert_type '  I like Twig.'|trim('.') "string" %}
+{% assert_type '  I like Twig.  '|trim(side: 'left') "string" %}
+{% assert_type '  I like Twig.  '|trim(' ', 'right') "string" %}
+
+https://twig.symfony.com/doc/3.x/filters/nl2br.html
+\Twig\Extension\CoreExtension::nl2br
+{% assert_type 'Hello\nWorld' | nl2br "string" %}
