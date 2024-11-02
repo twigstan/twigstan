@@ -1,0 +1,12 @@
+https://twig.symfony.com/doc/3.x/filters/default.html
+\Twig\Extension\CoreExtension::default
+{% assert_type null | default "''" %}
+{% assert_type false | default(true) 'true' %}
+{% assert_type null | default('Fallback') "'Fallback'" %}
+{% assert_type [] | default('Fallback') "'Fallback'" %}
+{% assert_type 'Hello' | default('Fallback') "'Hello'" %}
+
+https://twig.symfony.com/doc/3.x/filters/keys.html
+\Twig\Extension\CoreExtension::keys
+{% assert_type [1, 2, 3, 4] | keys 'array{0, 1, 2, 3}' %}
+{% assert_type {a: 'aa', b: 'bb'} | keys "array{'a', 'b'}" %}

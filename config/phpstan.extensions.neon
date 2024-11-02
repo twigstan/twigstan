@@ -55,6 +55,14 @@ services:
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\KeysReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\DefaultReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
 		class: TwigStan\PHPStan\DynamicReturnType\Filter\SplitReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
