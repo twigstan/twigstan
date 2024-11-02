@@ -6,10 +6,10 @@ namespace TwigStan\PHPStan\DynamicReturnType\Filter;
 
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\StaticCall;
-use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Constant\ConstantIntegerType;
+use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -40,12 +40,16 @@ final readonly class DefaultReturnType implements DynamicStaticMethodReturnTypeE
             return null;
         }
 
-        if (isset($methodCall->args[1]) && ! $methodCall->args[1] instanceof Arg) {
-            return null;
-        }
-
         $argType = $scope->getType($methodCall->args[0]->value);
-        $default = $scope->getType($methodCall->args[1]?->value ?? new String_(''));
+        $default = new ConstantStringType('');
+
+        if (isset($methodCall->args[1])) {
+            if ( ! $methodCall->args[1] instanceof Arg) {
+                return null;
+            }
+
+            $default = $scope->getType($methodCall->args[1]->value);
+        }
 
         if ($argType->isFalse()->yes()) {
             return $default;

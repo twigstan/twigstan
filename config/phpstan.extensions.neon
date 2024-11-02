@@ -31,6 +31,10 @@ services:
 		class: TwigStan\PHPStan\DynamicReturnType\GetGlobalsReturnType
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetCharsetReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
 
 
 	# Filter
@@ -40,6 +44,14 @@ services:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\Filter\ReduceReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\FirstReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\LastReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
@@ -55,11 +67,23 @@ services:
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\ShuffleReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\SliceReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
 		class: TwigStan\PHPStan\DynamicReturnType\Filter\KeysReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\Filter\DefaultReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\ReverseReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-

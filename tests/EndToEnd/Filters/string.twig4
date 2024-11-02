@@ -1,0 +1,6 @@
+https://twig.symfony.com/doc/3.x/filters/trim.html
+\Twig\Extension\CoreExtension::trim
+{% assert_type '  I like Twig.  '|trim "string|Stringable" %}
+{% assert_type '  I like Twig.'|trim('.') "string|Stringable" %}
+{% assert_type '  I like Twig.  '|trim(side: 'left') "string|Stringable" %}
+{% assert_type '  I like Twig.  '|trim(' ', 'right') "string|Stringable" %}
