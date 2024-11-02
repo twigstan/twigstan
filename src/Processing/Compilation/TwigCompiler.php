@@ -26,10 +26,12 @@ use TwigStan\PHPStan\Analysis\CollectedData;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 use TwigStan\Processing\Compilation\PhpVisitor\AddExtraLineNumberCommentVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\AddGetExtensionMethodVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AddTypeCommentsToTemplateVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AppendFilePathToLineCommentVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\MakeFinalVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\RefactorExtensionCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
 use TwigStan\Processing\ScopeInjection\ArrayShapeMerger;
@@ -142,6 +144,8 @@ final readonly class TwigCompiler
             new RemoveImportsVisitor(),
             new AddTypeCommentsToTemplateVisitor($templateRenderContext[$twigFileName] ?? new ArrayShapeNode([])),
             new IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor(),
+            new AddGetExtensionMethodVisitor(),
+            new RefactorExtensionCallVisitor(),
             ...(Environment::MAJOR_VERSION >= 4 ? [new RefactorLoopClosureVisitor()] : []),
         );
 
