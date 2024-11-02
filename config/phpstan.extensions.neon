@@ -70,3 +70,9 @@ services:
 		class: TwigStan\PHPStan\DynamicReturnType\Filter\MergeReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+
+	# Function
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Function\ConstantReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
