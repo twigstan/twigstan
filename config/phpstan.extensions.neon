@@ -63,11 +63,27 @@ services:
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\NumberFormatReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\DateModifyReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\RoundReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
 		class: TwigStan\PHPStan\DynamicReturnType\Filter\BatchReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\Filter\MergeReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Filter\SprintfReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 
