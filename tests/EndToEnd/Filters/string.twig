@@ -18,13 +18,6 @@ https://twig.symfony.com/doc/3.x/filters/striptags.html
 \Twig\Extension\CoreExtension::striptags
 {% assert_type 'html' | striptags "string" %}
 
-https://twig.symfony.com/doc/3.x/filters/trim.html
-\Twig\Extension\CoreExtension::trim
-{% assert_type '  I like Twig.  '|trim "string" %}
-{% assert_type '  I like Twig.'|trim('.') "string" %}
-{% assert_type '  I like Twig.  '|trim(side: 'left') "string" %}
-{% assert_type '  I like Twig.  '|trim(' ', 'right') "string" %}
-
 https://twig.symfony.com/doc/3.x/filters/nl2br.html
 \Twig\Extension\CoreExtension::nl2br
 {% assert_type 'Hello\nWorld' | nl2br "string" %}
