@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Twig\Environment;
 use TwigStan\Config\TwigStanConfig;
 use TwigStan\EndToEnd\RenderPoints\CustomControllerContextCollector;
 use TwigStan\Error\IgnoreError;
@@ -12,4 +13,5 @@ return TwigStanConfig::configure(__DIR__)
     ->twigEnvironmentLoader(__DIR__ . '/twig-loader.php')
     ->twigContextCollector(CustomControllerContextCollector::class)
     ->ignoreErrors(IgnoreError::path('*/_*.twig'))
+    ->twigExtensions('twig', sprintf('twig%d', Environment::MAJOR_VERSION))
 ;

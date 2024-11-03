@@ -14,8 +14,10 @@ final readonly class TwigStanConfig
     /**
      * @param list<string> $twigPaths
      * @param list<string> $twigExcludes
+     * @param list<string> $twigExtensions
      * @param list<string> $phpPaths
      * @param list<string> $phpExcludes
+     * @param list<string> $phpExtensions
      * @param list<IgnoreError> $ignoreErrors
      * @param list<BaselineError> $baselineErrors
      * @param list<class-string<TemplateContextCollector<Node>>> $twigContextCollectors
@@ -32,8 +34,10 @@ final readonly class TwigStanConfig
         public string $twigEnvironmentLoader,
         public array $twigPaths,
         public array $twigExcludes,
+        public array $twigExtensions,
         public array $phpPaths,
         public array $phpExcludes,
+        public array $phpExtensions,
         public array $ignoreErrors,
         public array $baselineErrors,
         public array $twigContextCollectors,

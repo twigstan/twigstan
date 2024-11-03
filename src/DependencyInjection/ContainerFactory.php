@@ -62,8 +62,10 @@ final readonly class ContainerFactory
             'twigEnvironmentLoader' => $this->configuration->twigEnvironmentLoader,
             'twigPaths' => $this->configuration->twigPaths,
             'twigExcludes' => $this->configuration->twigExcludes,
+            'twigExtensions' => $this->configuration->twigExtensions,
             'phpPaths' => $this->configuration->phpPaths,
             'phpExcludes' => $this->configuration->phpExcludes,
+            'phpExtensions' => $this->configuration->phpExtensions,
             'twigContextCollectors' => $this->configuration->twigContextCollectors,
             'baselineErrors' => array_map(
                 fn(BaselineError $error) => new Statement(

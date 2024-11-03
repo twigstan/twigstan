@@ -40,6 +40,10 @@ use TwigStan\Twig\UnableToCanonicalizeTwigFileException;
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
 {
+    /**
+     * @param list<string> $phpExtensions
+     * @param list<string> $twigExtensions
+     */
     public function __construct(
         private TwigCompiler $twigCompiler,
         private TwigFlattener $twigFlattener,
@@ -63,6 +67,8 @@ final class AnalyzeCommand extends Command
         private string $configurationFile,
         private ?string $baselineFile,
         private bool $onlyAnalyzeTemplatesWithContext,
+        private array $phpExtensions,
+        private array $twigExtensions,
     ) {
         parent::__construct();
     }
@@ -212,13 +218,13 @@ final class AnalyzeCommand extends Command
         $twigFileNames = [];
         $phpFileNames = [];
         foreach ($files as $file) {
-            if ($file->getExtension() === 'php') {
+            if (in_array($file->getExtension(), $this->phpExtensions, true)) {
                 $phpFileNames[] = $file->getRealPath();
 
                 continue;
             }
 
-            if ($file->getExtension() === 'twig') {
+            if (in_array($file->getExtension(), $this->twigExtensions, true)) {
                 $twigFileNames[] = $this->twigFileCanonicalizer->canonicalize($file->getRealPath());
 
                 continue;

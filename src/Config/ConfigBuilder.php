@@ -42,12 +42,22 @@ final class ConfigBuilder
     /**
      * @var list<string>
      */
+    private array $twigExtensions = ['twig'];
+
+    /**
+     * @var list<string>
+     */
     private array $phpPaths = [];
 
     /**
      * @var list<string>
      */
     private array $phpExcludes = [];
+
+    /**
+     * @var list<string>
+     */
+    private array $phpExtensions = ['php'];
 
     /**
      * @var list<IgnoreError>
@@ -186,8 +196,10 @@ final class ConfigBuilder
             $this->twigEnvironmentLoader,
             $this->twigPaths,
             $this->twigExcludes,
+            array_values(array_unique($this->twigExtensions)),
             $this->phpPaths,
             $this->phpExcludes,
+            array_values(array_unique($this->phpExtensions)),
             $this->ignoreErrors,
             $this->baselineErrors,
             $this->twigContextCollectors,
@@ -376,6 +388,16 @@ final class ConfigBuilder
         return $this;
     }
 
+    public function twigExtensions(string ...$extensions): self
+    {
+        $this->twigExtensions = [
+            ...$this->twigExtensions,
+            ...array_values($extensions),
+        ];
+
+        return $this;
+    }
+
     /**
      * Used to scan for PHP controllers that render Twig templates.
      */
@@ -413,6 +435,16 @@ final class ConfigBuilder
         $this->phpExcludes = [
             ...$this->phpExcludes,
             ...array_values($excludes),
+        ];
+
+        return $this;
+    }
+
+    public function phpExtensions(string ...$extensions): self
+    {
+        $this->phpExtensions = [
+            ...$this->phpExtensions,
+            ...array_values($extensions),
         ];
 
         return $this;

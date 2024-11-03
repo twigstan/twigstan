@@ -11,20 +11,24 @@ services:
 		baselineFile: %baselineFile%
 		onlyAnalyzeTemplatesWithContext: %onlyAnalyzeTemplatesWithContext%
 		phpFilesFinder: TwigStan\Finder\FilesFinder(
-			namePattern: *.php
+			extensions: %phpExtensions%
 			paths: %phpPaths%
 			exclusions: %phpExcludes%
 			currentWorkingDirectory: %currentWorkingDirectory%
 		)
 		twigFilesFinder: TwigStan\Finder\FilesFinder(
-			namePattern: *.twig
+			extensions: %twigExtensions%
 			paths: %twigPaths%
 			exclusions: %twigExcludes%
 			currentWorkingDirectory: %currentWorkingDirectory%
 		)
 		givenFilesFinder: TwigStan\Finder\GivenFilesFinder(
 			currentWorkingDirectory: %currentWorkingDirectory%
+			phpExtensions: %phpExtensions%
+			twigExtensions: %twigExtensions%
 		)
+		phpExtensions: %phpExtensions%
+		twigExtensions: %twigExtensions%
 	)
 	- TwigStan\Application\PHPStanRunner(
 		phpstanBinPath: %phpstanBinPath%
