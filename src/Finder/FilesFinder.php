@@ -12,11 +12,12 @@ use Symfony\Component\Finder\SplFileInfo;
 final class FilesFinder
 {
     /**
+     * @param list<string> $extensions
      * @param list<string> $paths
      * @param list<string> $exclusions
      */
     public function __construct(
-        private string $namePattern,
+        private array $extensions,
         private array $paths,
         private array $exclusions,
         private string $currentWorkingDirectory,
@@ -59,7 +60,10 @@ final class FilesFinder
 
         $finder = Finder::create()
             ->files()
-            ->name([$this->namePattern])
+            ->name(array_map(
+                fn($extension) => sprintf('*.%s', $extension),
+                $this->extensions,
+            ))
             ->in($directories)
             ->append($files)
             ->sortByName()

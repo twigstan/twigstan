@@ -11,8 +11,14 @@ use Symfony\Component\Finder\SplFileInfo;
 
 final class GivenFilesFinder
 {
+    /**
+     * @param list<string> $phpExtensions
+     * @param list<string> $twigExtensions
+     */
     public function __construct(
         private string $currentWorkingDirectory,
+        private array $phpExtensions,
+        private array $twigExtensions,
     ) {}
 
     /**
@@ -54,7 +60,10 @@ final class GivenFilesFinder
 
         $finder = Finder::create()
             ->files()
-            ->name(['*.twig', '*.php'])
+            ->name(array_map(
+                fn($extension) => sprintf('*.%s', $extension),
+                [...$this->phpExtensions, ...$this->twigExtensions],
+            ))
             ->in($directories)
             ->append($files)
             ->sortByName();

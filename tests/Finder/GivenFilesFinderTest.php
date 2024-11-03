@@ -16,6 +16,8 @@ final class GivenFilesFinderTest extends TestCase
 
         $this->givenFilesFinder = new GivenFilesFinder(
             __DIR__,
+            ['php'],
+            ['twig'],
         );
     }
 

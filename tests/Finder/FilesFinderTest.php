@@ -17,13 +17,13 @@ final class FilesFinderTest extends TestCase
         parent::setUp();
 
         $this->phpFileFinder = new FilesFinder(
-            '*.php',
+            ['php'],
             [__DIR__ . '/files'],
             ['*/exclude.php'],
             __DIR__,
         );
         $this->twigFileFinder = new FilesFinder(
-            '*.twig',
+            ['twig'],
             [__DIR__ . '/files'],
             ['*/exclude.twig'],
             __DIR__,
@@ -51,7 +51,7 @@ final class FilesFinderTest extends TestCase
     public function testFindWithNoPaths(): void
     {
         $finder = new FilesFinder(
-            '*.twig',
+            ['twig'],
             [],
             [],
             __DIR__,
