@@ -6,6 +6,21 @@ parameters:
 			path: src/PHPStan/DynamicReturnType/Filter/SplitReturnType.php
 
 		-
+			message: "#^Creating new PHPStan\\\\Node\\\\Expr\\\\TypeExpr is not covered by backward compatibility promise\\. The class might change in a minor PHPStan version\\.$#"
+			count: 3
+			path: src/PHPStan/DynamicReturnType/Function/CycleReturnType.php
+
+		-
+			message: "#^Access to an undefined property PhpParser\\\\Node\\\\Arg\\|PhpParser\\\\Node\\\\VariadicPlaceholder\\:\\:\\$value\\.$#"
+			count: 1
+			path: src/PHPStan/DynamicReturnType/Function/RandomReturnType.php
+
+		-
+			message: "#^Creating new PHPStan\\\\Node\\\\Expr\\\\TypeExpr is not covered by backward compatibility promise\\. The class might change in a minor PHPStan version\\.$#"
+			count: 3
+			path: src/PHPStan/DynamicReturnType/Function/RandomReturnType.php
+
+		-
 			message: "#^Method TwigStan\\\\Twig\\\\TwigFileCanonicalizer\\:\\:findNamespacesWithinMainNamespace\\(\\) should return array\\<string, list\\<string\\>\\> but returns array\\<int\\|string, non\\-empty\\-list\\<string\\>\\>\\.$#"
 			count: 1
 			path: src/Twig/TwigFileCanonicalizer.php
