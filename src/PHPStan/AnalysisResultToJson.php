@@ -24,7 +24,12 @@ final readonly class AnalysisResultToJson implements ErrorFormatter
 
     public function formatErrors(AnalysisResult $analysisResult, Output $output): int
     {
-        $output->writeLineFormatted(sprintf('<info>Writing analysis result to JSON file: "%s"</info>', $this->jsonFile));
+        if ($output->isVerbose()) {
+            $output->writeLineFormatted(sprintf(
+                '<info>Writing analysis result to JSON file: "%s"</info>',
+                $this->jsonFile,
+            ));
+        }
 
         file_put_contents(
             $this->jsonFile,
