@@ -153,3 +153,4 @@ If you want to dump the types for the whole context (everything that's available
 * [Tomas Votruba](https://github.com/tomasvotruba) for creating and blogging about [Twig PHPStan Compiler](https://github.com/deprecated-packages/twig-phpstan-compiler); and for creating [Bladestan](https://github.com/TomasVotruba/bladestan).
 * [Jan Matošík](https://github.com/HonzaMatosik) for creating a [phpstan-twig proof of concept](https://github.com/driveto/phpstan-twig).
 * [Jeroen Versteeg](https://github.com/drjayvee) for creating [TwigQI](https://github.com/alisqi/TwigStan) and discussing ideas.
+* [Markus Staab](https://github.com/staabm) for improving PHPStan for specific use cases in TwigStan.
