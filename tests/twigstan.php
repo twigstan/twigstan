@@ -14,5 +14,5 @@ return TwigStanConfig::configure(__DIR__)
     ->twigContextCollector(CustomControllerContextCollector::class)
     ->ignoreErrors(IgnoreError::path('*/_*.twig'))
     ->twigExtensions('twig', sprintf('twig%d', Environment::MAJOR_VERSION))
-    ->editorUrl('phpstorm://open?file=%%file%%&line=%%line%%')
+    ->editorUrl('phpstorm://open?file=%file%&line=%line%')
 ;
