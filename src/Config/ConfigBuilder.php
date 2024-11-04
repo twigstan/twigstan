@@ -23,6 +23,7 @@ final class ConfigBuilder
     private ?string $phpstanConfigurationFile = null;
     private null | false | string $phpstanMemoryLimit = null;
     private ?string $twigEnvironmentLoader = null;
+    private ?string $editorUrl = null;
 
     /**
      * @var list<class-string<TemplateContextCollector<Node>>>
@@ -203,6 +204,7 @@ final class ConfigBuilder
             $this->ignoreErrors,
             $this->baselineErrors,
             $this->twigContextCollectors,
+            $this->editorUrl,
         );
     }
 
@@ -472,6 +474,13 @@ final class ConfigBuilder
 
             $this->twigContextCollectors[] = $className;
         }
+
+        return $this;
+    }
+
+    public function editorUrl(string $editorUrl): self
+    {
+        $this->editorUrl = $editorUrl;
 
         return $this;
     }

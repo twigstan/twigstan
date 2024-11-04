@@ -29,6 +29,7 @@ services:
 		)
 		phpExtensions: %phpExtensions%
 		twigExtensions: %twigExtensions%
+		editorUrl: %editorUrl%
 	)
 	- TwigStan\Application\PHPStanRunner(
 		phpstanBinPath: %phpstanBinPath%

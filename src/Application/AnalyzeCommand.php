@@ -69,6 +69,7 @@ final class AnalyzeCommand extends Command
         private bool $onlyAnalyzeTemplatesWithContext,
         private array $phpExtensions,
         private array $twigExtensions,
+        private ?string $editorUrl,
     ) {
         parent::__construct();
     }
@@ -569,16 +570,12 @@ final class AnalyzeCommand extends Command
 
     private function linkify(string $fileName, string $relativeFileName, int $lineNumber): string
     {
-        if (isset($_SERVER['TERMINAL_EMULATOR']) && $_SERVER['TERMINAL_EMULATOR'] === 'JetBrains-JediTerm') {
-            return sprintf('file://%s:%d', $fileName, $lineNumber);
-        }
-
         return sprintf(
             '<href=%s>%s:%d</>',
             str_replace(
-                ['%file%', '%line%'],
-                [$fileName, $lineNumber],
-                'phpstorm://open?file=%file%&line=%line%',
+                ['%relFile%', '%file%', '%line%'],
+                [$relativeFileName, $fileName, $lineNumber],
+                $this->editorUrl,
             ),
             $relativeFileName,
             $lineNumber,

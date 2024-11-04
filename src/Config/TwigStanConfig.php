@@ -41,6 +41,7 @@ final readonly class TwigStanConfig
         public array $ignoreErrors,
         public array $baselineErrors,
         public array $twigContextCollectors,
+        public ?string $editorUrl,
     ) {}
 
     public static function configure(string $projectRootDirectory): ConfigBuilder
