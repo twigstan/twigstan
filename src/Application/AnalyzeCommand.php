@@ -570,6 +570,14 @@ final class AnalyzeCommand extends Command
 
     private function linkify(string $fileName, string $relativeFileName, int $lineNumber): string
     {
+        if ($this->editorUrl === null) {
+            return sprintf(
+                '%s:%d',
+                $relativeFileName,
+                $lineNumber,
+            );
+        }
+
         return sprintf(
             '<href=%s>%s:%d</>',
             str_replace(
