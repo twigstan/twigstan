@@ -124,3 +124,15 @@ services:
 		class: TwigStan\PHPStan\DynamicReturnType\Function\ConstantReturnType
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Function\RandomReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Function\CycleReturnType
+		tags:
+			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\Function\ConvertDateReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
