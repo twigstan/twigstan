@@ -7,7 +7,7 @@
 
 {% for name in names %}
     Hello {{ name }}
-    {% assert_type name "string" %}
+    {% assert_type name 'string' %}
 {% endfor %}
 
 {% assert_type name "'Ruud'" %}

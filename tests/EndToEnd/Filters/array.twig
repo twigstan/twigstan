@@ -26,7 +26,7 @@ https://twig.symfony.com/doc/3.x/filters/batch.html
 
 https://twig.symfony.com/doc/3.x/filters/column.html
 \Twig\Extension\CoreExtension::column
-{% assert_type [{name: 'John'}, {name: 'Jane'}] | column('name') "array{'John', 'Jane'}" %}
+{% assert_type [{ name: 'John' }, { name: 'Jane' }] | column('name') "array{'John', 'Jane'}" %}
 
 https://twig.symfony.com/doc/3.x/filters/filter.html
 \Twig\Extension\CoreExtension::filter
@@ -35,8 +35,8 @@ https://twig.symfony.com/doc/3.x/filters/filter.html
 https://twig.symfony.com/doc/3.x/filters/map.html
 \Twig\Extension\CoreExtension::map
 {% assert_type [
-    {first: "John", last: "Doe"},
-    {first: "Jane", last: "Doe"},
+    { first: 'John', last: 'Doe' },
+    { first: 'Jane', last: 'Doe' },
 ] | map(p => "#{p.first} #{p.last}") 'array<0|1, non-falsy-string>' %}
 
 https://twig.symfony.com/doc/3.x/filters/reduce.html
