@@ -1,0 +1,13 @@
+{% types {
+    downloadUrl: 'string'
+} %}
+
+{% set content %}
+    {% assert_type downloadUrl 'string' %}
+    {% set allowDownload = true %}
+    {% assert_type allowDownload 'true' %}
+{% endset %}
+
+{{ content }}
+
+{% assert_type allowDownload 'true' %}
