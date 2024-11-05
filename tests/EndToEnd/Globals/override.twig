@@ -1,7 +1,7 @@
-{% assert_type app "Symfony\\Bridge\\Twig\\AppVariable" %}
+{% assert_type app 'Symfony\\Bridge\\Twig\\AppVariable' %}
 
 {% set app = false %}
 
 {% block main %}
-    {% assert_type app "false" %}
+    {% assert_type app 'false' %}
 {% endblock %}

@@ -69,6 +69,18 @@ function phpcsfixer(
     return exit_code(sprintf('vendor/bin/php-cs-fixer %s --diff', $fix ? 'fix' : 'check'));
 }
 
+#[AsTask(name: 'twig-cs-fixer')]
+function twigcsfixer(
+    #[AsOption(mode: InputOption::VALUE_NEGATABLE)]
+    bool $fix = true,
+): int {
+    if ( ! fs()->exists('vendor')) {
+        composer_install();
+    }
+
+    return exit_code(sprintf('vendor/bin/twig-cs-fixer %s', $fix ? 'fix' : 'check'));
+}
+
 #[AsTask(name: 'editorconfig')]
 function editorconfig(): int
 {
@@ -160,6 +172,16 @@ function qa(): int
 
     io()->section('Running PHP-CS-Fixer');
     $exitCode = phpcsfixer();
+
+    if ($exitCode !== 0) {
+        return $exitCode;
+    }
+
+    io()->writeln('');
+    io()->success('No issues found');
+
+    io()->section('Running Twig-CS-Fixer');
+    $exitCode = twigcsfixer();
 
     if ($exitCode !== 0) {
         return $exitCode;

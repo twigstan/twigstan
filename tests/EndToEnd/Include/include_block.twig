@@ -1,23 +1,23 @@
 {% set somethingInTheContext = true %}
 
-{% include '@EndToEnd/Include/_footer.twig' %}
-{% include '@EndToEnd/Include/_footer.twig' only %}
-{% include '@EndToEnd/Include/_footer.twig' with { title: 'Hello, World!' } %}
-{% include '@EndToEnd/Include/_footer.twig' with { title: 'Hello, World!' } only %}
+{{ include('@EndToEnd/Include/_footer.twig') }}
+{{ include('@EndToEnd/Include/_footer.twig', [], false) }}
+{{ include('@EndToEnd/Include/_footer.twig', { title: 'Hello, World!' }) }}
+{{ include('@EndToEnd/Include/_footer.twig', { title: 'Hello, World!' }, false) }}
 
-{% include '@EndToEnd/Include/maybe-exists.twig' ignore missing %}
-{% include '@EndToEnd/Include/maybe-exists.twig' ignore missing only %}
-{% include '@EndToEnd/Include/maybe-exists.twig' ignore missing with { title: 'Hello, World!' } %}
-{% include '@EndToEnd/Include/maybe-exists.twig' ignore missing with { title: 'Hello, World!' } only %}
+{{ include('@EndToEnd/Include/maybe-exists.twig', [], true, true) }}
+{{ include('@EndToEnd/Include/maybe-exists.twig', [], false, true) }}
+{{ include('@EndToEnd/Include/maybe-exists.twig', { title: 'Hello, World!' }, true, true) }}
+{{ include('@EndToEnd/Include/maybe-exists.twig', { title: 'Hello, World!' }, false, true) }}
 
-{% include ['@EndToEnd/Include/maybe-exists.twig', '@EndToEnd/Include/_footer.twig'] %}
-{% include ['@EndToEnd/Include/maybe-exists.twig', '@EndToEnd/Include/_footer.twig'] ignore missing %}
+{{ include(['@EndToEnd/Include/maybe-exists.twig', '@EndToEnd/Include/_footer.twig']) }}
+{{ include(['@EndToEnd/Include/maybe-exists.twig', '@EndToEnd/Include/_footer.twig'], [], true, true) }}
 
 {% set template = '@EndToEnd/Include/_footer.twig' %}
-{% include template %}
+{{ include(template) }}
 
 {% types {
     isMobile: 'bool'
 } %}
 
-{% include isMobile ? '@EndToEnd/Include/isMobile.twig' : '@EndToEnd/Include/_footer.twig' %}
+{{ include(isMobile ? '@EndToEnd/Include/isMobile.twig' : '@EndToEnd/Include/_footer.twig') }}

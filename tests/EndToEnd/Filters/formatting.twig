@@ -6,25 +6,25 @@
 
 https://twig.symfony.com/doc/3.x/filters/date.html
 \Twig\Extension\CoreExtension::formatDate
-{% assert_type "now" | date("m/d/Y") 'string' %}
-{% assert_type dateTime | date("m/d/Y") 'string' %}
-{% assert_type dateTimeImmutable | date("m/d/Y") 'string' %}
-{% assert_type dateTimeInterface | date("m/d/Y") 'string' %}
+{% assert_type 'now' | date('m/d/Y') 'string' %}
+{% assert_type dateTime | date('m/d/Y') 'string' %}
+{% assert_type dateTimeImmutable | date('m/d/Y') 'string' %}
+{% assert_type dateTimeInterface | date('m/d/Y') 'string' %}
 
 https://twig.symfony.com/doc/3.x/filters/date_modify.html
 \Twig\Extension\CoreExtension::modifyDate
-{% assert_type "now" | date_modify("+1 day") 'DateTime' %}
-{% assert_type dateTime | date_modify("+1 day") 'DateTime' %}
-{% assert_type dateTimeImmutable | date_modify("+1 day") 'DateTimeImmutable' %}
-{% assert_type dateTimeInterface | date_modify("+1 day") 'DateTimeInterface' %}
+{% assert_type 'now' | date_modify('+1 day') 'DateTime' %}
+{% assert_type dateTime | date_modify('+1 day') 'DateTime' %}
+{% assert_type dateTimeImmutable | date_modify('+1 day') 'DateTimeImmutable' %}
+{% assert_type dateTimeInterface | date_modify('+1 day') 'DateTimeInterface' %}
 
 https://twig.symfony.com/doc/3.x/filters/format.html
 \Twig\Extension\CoreExtension::sprintf
-{% assert_type "I like %s and %s." | format('apples', 'oranges') "'I like apples and oranges.'" %}
+{% assert_type 'I like %s and %s.' | format('apples', 'oranges') "'I like apples and oranges.'" %}
 
 https://twig.symfony.com/doc/3.x/filters/replace.html
 \Twig\Extension\CoreExtension::replace
-{% assert_type "I like %this% and %that%." | replace({'%this%': fruit, '%that%': "oranges"}) 'string' %}
+{% assert_type 'I like %this% and %that%.' | replace({ '%this%': fruit, '%that%': 'oranges' }) 'string' %}
 
 https://twig.symfony.com/doc/3.x/filters/number_format.html
 \Twig\Extension\CoreExtension::formatNumber

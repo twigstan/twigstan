@@ -9,3 +9,4 @@
 /twig-loader.php
 /.phpstan
 /.castor.stub.php
+/.twig-cs-fixer.cache

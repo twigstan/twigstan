@@ -1,5 +1,5 @@
-{% use "@EndToEnd/Inheritance/_layout.twig" %}
-{% use "@EndToEnd/Inheritance/_other.twig" with main as other_main %}
+{% use '@EndToEnd/Inheritance/_layout.twig' %}
+{% use '@EndToEnd/Inheritance/_other.twig' with main as other_main %}
 
 {% set subtitle = 'Hello' %}
 {% assert_type subtitle "'Hello'" %}
@@ -18,7 +18,7 @@
 {% endblock %}
 
 {% assert_type subtitle "'Hello'" %}
-{% assert_type name "*ERROR*" %}
+{% assert_type name '*ERROR*' %}
 
 {% block footer %}
     <footer>Copyright</footer>

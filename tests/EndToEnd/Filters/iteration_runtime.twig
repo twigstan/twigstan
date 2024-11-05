@@ -9,4 +9,4 @@ https://twig.symfony.com/doc/3.x/filters/default.html
 https://twig.symfony.com/doc/3.x/filters/keys.html
 \Twig\Extension\CoreExtension::keys
 {% assert_type [1, 2, 3, 4] | keys 'array{0, 1, 2, 3}' %}
-{% assert_type {a: 'aa', b: 'bb'} | keys "array{'a', 'b'}" %}
+{% assert_type { a: 'aa', b: 'bb' } | keys "array{'a', 'b'}" %}

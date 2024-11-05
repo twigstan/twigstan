@@ -5,35 +5,35 @@
 https://twig.symfony.com/doc/3.x/filters/reverse.html
 \Twig\Extension\CoreExtension::reverse
 {% assert_type ['a', 'b'] | reverse "array{'b', 'a'}" %}
-{% assert_type array | reverse "array<string>" %}
-{% assert_type "Hello" | reverse "string" %}
+{% assert_type array | reverse 'array<string>' %}
+{% assert_type 'Hello' | reverse 'string' %}
 
 https://twig.symfony.com/doc/3.x/filters/shuffle.html
 \Twig\Extension\CoreExtension::shuffle
 {% assert_type ['a', 'b'] | shuffle "non-empty-array<0|1, 'a'|'b'>&list" %}
-{% assert_type array | shuffle "list<string>" %}
-{% assert_type "Hello" | shuffle "string" %}
+{% assert_type array | shuffle 'list<string>' %}
+{% assert_type 'Hello' | shuffle 'string' %}
 
 https://twig.symfony.com/doc/3.x/filters/length.html
 \Twig\Extension\CoreExtension::length
-{% assert_type ['a', 'b'] | length "int" %}
-{% assert_type array | length "int" %}
-{% assert_type "Hello" | length "int" %}
+{% assert_type ['a', 'b'] | length 'int' %}
+{% assert_type array | length 'int' %}
+{% assert_type 'Hello' | length 'int' %}
 
 https://twig.symfony.com/doc/3.x/filters/slice.html
 \Twig\Extension\CoreExtension::slice
 {% assert_type ['a', 'b'] | slice(1, 2) "array{'b'}" %}
-{% assert_type array | slice(1, 2) "array<string>" %}
-{% assert_type "Hello" | slice(0, 2) "'He'" %}
+{% assert_type array | slice(1, 2) 'array<string>' %}
+{% assert_type 'Hello' | slice(0, 2) "'He'" %}
 
 https://twig.symfony.com/doc/3.x/filters/first.html
 \Twig\Extension\CoreExtension::first
 {% assert_type ['a', 'b'] | first "'a'" %}
-{% assert_type array | first "string" %}
-{% assert_type "Hello" | first "'H'" %}
+{% assert_type array | first 'string' %}
+{% assert_type 'Hello' | first "'H'" %}
 
 https://twig.symfony.com/doc/3.x/filters/last.html
 \Twig\Extension\CoreExtension::last
 {% assert_type ['a', 'b'] | last "'b'" %}
-{% assert_type array | last "string" %}
-{% assert_type "Hello" | last "'o'" %}
+{% assert_type array | last 'string' %}
+{% assert_type 'Hello' | last "'o'" %}
