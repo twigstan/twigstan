@@ -40,7 +40,8 @@
         "symfony/routing": "^7.1",
         "symfony/twig-bridge": "^7.1",
         "symfony/var-dumper": "^7.1",
-        "ticketswap/phpstan-error-formatter": "^1.0.3"
+        "ticketswap/phpstan-error-formatter": "^1.0.3",
+        "vincentlanglet/twig-cs-fixer": "^3.1"
     },
     "autoload": {
         "psr-4": {

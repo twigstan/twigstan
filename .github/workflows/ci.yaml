@@ -69,6 +69,9 @@ jobs:
             -   name: Run PHP CS Fixer
                 run: castor php-cs-fixer --no-fix
 
+            -   name: Run Twig CS Fixer
+                run: castor twig-cs-fixer --no-fix
+
             -   name: Check editorconfig
                 run: castor editorconfig
 
