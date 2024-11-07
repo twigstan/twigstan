@@ -16,7 +16,7 @@ final readonly class MarkNameExpressionAsAlwaysDefinedVisitor implements NodeVis
     {
         // TODO: twig/twig:v3.15.0 Remove NameExpression check and bump minimum required Twig version to 3.15
         // @phpstan-ignore class.notFound
-        if ($node::class !== (Environment::VERSION_ID <= 31400 ? NameExpression::class : ContextVariable::class)) {
+        if ($node::class !== (Environment::VERSION_ID < 31500 ? NameExpression::class : ContextVariable::class)) {
             return $node;
         }
 
