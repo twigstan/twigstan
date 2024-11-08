@@ -12,6 +12,7 @@ use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\Type;
+use Twig\Environment;
 use Twig\Extension\CoreExtension;
 
 final readonly class SortReturnType implements DynamicStaticMethodReturnTypeExtension
@@ -31,15 +32,17 @@ final readonly class SortReturnType implements DynamicStaticMethodReturnTypeExte
         StaticCall $methodCall,
         Scope $scope,
     ): ?Type {
-        if (count($methodCall->args) < 2) {
+        $args = $methodCall->args;
+
+        if (Environment::MAJOR_VERSION === 3) {
+            array_shift($args);
+        }
+
+        if ( ! $args[0] instanceof Arg) {
             return null;
         }
 
-        if ( ! $methodCall->args[1] instanceof Arg) {
-            return null;
-        }
-
-        $input = $scope->getType($methodCall->args[1]->value);
+        $input = $scope->getType($args[0]->value);
 
         if ($input->isConstantArray()->yes()) {
             return $input->generalize(GeneralizePrecision::lessSpecific());

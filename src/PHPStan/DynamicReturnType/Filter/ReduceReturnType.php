@@ -10,6 +10,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
+use Twig\Environment;
 use Twig\Extension\CoreExtension;
 
 final readonly class ReduceReturnType implements DynamicStaticMethodReturnTypeExtension
@@ -29,15 +30,17 @@ final readonly class ReduceReturnType implements DynamicStaticMethodReturnTypeEx
         StaticCall $methodCall,
         Scope $scope,
     ): ?Type {
-        if (count($methodCall->args) !== 3) {
+        $args = $methodCall->args;
+
+        if (Environment::MAJOR_VERSION === 3) {
+            array_shift($args);
+        }
+
+        if ( ! $args[1] instanceof Arg) {
             return null;
         }
 
-        if ( ! $methodCall->args[2] instanceof Arg) {
-            return null;
-        }
-
-        $reducer = $scope->getType($methodCall->args[2]->value);
+        $reducer = $scope->getType($args[1]->value);
 
         if ( ! $reducer->isCallable()->yes()) {
             return null;

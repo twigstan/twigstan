@@ -11,6 +11,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
+use Twig\Environment;
 use Twig\Extension\CoreExtension;
 
 final readonly class MapReturnType implements DynamicStaticMethodReturnTypeExtension
@@ -30,20 +31,22 @@ final readonly class MapReturnType implements DynamicStaticMethodReturnTypeExten
         StaticCall $methodCall,
         Scope $scope,
     ): ?Type {
-        if (count($methodCall->args) !== 3) {
+        $args = $methodCall->args;
+
+        if (Environment::MAJOR_VERSION === 3) {
+            array_shift($args);
+        }
+
+        if ( ! $args[0] instanceof Arg) {
             return null;
         }
 
-        if ( ! $methodCall->args[1] instanceof Arg) {
+        if ( ! $args[1] instanceof Arg) {
             return null;
         }
 
-        if ( ! $methodCall->args[2] instanceof Arg) {
-            return null;
-        }
-
-        $input = $scope->getType($methodCall->args[1]->value);
-        $reducer = $scope->getType($methodCall->args[2]->value);
+        $input = $scope->getType($args[0]->value);
+        $reducer = $scope->getType($args[1]->value);
 
         if ( ! $reducer->isCallable()->yes()) {
             return null;
