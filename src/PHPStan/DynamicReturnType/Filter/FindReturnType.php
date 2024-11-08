@@ -11,6 +11,7 @@ use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use Twig\Environment;
 use Twig\Extension\CoreExtension;
 
 final readonly class FindReturnType implements DynamicStaticMethodReturnTypeExtension
@@ -30,17 +31,23 @@ final readonly class FindReturnType implements DynamicStaticMethodReturnTypeExte
         StaticCall $methodCall,
         Scope $scope,
     ): ?Type {
-        if (count($methodCall->args) !== 3) {
+        $args = $methodCall->args;
+
+        if (Environment::MAJOR_VERSION === 3) {
+            array_shift($args);
+        }
+
+        if ($args === []) {
             return null;
         }
 
-        if ( ! $methodCall->args[1] instanceof Arg) {
+        if ( ! $args[0] instanceof Arg) {
             return null;
         }
 
         // TODO: When PHPStan supports array_find, pass that to getType.
 
-        $input = $scope->getType($methodCall->args[1]->value);
+        $input = $scope->getType($args[0]->value);
 
         return TypeCombinator::addNull($input->getIterableValueType());
     }
