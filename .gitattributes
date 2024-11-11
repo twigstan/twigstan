@@ -5,7 +5,7 @@ castor.php export-ignore
 composer.json
 composer.lock export-ignore
 composer-dependency-analyser.php export-ignore
-phpstan.neon export-ignore
+/phpstan.neon export-ignore
 phpstan-baseline.neon export-ignore
 phpstan-local.neon export-ignore
 phpunit.xml export-ignore
