@@ -573,7 +573,7 @@ final class AnalyzeCommand extends Command
             '<href=%s>%s:%d</>',
             str_replace(
                 ['%relFile%', '%file%', '%line%'],
-                [$relativeFileName, $fileName, $lineNumber],
+                [$relativeFileName, $fileName, (string) $lineNumber],
                 $this->editorUrl,
             ),
             $relativeFileName,

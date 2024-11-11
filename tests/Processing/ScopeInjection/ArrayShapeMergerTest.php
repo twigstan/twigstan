@@ -49,30 +49,30 @@ final class ArrayShapeMergerTest extends TestCase
     {
         yield [
             // left: array{firstName: 'Jane'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // right: array{isAdmin: true}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('isAdmin'),
+                    new ConstExprStringNode('isAdmin', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new ConstTypeNode(new ConstExprTrueNode()),
                 ),
             ]),
             // result: array{firstName?: 'Jane', isAdmin?: true}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     true,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('isAdmin'),
+                    new ConstExprStringNode('isAdmin', ConstExprStringNode::SINGLE_QUOTED),
                     true,
                     new ConstTypeNode(new ConstExprTrueNode()),
                 ),
@@ -82,27 +82,27 @@ final class ArrayShapeMergerTest extends TestCase
 
         yield [
             // left: array{firstName: 'Jane'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // right: array{firstName: 'Jane'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // result: array{firstName: 'Jane'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             false,
@@ -110,29 +110,29 @@ final class ArrayShapeMergerTest extends TestCase
 
         yield [
             // left: array{firstName: 'Jane'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // right: array{firstName: 'John'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('John')),
+                    new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // result: array{firstName: 'Jane'|'John'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('Jane')),
-                        new ConstTypeNode(new ConstExprStringNode('John')),
+                        new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
                     ]),
                 ),
             ]),
@@ -141,33 +141,33 @@ final class ArrayShapeMergerTest extends TestCase
 
         yield [
             // left: array{firstName: 'Jane'|'John'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('Jane')),
-                        new ConstTypeNode(new ConstExprStringNode('John')),
+                        new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
                     ]),
                 ),
             ]),
             // right: array{firstName: 'James'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('James')),
+                    new ConstTypeNode(new ConstExprStringNode('James', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // result: array{firstName: 'Jane'|'John'|'James'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('Jane')),
-                        new ConstTypeNode(new ConstExprStringNode('John')),
-                        new ConstTypeNode(new ConstExprStringNode('James')),
+                        new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('James', ConstExprStringNode::SINGLE_QUOTED)),
                     ]),
                 ),
             ]),
@@ -176,33 +176,33 @@ final class ArrayShapeMergerTest extends TestCase
 
         yield [
             // left: array{firstName: 'James'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('James')),
+                    new ConstTypeNode(new ConstExprStringNode('James', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // right: array{firstName: 'Jane'|'John'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('Jane')),
-                        new ConstTypeNode(new ConstExprStringNode('John')),
+                        new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
                     ]),
                 ),
             ]),
             // result: array{firstName: 'James'|'Jane'|'John'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('James')),
-                        new ConstTypeNode(new ConstExprStringNode('Jane')),
-                        new ConstTypeNode(new ConstExprStringNode('John')),
+                        new ConstTypeNode(new ConstExprStringNode('James', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
                     ]),
                 ),
             ]),
@@ -211,37 +211,37 @@ final class ArrayShapeMergerTest extends TestCase
 
         yield [
             // left: array{firstName: 'Jane'|'John'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('Jane')),
-                        new ConstTypeNode(new ConstExprStringNode('John')),
+                        new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
                     ]),
                 ),
             ]),
             // right: array{firstName: 'James'|'Jill'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('James')),
-                        new ConstTypeNode(new ConstExprStringNode('Jill')),
+                        new ConstTypeNode(new ConstExprStringNode('James', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('Jill', ConstExprStringNode::SINGLE_QUOTED)),
                     ]),
                 ),
             ]),
             // result: array{firstName: 'James'|'Jane'|'John'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('Jane')),
-                        new ConstTypeNode(new ConstExprStringNode('John')),
-                        new ConstTypeNode(new ConstExprStringNode('James')),
-                        new ConstTypeNode(new ConstExprStringNode('Jill')),
+                        new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('James', ConstExprStringNode::SINGLE_QUOTED)),
+                        new ConstTypeNode(new ConstExprStringNode('Jill', ConstExprStringNode::SINGLE_QUOTED)),
                     ]),
                 ),
             ]),
@@ -250,27 +250,27 @@ final class ArrayShapeMergerTest extends TestCase
 
         yield [
             // left: array{firstName: 'Jane'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // right: array{firstName?: 'Jane'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     true,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // result: array{firstName?: 'Jane'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     true,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             false,
@@ -278,25 +278,25 @@ final class ArrayShapeMergerTest extends TestCase
 
         yield [
             // left: array{isAdmin: true}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('isAdmin'),
+                    new ConstExprStringNode('isAdmin', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new ConstTypeNode(new ConstExprTrueNode()),
                 ),
             ]),
             // right: array{isAdmin: false}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('isAdmin'),
+                    new ConstExprStringNode('isAdmin', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new ConstTypeNode(new ConstExprFalseNode()),
                 ),
             ]),
             // result: array{isAdmin: true|false}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('isAdmin'),
+                    new ConstExprStringNode('isAdmin', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new UnionTypeNode([
                         new ConstTypeNode(new ConstExprTrueNode()),
@@ -315,58 +315,58 @@ final class ArrayShapeMergerTest extends TestCase
     {
         yield [
             // left: array{firstName: 'Jane', lastName: 'Doe'}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('lastName'),
+                    new ConstExprStringNode('lastName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Doe')),
+                    new ConstTypeNode(new ConstExprStringNode('Doe', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
             ]),
             // right: array{age?: int, lastName?: string, isAdmin: true}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('age'),
+                    new ConstExprStringNode('age', ConstExprStringNode::SINGLE_QUOTED),
                     true,
                     new IdentifierTypeNode('int'),
                 ),
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('lastName'),
+                    new ConstExprStringNode('lastName', ConstExprStringNode::SINGLE_QUOTED),
                     true,
                     new IdentifierTypeNode('string'),
                 ),
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('isAdmin'),
+                    new ConstExprStringNode('isAdmin', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new ConstTypeNode(new ConstExprTrueNode()),
                 ),
             ]),
             // result: array{firstName: 'Jane', lastName?: 'Doe'|string, age?: int, isAdmin: true}
-            new ArrayShapeNode([
+            ArrayShapeNode::createSealed([
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('firstName'),
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
                     false,
-                    new ConstTypeNode(new ConstExprStringNode('Jane')),
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
                 ),
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('lastName'),
+                    new ConstExprStringNode('lastName', ConstExprStringNode::SINGLE_QUOTED),
                     true,
                     new UnionTypeNode([
-                        new ConstTypeNode(new ConstExprStringNode('Doe')),
+                        new ConstTypeNode(new ConstExprStringNode('Doe', ConstExprStringNode::SINGLE_QUOTED)),
                         new IdentifierTypeNode('string'),
                     ]),
                 ),
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('age'),
+                    new ConstExprStringNode('age', ConstExprStringNode::SINGLE_QUOTED),
                     true,
                     new IdentifierTypeNode('int'),
                 ),
                 new ArrayShapeItemNode(
-                    new ConstExprStringNode('isAdmin'),
+                    new ConstExprStringNode('isAdmin', ConstExprStringNode::SINGLE_QUOTED),
                     false,
                     new ConstTypeNode(new ConstExprTrueNode()),
                 ),

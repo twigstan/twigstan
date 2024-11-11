@@ -16,6 +16,7 @@ use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
 use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\ParserConfig;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\PHP\PrettyPrinter;
@@ -41,10 +42,11 @@ final readonly class TwigScopeInjector
      */
     public function inject(array $collectedData, FlatteningResultCollection $collection, string $targetDirectory): ScopeInjectionResultCollection
     {
-        $lexer = new Lexer();
-        $constExprParser = new ConstExprParser(true, true);
-        $typeParser = new TypeParser($constExprParser, true);
-        $phpDocParser = new PhpDocParser($typeParser, $constExprParser);
+        $config = new ParserConfig(usedAttributes: ['lines' => true, 'indexes' => true]);
+        $lexer = new Lexer($config);
+        $constExprParser = new ConstExprParser($config);
+        $typeParser = new TypeParser($config, $constExprParser);
+        $phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser);
 
         $contextBeforeBlock = array_map(
             function (CollectedData $collectedData) use ($lexer, $phpDocParser) {
@@ -60,7 +62,7 @@ final readonly class TwigScopeInjector
                 $context = $phpDocNode->type;
 
                 if ( ! $context instanceof ArrayShapeNode) {
-                    $context = new ArrayShapeNode([]);
+                    $context = ArrayShapeNode::createSealed([]);
                 }
 
                 return [

@@ -10,7 +10,7 @@ https://twig.symfony.com/doc/3.x/filters/reverse.html
 
 https://twig.symfony.com/doc/3.x/filters/shuffle.html
 \Twig\Extension\CoreExtension::shuffle
-{% assert_type ['a', 'b'] | shuffle "non-empty-array<0|1, 'a'|'b'>&list" %}
+{% assert_type ['a', 'b'] | shuffle "non-empty-list<'a'|'b'>" %}
 {% assert_type array | shuffle 'list<string>' %}
 {% assert_type 'Hello' | shuffle 'string' %}
 

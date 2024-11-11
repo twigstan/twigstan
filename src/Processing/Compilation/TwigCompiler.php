@@ -15,6 +15,7 @@ use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
 use PHPStan\PhpDocParser\Parser\TypeParser;
+use PHPStan\PhpDocParser\ParserConfig;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -54,10 +55,11 @@ final readonly class TwigCompiler
      */
     public function compile(ModuleNode | string $template, string $targetDirectory, array $collectedData): CompilationResult
     {
-        $lexer = new Lexer();
-        $constExprParser = new ConstExprParser(true, true);
-        $typeParser = new TypeParser($constExprParser, true);
-        $phpDocParser = new PhpDocParser($typeParser, $constExprParser);
+        $config = new ParserConfig(usedAttributes: ['lines' => true, 'indexes' => true]);
+        $lexer = new Lexer($config);
+        $constExprParser = new ConstExprParser($config);
+        $typeParser = new TypeParser($config, $constExprParser);
+        $phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser);
 
         $twigNode = $this->twigNodeParser->parse($template);
 
@@ -95,7 +97,7 @@ final readonly class TwigCompiler
         foreach ($templateRenderContexts as $templateToRender => $contexts) {
             $newContext = null;
             foreach (array_unique($contexts) as $context) {
-                $contextShape = new ArrayShapeNode([]);
+                $contextShape = ArrayShapeNode::createSealed([]);
 
                 if ($context !== 'array{}') {
                     $phpDocNode = $phpDocParser->parseTagValue(
@@ -110,7 +112,7 @@ final readonly class TwigCompiler
                     $contextShape = $phpDocNode->type;
 
                     if ( ! $contextShape instanceof ArrayShapeNode) {
-                        $contextShape = new ArrayShapeNode([]);
+                        $contextShape = ArrayShapeNode::createSealed([]);
                     }
                 }
 
@@ -136,7 +138,7 @@ final readonly class TwigCompiler
             new AddExtraLineNumberCommentVisitor(),
             new AppendFilePathToLineCommentVisitor($twigFilePath),
             new RemoveImportsVisitor(),
-            new AddTypeCommentsToTemplateVisitor($templateRenderContext[$twigFilePath] ?? new ArrayShapeNode([])),
+            new AddTypeCommentsToTemplateVisitor($templateRenderContext[$twigFilePath] ?? ArrayShapeNode::createSealed([])),
             new IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor(),
             new AddGetExtensionMethodVisitor(),
             new RefactorExtensionCallVisitor(),
