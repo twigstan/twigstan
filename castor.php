@@ -136,7 +136,7 @@ function verify_commits(): int
     return 0;
 }
 
-#[AsTask(name: 'qa')]
+#[AsTask(name: 'qa', default: true)]
 function qa(): int
 {
     if ( ! fs()->exists('vendor')) {
