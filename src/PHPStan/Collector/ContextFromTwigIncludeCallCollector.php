@@ -4,44 +4,67 @@ declare(strict_types=1);
 
 namespace TwigStan\PHPStan\Collector;
 
+use LogicException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use Twig\Extension\CoreExtension;
+use TwigStan\Twig\CommentHelper;
 
 /**
- * @implements TemplateContextCollector<Node\Expr\StaticCall>
+ * @implements TemplateContextCollector<Node\Stmt\Expression>
  */
 final readonly class ContextFromTwigIncludeCallCollector implements TemplateContextCollector
 {
     public function getNodeType(): string
     {
-        return Node\Expr\StaticCall::class;
+        return Node\Stmt\Expression::class;
     }
 
     public function processNode(Node $node, Scope $scope): ?array
     {
         // Find: yield \Twig\Extension\CoreExtension::include($this->env, $context, "@EndToEnd/Include/footer.twig", ["title" => "Hello, World!"], \false);
 
-        if ( ! $node->class instanceof Node\Name\FullyQualified) {
+        if ( ! $node->expr instanceof Node\Expr\Yield_) {
             return null;
         }
 
-        if ($node->class->toString() !== CoreExtension::class) {
+        if ( ! $node->expr->value instanceof Node\Expr\StaticCall) {
             return null;
         }
 
-        if ( ! $node->name instanceof Node\Identifier) {
+        if ( ! $node->expr->value->class instanceof Node\Name\FullyQualified) {
             return null;
         }
 
-        if ($node->name->name !== 'include') {
+        if ($node->expr->value->class->toString() !== CoreExtension::class) {
             return null;
         }
 
-        $args = $node->getArgs();
+        if ( ! $node->expr->value->name instanceof Node\Identifier) {
+            return null;
+        }
+
+        if ($node->expr->value->name->name !== 'include') {
+            return null;
+        }
+
+        $sourceLocation = null;
+        foreach ($node->getComments() as $comment) {
+            $sourceLocation = CommentHelper::getSourceLocationFromComment($comment->getText());
+
+            if ($sourceLocation !== null) {
+                break;
+            }
+        }
+
+        if ($sourceLocation === null) {
+            throw new LogicException(sprintf('Could not find Twig line number on %s:%d.', $scope->getFile(), $node->getStartLine()));
+        }
+
+        $args = $node->expr->value->getArgs();
 
         if (count($args) < 3) {
             return null;
@@ -86,8 +109,7 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
         $result = [];
         foreach ($templates as $template) {
             $result[] = [
-                'startLine' => $node->getStartLine(),
-                'endLine' => $node->getEndLine(),
+                'sourceLocation' => $sourceLocation,
                 'template' => $template->getValue(),
                 'context' => (new Printer())->print($templateContext->toPhpDocNode()),
             ];

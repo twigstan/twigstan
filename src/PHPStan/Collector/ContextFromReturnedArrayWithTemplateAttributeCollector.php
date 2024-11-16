@@ -12,6 +12,7 @@ use PHPStan\Reflection\ClassReflection;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Routing\Annotation\Route as LegacyRoute;
 use Symfony\Component\Routing\Attribute\Route;
+use TwigStan\Twig\SourceLocation;
 
 /**
  * @implements TemplateContextCollector<MethodReturnStatementsNode>
@@ -62,8 +63,7 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
             }
 
             $data[] = [
-                'startLine' => $returnNode->getStartLine(),
-                'endLine' => $returnNode->getEndLine(),
+                'sourceLocation' => new SourceLocation($scope->getFile(), $returnNode->getStartLine()),
                 'template' => $template,
                 'context' => (new Printer())->print($context->toPhpDocNode()),
             ];

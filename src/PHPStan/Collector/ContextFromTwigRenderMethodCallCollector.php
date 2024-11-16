@@ -10,6 +10,7 @@ use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\ObjectType;
 use Twig\Environment;
+use TwigStan\Twig\SourceLocation;
 
 /**
  * @implements TemplateContextCollector<Node\Expr\MethodCall>
@@ -58,8 +59,7 @@ final readonly class ContextFromTwigRenderMethodCallCollector implements Templat
         $result = [];
         foreach ($views as $view) {
             $result[] = [
-                'startLine' => $node->getStartLine(),
-                'endLine' => $node->getEndLine(),
+                'sourceLocation' => new SourceLocation($scope->getFile(), $node->getStartLine()),
                 'template' => $view->getValue(),
                 'context' => (new Printer())->print($context->toPhpDocNode()),
             ];
