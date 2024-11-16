@@ -80,7 +80,7 @@ final readonly class TwigScopeInjector
         foreach ($collection as $flatteningResult) {
             $contextBeforeBlockRelatedToTemplate = array_values(array_filter(
                 $contextBeforeBlock,
-                fn($contextBeforeBlock) => $contextBeforeBlock['sourceLocation']->contains($flatteningResult->twigFileName),
+                fn($contextBeforeBlock) => $contextBeforeBlock['sourceLocation']->contains($flatteningResult->twigFilePath),
             ));
             $stmts = $this->applyVisitors(
                 $this->phpParser->parseFile($flatteningResult->phpFile),
@@ -107,7 +107,6 @@ final readonly class TwigScopeInjector
             $this->applyVisitors($stmts, $visitor);
 
             $results = $results->with(new ScopeInjectionResult(
-                $flatteningResult->twigFileName,
                 $flatteningResult->twigFilePath,
                 $phpFile,
                 $visitor->getMapping(),

@@ -24,7 +24,7 @@ final readonly class FlatteningResultCollection implements IteratorAggregate
 
         $this->results = array_combine(
             array_map(
-                fn(FlatteningResult $result) => $result->twigFileName,
+                fn(FlatteningResult $result) => $result->twigFilePath,
                 $results,
             ),
             $results,

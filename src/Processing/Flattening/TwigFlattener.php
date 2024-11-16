@@ -34,7 +34,7 @@ final readonly class TwigFlattener
     {
         $results = new FlatteningResultCollection();
         foreach ($collection as $compilationResult) {
-            $metadata = $this->metadataRegistry->getMetadata($compilationResult->twigFileName);
+            $metadata = $this->metadataRegistry->getMetadata($compilationResult->twigFilePath);
 
             if ($metadata->hasResolvableParents()) {
                 foreach ($metadata->parents as $parent) {
@@ -74,7 +74,7 @@ final readonly class TwigFlattener
                     $traverser->traverse($phpAst);
 
                     $sourceLocation = new SourceLocation(
-                        $metadata->name,
+                        $metadata->filePath,
                         $metadata->parentLineNumber ?? 0,
                     );
 
@@ -104,7 +104,6 @@ final readonly class TwigFlattener
                     );
 
                     $results = $results->with(new FlatteningResult(
-                        $compilationResult->twigFileName,
                         $compilationResult->twigFilePath,
                         $phpFile,
                     ));
@@ -120,7 +119,6 @@ final readonly class TwigFlattener
 
             $results = $results->with(
                 new FlatteningResult(
-                    $compilationResult->twigFileName,
                     $compilationResult->twigFilePath,
                     Path::join(
                         $targetDirectory,

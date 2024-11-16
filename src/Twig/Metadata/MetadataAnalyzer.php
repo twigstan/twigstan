@@ -43,7 +43,7 @@ final readonly class MetadataAnalyzer
         if ($template->hasNode('parent')) {
             $parentLineNumber = $template->getNode('parent')->getTemplateLine();
             $parents = array_map(
-                $this->twigFileCanonicalizer->canonicalize(...),
+                $this->twigFileCanonicalizer->absolute(...),
                 $this->getStringsFromExpression($template->getNode('parent')),
             );
         }
@@ -83,7 +83,7 @@ final readonly class MetadataAnalyzer
         foreach ([$template->getNode('body'), ...$template->getNode('blocks')] as $node) {
             foreach ($this->nodeFinder->findInstanceOf($node, ImportNode::class) as $importNode) {
                 $macros = [...$macros, ...array_map(
-                    $this->twigFileCanonicalizer->canonicalize(...),
+                    $this->twigFileCanonicalizer->absolute(...),
                     $this->getStringsFromExpression($importNode->getNode('expr')),
                 )];
             }

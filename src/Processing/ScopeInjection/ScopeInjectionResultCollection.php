@@ -24,7 +24,7 @@ final readonly class ScopeInjectionResultCollection implements IteratorAggregate
 
         $this->results = array_combine(
             array_map(
-                fn(ScopeInjectionResult $result) => $result->twigFileName,
+                fn(ScopeInjectionResult $result) => $result->twigFilePath,
                 $results,
             ),
             $results,

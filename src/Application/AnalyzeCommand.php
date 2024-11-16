@@ -35,7 +35,6 @@ use TwigStan\Twig\DependencyFinder;
 use TwigStan\Twig\DependencySorter;
 use TwigStan\Twig\SourceLocation;
 use TwigStan\Twig\TwigFileCanonicalizer;
-use TwigStan\Twig\UnableToCanonicalizeTwigFileException;
 
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
@@ -226,7 +225,7 @@ final class AnalyzeCommand extends Command
             }
 
             if (in_array($file->getExtension(), $this->twigExtensions, true)) {
-                $twigFileNames[] = $this->twigFileCanonicalizer->canonicalize($file->getRealPath());
+                $twigFileNames[] = $file->getRealPath();
 
                 continue;
             }
@@ -289,18 +288,8 @@ final class AnalyzeCommand extends Command
         foreach ($analysisResult->collectedData as $data) {
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
-                    try {
-                        $filePath = $data->filePath;
-
-                        $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
-
-                        $templateToRenderPoint[$template][$filePath][$renderData['startLine']] = $renderData['context'];
-                    } catch (UnableToCanonicalizeTwigFileException $exception) {
-                        if ($debugMode) {
-                            throw $exception;
-                        }
-                        // Ignore
-                    }
+                    $template = $this->twigFileCanonicalizer->absolute($renderData['template']);
+                    $templateToRenderPoint[$template][$data->filePath][$renderData['startLine']] = $renderData['context'];
                 }
             }
         }
@@ -421,7 +410,7 @@ final class AnalyzeCommand extends Command
                 }
 
                 $hasRenderPoint = array_key_exists(
-                    $this->twigFileCanonicalizer->canonicalize($error->twigFile),
+                    $error->twigFile,
                     $templateToRenderPoint,
                 );
 
