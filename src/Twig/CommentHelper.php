@@ -16,15 +16,15 @@ final readonly class CommentHelper
 
         $comment = substr($comment, 8);
 
-        if (preg_match_all('#(?<name>[@\/\w.-]+):(?<line_number>\d+)#', $comment, $matches, PREG_SET_ORDER) === 0) {
-            return null;
-        }
+        $pairs = explode(', ', $comment);
 
         $sourceLocation = null;
-        foreach (array_reverse($matches) as $match) {
+        foreach (array_reverse($pairs) as $pair) {
+            [$fileName, $line] = explode(':', $pair);
+
             $sourceLocation = new SourceLocation(
-                $match['name'],
-                (int) $match['line_number'],
+                $fileName,
+                (int) $line,
                 $sourceLocation,
             );
         }

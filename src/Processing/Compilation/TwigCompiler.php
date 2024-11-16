@@ -36,7 +36,6 @@ use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
 use TwigStan\Processing\ScopeInjection\ArrayShapeMerger;
 use TwigStan\Twig\TwigFileCanonicalizer;
-use TwigStan\Twig\UnableToCanonicalizeTwigFileException;
 
 final readonly class TwigCompiler
 {
@@ -67,7 +66,7 @@ final readonly class TwigCompiler
         }
 
         $twigFileName = $twigNode->getSourceContext()->getName();
-        $twigFilePath = $twigNode->getSourceContext()->getPath();
+        $twigFilePath = Path::canonicalize($twigNode->getSourceContext()->getPath());
 
         $phpSource = $this->compiler->compile($twigNode)->getSource();
 
@@ -86,13 +85,8 @@ final readonly class TwigCompiler
         foreach ($collectedData as $data) {
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
-                    try {
-                        $template = $this->twigFileCanonicalizer->canonicalize($renderData['template']);
-
-                        $templateRenderContexts[$template][] = $renderData['context'];
-                    } catch (UnableToCanonicalizeTwigFileException) {
-                        // Ignore
-                    }
+                    $template = $this->twigFileCanonicalizer->absolute($renderData['template']);
+                    $templateRenderContexts[$template][] = $renderData['context'];
                 }
             }
         }
@@ -140,9 +134,9 @@ final readonly class TwigCompiler
             new NameResolver(),
             new MakeFinalVisitor(),
             new AddExtraLineNumberCommentVisitor(),
-            new AppendFilePathToLineCommentVisitor($twigFileName),
+            new AppendFilePathToLineCommentVisitor($twigFilePath),
             new RemoveImportsVisitor(),
-            new AddTypeCommentsToTemplateVisitor($templateRenderContext[$twigFileName] ?? new ArrayShapeNode([])),
+            new AddTypeCommentsToTemplateVisitor($templateRenderContext[$twigFilePath] ?? new ArrayShapeNode([])),
             new IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor(),
             new AddGetExtensionMethodVisitor(),
             new RefactorExtensionCallVisitor(),
@@ -163,7 +157,6 @@ final readonly class TwigCompiler
         );
 
         return new CompilationResult(
-            $twigFileName,
             $twigFilePath,
             $phpFile,
         );

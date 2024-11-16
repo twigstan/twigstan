@@ -8,11 +8,13 @@ use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\SyntaxError;
 use Twig\Node\ModuleNode;
+use TwigStan\Twig\TwigFileCanonicalizer;
 
 final readonly class TwigNodeParser
 {
     public function __construct(
         private Environment $twig,
+        private TwigFileCanonicalizer $twigFileCanonicalizer,
     ) {}
 
     /**
@@ -24,6 +26,8 @@ final readonly class TwigNodeParser
         if ($template instanceof ModuleNode) {
             return $template;
         }
+
+        $template = $this->twigFileCanonicalizer->canonicalize($template);
 
         $source = $this->twig->getLoader()->getSourceContext($template);
 

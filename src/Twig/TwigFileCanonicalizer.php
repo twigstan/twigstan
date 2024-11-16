@@ -23,6 +23,11 @@ final class TwigFileCanonicalizer
         private Environment $twig,
     ) {}
 
+    public function absolute(string $name): string
+    {
+        return $this->twig->getLoader()->getSourceContext($name)->getPath();
+    }
+
     /**
      * Takes a relative or absolute path and returns a canonicalized Twig path.
      *

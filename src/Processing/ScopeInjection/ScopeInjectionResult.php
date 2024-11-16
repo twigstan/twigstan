@@ -12,7 +12,6 @@ final readonly class ScopeInjectionResult
      * @param array<int, SourceLocation> $phpToTwigLineMapping
      */
     public function __construct(
-        public string $twigFileName,
         public string $twigFilePath,
         public string $phpFile,
         public array $phpToTwigLineMapping,

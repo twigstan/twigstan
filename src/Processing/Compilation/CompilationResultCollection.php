@@ -24,7 +24,7 @@ final readonly class CompilationResultCollection implements IteratorAggregate
 
         $this->results = array_combine(
             array_map(
-                fn(CompilationResult $result) => $result->twigFileName,
+                fn(CompilationResult $result) => $result->twigFilePath,
                 $results,
             ),
             $results,
@@ -47,33 +47,6 @@ final readonly class CompilationResultCollection implements IteratorAggregate
     public function getIterator(): ArrayIterator
     {
         return new ArrayIterator($this->results);
-    }
-
-    public function hasPhpFile(string $phpFile): bool
-    {
-        foreach ($this->results as $result) {
-            if ($result->phpFile === $phpFile) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function getByPhpFile(string $phpFile): CompilationResult
-    {
-        foreach ($this->results as $result) {
-            if ($result->phpFile === $phpFile) {
-                return $result;
-            }
-        }
-
-        throw new InvalidArgumentException(sprintf('No CompilationResult found for PHP file "%s".', $phpFile));
-    }
-
-    public function hasTwigFileName(string $fileName): bool
-    {
-        return isset($this->results[$fileName]);
     }
 
     public function getByTwigFileName(string $fileName): CompilationResult
