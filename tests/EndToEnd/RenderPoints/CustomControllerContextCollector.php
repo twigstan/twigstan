@@ -12,6 +12,7 @@ use PHPStan\Type\ObjectType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
+use TwigStan\Twig\SourceLocation;
 
 /**
  * @implements TemplateContextCollector<Node\Expr\MethodCall>
@@ -79,8 +80,7 @@ final readonly class CustomControllerContextCollector implements TemplateContext
         $result = [];
         foreach ($views as $view) {
             $result[] = [
-                'startLine' => $node->getStartLine(),
-                'endLine' => $node->getEndLine(),
+                'sourceLocation' => new SourceLocation($scope->getFile(), $node->getStartLine()),
                 'template' => $view->getValue(),
                 'context' => (new Printer())->print($context->toPhpDocNode()),
             ];

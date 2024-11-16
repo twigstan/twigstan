@@ -289,7 +289,9 @@ final class AnalyzeCommand extends Command
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
                     $template = $this->twigFileCanonicalizer->absolute($renderData['template']);
-                    $templateToRenderPoint[$template][$data->filePath][$renderData['startLine']] = $renderData['context'];
+                    $sourceLocation = SourceLocation::decode($renderData['sourceLocation']);
+
+                    $templateToRenderPoint[$template][$sourceLocation->fileName][$sourceLocation->lineNumber] = $renderData['context'];
                 }
             }
         }

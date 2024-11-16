@@ -6,11 +6,11 @@ namespace TwigStan\PHPStan\Collector;
 
 use PhpParser\Node;
 use PHPStan\Collectors\Collector;
+use TwigStan\Twig\SourceLocation;
 
 /**
  * @phpstan-type TemplateData = array{
- *      startLine: int,
- *      endLine: int,
+ *      sourceLocation: SourceLocation,
  *      template: string,
  *      context: string,
  *  }
