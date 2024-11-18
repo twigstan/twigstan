@@ -19,7 +19,7 @@
         "symfony/filesystem": "^7.1",
         "symfony/finder": "^7.1",
         "symfony/process": "^7.1",
-        "twig/twig": "3.14.2"
+        "twig/twig": "3.15.0"
     },
     "require-dev": {
         "editorconfig-checker/editorconfig-checker": "^10.6",
