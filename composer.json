@@ -32,7 +32,7 @@
         "phpstan/phpstan-symfony": "^1.4",
         "phpunit/phpunit": "^11.4",
         "shipmonk/composer-dependency-analyser": "^1.7",
-        "staabm/phpstan-todo-by": "^0.1.32",
+        "staabm/phpstan-todo-by": "^0.2",
         "symfony/form": "^7.1",
         "symfony/framework-bundle": "^7.1",
         "symfony/http-foundation": "^7.1",
