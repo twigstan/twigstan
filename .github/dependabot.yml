@@ -9,11 +9,16 @@ updates:
             timezone: Europe/Amsterdam
         rebase-strategy: disabled
         allow:
+            # require
             -   dependency-name: "twig/twig"
-            -   dependency-name: "ticketswap/phpstan-error-formatter"
-            -   dependency-name: "phpstan/extension-installer"
-            -   dependency-name: "friendsofphp/php-cs-fixer"
-            -   dependency-name: "phpunit/phpunit"
+            # require-dev
+            -   dependency-name: "editorconfig-checker/editorconfig-checker"
             -   dependency-name: "ergebnis/composer-normalize"
+            -   dependency-name: "erickskrauch/php-cs-fixer-custom-fixers"
+            -   dependency-name: "friendsofphp/php-cs-fixer"
+            -   dependency-name: "phpstan/*"
+            -   dependency-name: "phpunit/phpunit"
             -   dependency-name: "shipmonk/composer-dependency-analyser"
+            -   dependency-name: "staabm/phpstan-todo-by"
+            -   dependency-name: "ticketswap/phpstan-error-formatter"
             -   dependency-name: "vincentlanglet/twig-cs-fixer"
