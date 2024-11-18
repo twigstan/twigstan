@@ -8,4 +8,12 @@ updates:
             time: "06:00"
             timezone: Europe/Amsterdam
         rebase-strategy: disabled
-
+        allow:
+            -   dependency-name: "twig/twig"
+            -   dependency-name: "ticketswap/phpstan-error-formatter"
+            -   dependency-name: "phpstan/extension-installer"
+            -   dependency-name: "friendsofphp/php-cs-fixer"
+            -   dependency-name: "phpunit/phpunit"
+            -   dependency-name: "ergebnis/composer-normalize"
+            -   dependency-name: "shipmonk/composer-dependency-analyser"
+            -   dependency-name: "vincentlanglet/twig-cs-fixer"
