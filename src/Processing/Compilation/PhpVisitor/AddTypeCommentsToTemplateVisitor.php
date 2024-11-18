@@ -46,22 +46,6 @@ final class AddTypeCommentsToTemplateVisitor extends NodeVisitorAbstract
                     return $node;
                 }
 
-                if ($node->name->name === '__construct') {
-                    // TODO: twig/twig:v3.15.0 Remove
-                    $node->stmts = [
-                        new Node\Stmt\Expression(
-                            new Node\Expr\Assign(
-                                new Node\Expr\Variable('macros'),
-                                new Node\Expr\PropertyFetch(
-                                    new Node\Expr\Variable('this'),
-                                    'macros',
-                                ),
-                            ),
-                        ),
-                        ...$node->stmts ?? [],
-                    ];
-                }
-
                 if ($node->name->name === 'doDisplay') {
                     $node->setDocComment(
                         new Doc(

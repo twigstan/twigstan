@@ -20,10 +20,6 @@ services:
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
 	-
-		class: TwigStan\PHPStan\DynamicReturnType\UnwrapReturnType
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-	-
 		class: TwigStan\PHPStan\DynamicReturnType\GetParentReturnType
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
