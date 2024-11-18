@@ -16,7 +16,7 @@
 {{ include(template) }}
 
 {% types {
-    isMobile: 'bool'
+    isMobile: 'bool',
 } %}
 
 {{ include(isMobile ? '@EndToEnd/Include/isMobile.twig' : '@EndToEnd/Include/_footer.twig') }}
