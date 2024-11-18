@@ -8,14 +8,6 @@ use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitor\NameResolver;
-use PHPStan\PhpDocParser\Ast\PhpDoc\VarTagValueNode;
-use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
-use PHPStan\PhpDocParser\Lexer\Lexer;
-use PHPStan\PhpDocParser\Parser\ConstExprParser;
-use PHPStan\PhpDocParser\Parser\PhpDocParser;
-use PHPStan\PhpDocParser\Parser\TokenIterator;
-use PHPStan\PhpDocParser\Parser\TypeParser;
-use PHPStan\PhpDocParser\ParserConfig;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -23,8 +15,6 @@ use Twig\Environment;
 use Twig\Node\ModuleNode;
 use TwigStan\PHP\PrettyPrinter;
 use TwigStan\PHP\StrictPhpParser;
-use TwigStan\PHPStan\Analysis\CollectedData;
-use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 use TwigStan\Processing\Compilation\PhpVisitor\AddExtraLineNumberCommentVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AddGetExtensionMethodVisitor;
@@ -35,8 +25,8 @@ use TwigStan\Processing\Compilation\PhpVisitor\MakeFinalVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorExtensionCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
-use TwigStan\Processing\ScopeInjection\ArrayShapeMerger;
-use TwigStan\Twig\TwigFileCanonicalizer;
+use TwigStan\Processing\TemplateContext;
+use TwigStan\Processing\TemplateContextToArrayShape;
 
 final readonly class TwigCompiler
 {
@@ -46,20 +36,14 @@ final readonly class TwigCompiler
         private Filesystem $filesystem,
         private ModifiedCompiler $compiler,
         private StrictPhpParser $phpParser,
-        private ArrayShapeMerger $arrayShapeMerger,
-        private TwigFileCanonicalizer $twigFileCanonicalizer,
+        private TemplateContextToArrayShape $templateContextToArrayShape,
     ) {}
 
-    /**
-     * @param list<CollectedData> $collectedData
-     */
-    public function compile(ModuleNode | string $template, string $targetDirectory, array $collectedData): CompilationResult
+    public function compile(ModuleNode | string $template, string $targetDirectory, TemplateContext $templateContext, int $run): CompilationResult
     {
-        $config = new ParserConfig(usedAttributes: ['lines' => true, 'indexes' => true]);
-        $lexer = new Lexer($config);
-        $constExprParser = new ConstExprParser($config);
-        $typeParser = new TypeParser($config, $constExprParser);
-        $phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser);
+        $targetDirectory = Path::join($targetDirectory, (string) $run);
+
+        $this->filesystem->mkdir($targetDirectory);
 
         $twigNode = $this->twigNodeParser->parse($template);
 
@@ -67,7 +51,6 @@ final readonly class TwigCompiler
             throw new RuntimeException('Template does not have a source context.');
         }
 
-        $twigFileName = $twigNode->getSourceContext()->getName();
         $twigFilePath = Path::canonicalize($twigNode->getSourceContext()->getPath());
 
         $phpSource = $this->compiler->compile($twigNode)->getSource();
@@ -83,54 +66,6 @@ final readonly class TwigCompiler
 
         $stmts = $this->phpParser->parse($phpSource);
 
-        $templateRenderContexts = [];
-        foreach ($collectedData as $data) {
-            if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
-                foreach ($data->data as $renderData) {
-                    $template = $this->twigFileCanonicalizer->absolute($renderData['template']);
-                    $templateRenderContexts[$template][] = $renderData['context'];
-                }
-            }
-        }
-
-        $templateRenderContext = [];
-        foreach ($templateRenderContexts as $templateToRender => $contexts) {
-            $newContext = null;
-            foreach (array_unique($contexts) as $context) {
-                $contextShape = ArrayShapeNode::createSealed([]);
-
-                if ($context !== 'array{}') {
-                    $phpDocNode = $phpDocParser->parseTagValue(
-                        new TokenIterator($lexer->tokenize($context)),
-                        '@var',
-                    );
-
-                    if ( ! $phpDocNode instanceof VarTagValueNode) {
-                        continue;
-                    }
-
-                    $contextShape = $phpDocNode->type;
-
-                    if ( ! $contextShape instanceof ArrayShapeNode) {
-                        $contextShape = ArrayShapeNode::createSealed([]);
-                    }
-                }
-
-                if ($newContext === null) {
-                    $newContext = $contextShape;
-
-                    continue;
-                }
-
-                $newContext = $this->arrayShapeMerger->merge(
-                    $newContext,
-                    $contextShape,
-                );
-            }
-
-            $templateRenderContext[$templateToRender] = $newContext;
-        }
-
         $stmts = $this->applyVisitors(
             $stmts,
             new NameResolver(),
@@ -138,7 +73,7 @@ final readonly class TwigCompiler
             new AddExtraLineNumberCommentVisitor(),
             new AppendFilePathToLineCommentVisitor($twigFilePath),
             new RemoveImportsVisitor(),
-            new AddTypeCommentsToTemplateVisitor($templateRenderContext[$twigFilePath] ?? ArrayShapeNode::createSealed([])),
+            new AddTypeCommentsToTemplateVisitor($this->templateContextToArrayShape->getByTemplate($templateContext, $twigFilePath)),
             new IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor(),
             new AddGetExtensionMethodVisitor(),
             new RefactorExtensionCallVisitor(),

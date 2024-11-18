@@ -51,7 +51,6 @@ function phpstan(
         'vendor/bin/phpstan',
         '--ansi',
         ...$debug || $xdebug ? ['--debug'] : [],
-        ...$xdebug ? ['--xdebug'] : [],
         sprintf('--configuration=%s', $local ? 'phpstan-local.neon' : 'phpstan.neon'),
         'analyze',
         ...$paths,

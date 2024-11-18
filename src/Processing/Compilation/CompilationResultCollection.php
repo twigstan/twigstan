@@ -53,4 +53,9 @@ final readonly class CompilationResultCollection implements IteratorAggregate
     {
         return $this->results[$fileName] ?? throw new InvalidArgumentException(sprintf('No CompilationResult found for Twig file "%s".', $fileName));
     }
+
+    public function count(): int
+    {
+        return count($this->results);
+    }
 }

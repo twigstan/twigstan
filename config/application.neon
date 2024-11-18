@@ -1,3 +1,8 @@
+parameters:
+	phpDocParserConfig:
+		lines: true
+		indexes: true
+
 services:
 	-
 		class: Twig\Environment
@@ -73,3 +78,12 @@ services:
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigEnvironmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer
+	- TwigStan\Processing\TemplateContextFactory
+	- TwigStan\Processing\TemplateContextToArrayShape
+	- PHPStan\PhpDocParser\Lexer\Lexer
+	- PHPStan\PhpDocParser\Parser\ConstExprParser
+	- PHPStan\PhpDocParser\Parser\TypeParser
+	- PHPStan\PhpDocParser\Parser\PhpDocParser
+	- PHPStan\PhpDocParser\ParserConfig(
+		usedAttributes: %phpDocParserConfig%
+	)

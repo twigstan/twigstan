@@ -10,10 +10,6 @@ services:
 		tags:
 			- phpstan.collector
 	-
-		class: TwigStan\PHPStan\Collector\ContextFromTwigIncludeCallCollector
-		tags:
-			- phpstan.collector
-	-
 		class: TwigStan\PHPStan\Collector\ContextFromTwigRenderMethodCallCollector
 		tags:
 			- phpstan.collector

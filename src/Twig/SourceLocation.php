@@ -82,6 +82,16 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
         return $this->previous?->contains($fileName) ?? false;
     }
 
+    public function last(): self
+    {
+        $current = $this;
+        while ($current->previous !== null) {
+            $current = $current->previous;
+        }
+
+        return $current;
+    }
+
     public function __toString(): string
     {
         return $this->toString();
@@ -94,5 +104,19 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
             yield $current;
             $current = $current->previous;
         }
+    }
+
+    public function getHash(): int
+    {
+        return crc32($this->toString());
+    }
+
+    public function sort(SourceLocation $other): int
+    {
+        if ($this->fileName === $other->fileName) {
+            return $this->lineNumber <=> $other->lineNumber;
+        }
+
+        return $this->fileName <=> $other->fileName;
     }
 }
