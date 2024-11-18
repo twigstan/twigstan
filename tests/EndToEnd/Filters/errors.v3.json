@@ -1,0 +1,9 @@
+[
+    {
+        "message": "Parameter #1 $value of static method Twig\\Extension\\CoreExtension::join() expects array, string given.",
+        "identifier": "argument.type",
+        "tip": null,
+        "twigSourceLocation": "array.twig:4",
+        "renderPoints": []
+    }
+]
