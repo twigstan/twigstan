@@ -7,7 +7,7 @@ use Castor\Attribute\AsOption;
 use Castor\Attribute\AsRawTokens;
 use Castor\Attribute\AsTask;
 use function Castor\capture;
-use Castor\Context;
+use function Castor\context;
 use function Castor\exit_code;
 use function Castor\fs;
 use function Castor\io;
@@ -69,7 +69,9 @@ function phpcsfixer(
 
     return exit_code(
         sprintf('vendor/bin/php-cs-fixer %s --diff', $fix ? 'fix' : 'check'),
-        context: new Context(environment: ['PHP_CS_FIXER_IGNORE_ENV' => '1']),
+        context: context()->withEnvironment([
+            'PHP_CS_FIXER_IGNORE_ENV' => '1',
+        ]),
     );
 }
 
