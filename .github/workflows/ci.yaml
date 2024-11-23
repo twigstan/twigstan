@@ -21,7 +21,6 @@ jobs:
                     -   php: '8.4'
                         twig: 3
                         dependency-versions: highest
-                        composer-options: "--ignore-platform-req=php"
         name: Tests on PHP ${{ matrix.php }}, Twig ${{ matrix.twig }} & ${{ matrix.dependency-versions }} dependencies
         steps:
             -   name: Checkout
