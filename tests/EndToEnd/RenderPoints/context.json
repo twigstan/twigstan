@@ -1,0 +1,66 @@
+{
+    "complex.html.twig": [
+        [
+            "ComplexTemplateAttributeController.php:28",
+            "array{title: 'PostAction', error: lowercase-string&non-falsy-string}"
+        ],
+        [
+            "ComplexTemplateAttributeController.php:35",
+            "array{title: 'PutAction', error: lowercase-string&non-falsy-string}"
+        ],
+        [
+            "ComplexTemplateAttributeController.php:41",
+            "array{title: 'GetAction'}"
+        ]
+    ],
+    "simple.html.twig": [
+        [
+            "CustomRenderPointController.php:17",
+            "array{title: 'SimpleAction', rows: non-empty-list<string>}"
+        ],
+        [
+            "SimpleTemplateAttributeController.php:21",
+            "array{title: 'SimpleAction', rows: non-empty-list<string>}"
+        ]
+    ],
+    "optionality.html.twig": [
+        [
+            "OptionalityController.php:13",
+            "array{name: string|null}"
+        ],
+        [
+            "OptionalityController.php:20",
+            "array{}"
+        ]
+    ],
+    "render.html.twig": [
+        [
+            "RenderFromAbstractController.php:17",
+            "array{title: 'RenderAction', artists: array{'Adele', 'Kanye West'}}"
+        ],
+        [
+            "RenderFromAbstractController.php:25",
+            "array{title: 'RenderViewAction', artists: array{'Adele', 'Kanye West'}}"
+        ],
+        [
+            "RenderFromTwig.php:15",
+            "array{title: 'RenderAction', artists: array{'Adele', 'Kanye West'}}"
+        ],
+        [
+            "RenderFromTwig.php:23",
+            "array{title: 'RenderAction', artists: array{'Adele', 'Kanye West'}}"
+        ]
+    ],
+    "form.html.twig": [
+        [
+            "RenderFromAbstractController.php:41",
+            "array{form1: Symfony\\Component\\Form\\FormView, form2: Symfony\\Component\\Form\\FormView}"
+        ]
+    ],
+    "App\/Controller\/RenderFromSelfClassInAbstractController.html.twig": [
+        [
+            "RenderFromSelfClassInAbstractController.php:14",
+            "array{title: 'FromInvoke'}"
+        ]
+    ]
+}

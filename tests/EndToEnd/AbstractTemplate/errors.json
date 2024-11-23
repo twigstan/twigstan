@@ -1,0 +1,14 @@
+{
+    "errors": [
+        {
+            "message": "Template is marked as abstract but is rendered directly.",
+            "identifier": null,
+            "tip": null,
+            "twigSourceLocation": "layout.twig:0",
+            "renderPoints": [
+                "Controller.php:32"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}

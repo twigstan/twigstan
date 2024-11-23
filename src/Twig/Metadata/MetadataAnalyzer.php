@@ -98,6 +98,7 @@ final readonly class MetadataAnalyzer
             $blocks,
             $parentBlocks,
             array_values(array_unique($macros)),
+            str_contains($template->getSourceContext()->getCode(), '@twigstan-abstract'),
         );
     }
 

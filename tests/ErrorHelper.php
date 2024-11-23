@@ -112,8 +112,7 @@ final readonly class ErrorHelper
                 JSON_THROW_ON_ERROR,
             );
 
-            $lastRun = array_key_last($result->runs);
-            $actualContext = self::contextToArray($result->runs[$lastRun]->contextBefore, $directory);
+            $actualContext = ErrorHelper::contextToArray($result->context, $directory);
 
             Assert::assertEqualsCanonicalizing(
                 $expectedContext,
@@ -177,7 +176,7 @@ final readonly class ErrorHelper
     /**
      * @return array<string, non-empty-list<array{string, string}>>
      */
-    private static function contextToArray(TemplateContext $templateContext, string $directory): array
+    public static function contextToArray(TemplateContext $templateContext, string $directory): array
     {
         $result = [];
 

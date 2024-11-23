@@ -26,6 +26,7 @@ use TwigStan\Error\ErrorTransformer;
 use TwigStan\Error\IgnoreError;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
+use TwigStan\PHPStan\Analysis\Error;
 use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
@@ -35,6 +36,8 @@ use TwigStan\Processing\TemplateContext;
 use TwigStan\Processing\TemplateContextFactory;
 use TwigStan\Twig\DependencyFinder;
 use TwigStan\Twig\DependencySorter;
+use TwigStan\Twig\Metadata\MetadataRegistry;
+use TwigStan\Twig\SourceLocation;
 
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
@@ -60,6 +63,7 @@ final class AnalyzeCommand extends Command
         private ErrorTransformer $errorTransformer,
         private ErrorToSourceFileMapper $errorToSourceFileMapper,
         private TemplateContextFactory $templateContextFactory,
+        private MetadataRegistry $metadataRegistry,
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
@@ -300,6 +304,8 @@ final class AnalyzeCommand extends Command
         $changedTemplates = [];
         $templateContext = $templateContext->merge($run->contextAfter, $changedTemplates);
 
+        $result = $result->withContext($templateContext);
+
         $errors = $run->errors;
 
         if ($changedTemplates !== []) {
@@ -331,6 +337,27 @@ final class AnalyzeCommand extends Command
             $result = $result->withRun($run);
 
             $errors = [...$errors, ...$run->errors];
+        }
+
+        // Ignore errors for abstract templates
+        $abstractTemplates = $this->metadataRegistry->getAbstractTemplates();
+
+        $errors = (new ErrorFilter(
+            array_map(
+                fn($template) => IgnoreError::path($template),
+                $abstractTemplates,
+            ),
+        ))->filter($errors);
+
+        foreach ($abstractTemplates as $abstractTemplate) {
+            if ( ! $templateContext->hasTemplate($abstractTemplate)) {
+                continue;
+            }
+
+            $errors[] = new Error(
+                'Template is marked as abstract but is rendered directly.',
+                sourceLocation: new SourceLocation($abstractTemplate, 0),
+            );
         }
 
         // Transform PHPStan errors to TwigStan errors

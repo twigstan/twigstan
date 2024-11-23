@@ -112,7 +112,20 @@ Make sure that you configure your `phpPaths` to point to the PHP codebase that r
 
 This will make sure that TwigStan can collect the template context from the PHP codebase.
 
-Use the `dump_type` tag below to debug if types are properly resolved.
+Use the `dump_type` tag to debug if types are properly resolved.
+
+### Marking templates abstract
+
+When you have a template that is not rendered directly, but is used as a parent template, you can mark it as abstract.
+
+The benfit of this is that it will not be analyzed as a standalone template, but only as part of the template hierarchy.
+
+You can mark a template as abstract by adding a comment at the top of the file:
+```twig
+{# @twigstan-abstract #}
+```
+
+When you try to render an abstract template, TwigStan will report an error.
 
 ### Debugging
 
