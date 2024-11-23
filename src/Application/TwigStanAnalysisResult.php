@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TwigStan\Application;
 
+use TwigStan\Processing\TemplateContext;
+
 final readonly class TwigStanAnalysisResult
 {
     /**
@@ -15,6 +17,7 @@ final readonly class TwigStanAnalysisResult
         public array $errors = [],
         public array $fileSpecificErrors = [],
         public array $runs = [],
+        public TemplateContext $context = new TemplateContext(),
     ) {}
 
     public function withFileSpecificError(string $error): self
@@ -23,6 +26,7 @@ final readonly class TwigStanAnalysisResult
             $this->errors,
             [...$this->fileSpecificErrors, $error],
             $this->runs,
+            $this->context,
         );
     }
 
@@ -32,6 +36,7 @@ final readonly class TwigStanAnalysisResult
             [...$this->errors, $error],
             $this->fileSpecificErrors,
             $this->runs,
+            $this->context,
         );
     }
 
@@ -44,6 +49,17 @@ final readonly class TwigStanAnalysisResult
             $this->errors,
             $this->fileSpecificErrors,
             $runs,
+            $this->context,
+        );
+    }
+
+    public function withContext(TemplateContext $templateContext): self
+    {
+        return new self(
+            $this->errors,
+            $this->fileSpecificErrors,
+            $this->runs,
+            $templateContext,
         );
     }
 }

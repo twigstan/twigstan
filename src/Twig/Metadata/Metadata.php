@@ -23,6 +23,7 @@ final readonly class Metadata
         public array $blocks,
         public array $parentBlocks,
         public array $macros,
+        public bool $isAbstract,
     ) {}
 
     public function hasParents(): bool

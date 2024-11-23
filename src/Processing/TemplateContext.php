@@ -17,7 +17,7 @@ final readonly class TemplateContext
      * @param array<string, array<string, array{SourceLocation, string}>> $context
      */
     public function __construct(
-        array $context,
+        array $context = [],
     ) {
         $this->context = array_map(
             function ($renderPoints) {

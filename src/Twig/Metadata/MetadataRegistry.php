@@ -21,4 +21,17 @@ final class MetadataRegistry
 
         return $this->metadata[$name];
     }
+
+    /**
+     * @return list<string>
+     */
+    public function getAbstractTemplates(): array
+    {
+        return array_values(
+            array_map(
+                fn(Metadata $metadata) => $metadata->filePath,
+                array_filter($this->metadata, fn(Metadata $metadata) => $metadata->isAbstract),
+            ),
+        );
+    }
 }

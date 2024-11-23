@@ -11,7 +11,7 @@
             "array{title: 'Footer', name: string|null}"
         ],
         [
-            "_layout.twig:3, homepage.twig:1",
+            "layout.twig:5, homepage.twig:1",
             "array{title: 'Homepage', subtitle: 'Default subtitle', body: 'Welcome to the homepage', name: string|null}"
         ]
     ]

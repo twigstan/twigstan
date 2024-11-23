@@ -8,17 +8,14 @@ use TwigStan\Twig\SourceLocation;
 
 final readonly class Error
 {
-    /**
-     * @param null|string $twigFile Absolute path to Twig file
-     */
     public function __construct(
         public string $message,
-        public ?string $phpFile,
-        public int $phpLine,
-        public ?string $twigFile,
-        public ?SourceLocation $sourceLocation,
-        public ?string $identifier,
-        public ?string $tip,
+        public ?string $phpFile = null,
+        public int $phpLine = 0,
+        public ?string $twigFile = null,
+        public ?SourceLocation $sourceLocation = null,
+        public ?string $identifier = null,
+        public ?string $tip = null,
         public bool $canBeIgnored = true,
     ) {}
 
