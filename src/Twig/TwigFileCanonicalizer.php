@@ -7,6 +7,7 @@ namespace TwigStan\Twig;
 use RuntimeException;
 use Symfony\Component\Filesystem\Path;
 use Twig\Environment;
+use Twig\Error\LoaderError;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
 
@@ -25,7 +26,11 @@ final class TwigFileCanonicalizer
 
     public function absolute(string $name): string
     {
-        return $this->twig->getLoader()->getSourceContext($name)->getPath();
+        try {
+            return $this->twig->getLoader()->getSourceContext($name)->getPath();
+        } catch (LoaderError) {
+            return $name;
+        }
     }
 
     /**

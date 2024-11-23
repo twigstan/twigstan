@@ -5,6 +5,10 @@ services:
 	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
+	-
+		class: TwigStan\PHPStan\Collector\ContextFromTwigIncludeCallCollector
+		tags:
+			- phpstan.collector
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
 	- TwigStan\Twig\TwigFileCanonicalizer
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.twigEnvironmentLoader%)

@@ -23,18 +23,18 @@ use TwigStan\Error\ErrorCollapser;
 use TwigStan\Error\ErrorFilter;
 use TwigStan\Error\ErrorToSourceFileMapper;
 use TwigStan\Error\ErrorTransformer;
+use TwigStan\Error\IgnoreError;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
 use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
-use TwigStan\PHPStan\Collector\TemplateContextCollector;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Compilation\TwigCompiler;
 use TwigStan\Processing\Flattening\TwigFlattener;
 use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
+use TwigStan\Processing\TemplateContext;
+use TwigStan\Processing\TemplateContextFactory;
 use TwigStan\Twig\DependencyFinder;
 use TwigStan\Twig\DependencySorter;
-use TwigStan\Twig\SourceLocation;
-use TwigStan\Twig\TwigFileCanonicalizer;
 
 #[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
@@ -49,7 +49,6 @@ final class AnalyzeCommand extends Command
         private TwigScopeInjector $twigScopeInjector,
         private DependencyFinder $dependencyFinder,
         private DependencySorter $dependencySorter,
-        private TwigFileCanonicalizer $twigFileCanonicalizer,
         private PHPStanRunner $phpStanRunner,
         private Filesystem $filesystem,
         private FilesFinder $phpFilesFinder,
@@ -60,6 +59,7 @@ final class AnalyzeCommand extends Command
         private ErrorCollapser $errorCollapser,
         private ErrorTransformer $errorTransformer,
         private ErrorToSourceFileMapper $errorToSourceFileMapper,
+        private TemplateContextFactory $templateContextFactory,
         private string $environmentLoader,
         private string $tempDirectory,
         private string $currentWorkingDirectory,
@@ -157,9 +157,9 @@ final class AnalyzeCommand extends Command
             foreach ($error->renderPoints as $renderPoint) {
                 $errorOutput->write('🎯 ');
                 $errorOutput->writeln($this->linkify(
-                    $renderPoint->fileName,
-                    Path::makeRelative($renderPoint->fileName, $this->currentWorkingDirectory),
-                    $renderPoint->lineNumber,
+                    $renderPoint->sourceLocation->fileName,
+                    Path::makeRelative($renderPoint->sourceLocation->fileName, $this->currentWorkingDirectory),
+                    $renderPoint->sourceLocation->lineNumber,
                 ));
 
                 if ($output->isVeryVerbose()) {
@@ -281,140 +281,71 @@ final class AnalyzeCommand extends Command
             return $result;
         }
 
-        /**
-         * @var array<string, array<string, array<int, string>>> $templateToRenderPoint
-         */
-        $templateToRenderPoint = [];
-        foreach ($analysisResult->collectedData as $data) {
-            if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
-                foreach ($data->data as $renderData) {
-                    $template = $this->twigFileCanonicalizer->absolute($renderData['template']);
-                    $sourceLocation = SourceLocation::decode($renderData['sourceLocation']);
+        $templateContext = $this->templateContextFactory->create($analysisResult);
 
-                    $templateToRenderPoint[$template][$sourceLocation->fileName][$sourceLocation->lineNumber] = $renderData['context'];
-                }
-            }
-        }
-
-        // Make sure the render points are sorted by file name and line number
-        $templateToRenderPoint = array_map(
-            function ($renderPoints) {
-                uksort($renderPoints, function ($a, $b) {
-                    return strnatcmp($a, $b);
-                });
-                foreach ($renderPoints as &$lineNumberToContext) {
-                    ksort($lineNumberToContext);
-                }
-
-                return $renderPoints;
-            },
-            $templateToRenderPoint,
-        );
-
-        $output->writeln(sprintf('Compiling %d templates...', $count));
-
-        $progressBar = new ProgressBar($output, $count);
-        $progressBar->start();
-
-        $compilationResults = new CompilationResultCollection();
-        foreach ($twigFileNames as $twigFile) {
-            try {
-                $compilationResults = $compilationResults->with(
-                    $this->twigCompiler->compile(
-                        $twigFile,
-                        $compilationDirectory,
-                        $analysisResult->collectedData,
-                    ),
-                );
-            } catch (Throwable $error) {
-                $progressBar->clear();
-                $errorOutput->writeln(sprintf(
-                    'Error compiling %s: %s',
-                    Path::makeRelative($twigFile, $this->currentWorkingDirectory),
-                    $error->getMessage(),
-                ));
-
-                if ($debugMode) {
-                    throw $error;
-                }
-            } finally {
-                $progressBar->advance();
-            }
-        }
-
-        $progressBar->finish();
-        $progressBar->clear();
-
-        $output->writeln(sprintf('Flattening %d templates...', $count));
-
-        $flatteningResults = $this->twigFlattener->flatten(
-            $compilationResults,
+        $run = $this->executeRun(
+            $output,
+            $errorOutput,
+            $twigFileNames,
+            $compilationDirectory,
             $flatteningDirectory,
-        );
-
-        $output->writeln('Collecting scopes from Twig...');
-
-        $analysisResult = $this->phpStanRunner->run(
-            $output,
-            $errorOutput,
-            $this->environmentLoader,
-            [],
-            [$flatteningDirectory],
+            $scopeInjectionDirectory,
+            $templateContext,
             $debugMode,
             $xdebugMode,
-            PHPStanRunMode::CollectTwigRenderPoints,
         );
 
-        $result = new TwigStanAnalysisResult();
+        $result = $result->withRun($run);
 
-        foreach ($analysisResult->notFileSpecificErrors as $fileSpecificError) {
-            $result = $result->withFileSpecificError($fileSpecificError);
+        $changedTemplates = [];
+        $templateContext = $templateContext->merge($run->contextAfter, $changedTemplates);
 
-            $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
+        $errors = $run->errors;
+
+        if ($changedTemplates !== []) {
+            $output->writeln('Found new template context in Twig templates...');
+
+            $output->writeln('Recompiling templates...');
+
+            // Remove errors for the changed templates
+            $errors = (new ErrorFilter(
+                array_map(
+                    fn($template) => IgnoreError::path($template),
+                    $changedTemplates,
+                ),
+            ))->filter($run->errors);
+
+            $run = $this->executeRun(
+                $output,
+                $errorOutput,
+                $changedTemplates,
+                $compilationDirectory,
+                $flatteningDirectory,
+                $scopeInjectionDirectory,
+                $templateContext,
+                $debugMode,
+                $xdebugMode,
+                2,
+            );
+
+            $result = $result->withRun($run);
+
+            $errors = [...$errors, ...$run->errors];
         }
-
-        if ($analysisResult->exitCode !== 0) {
-            throw new LogicException('PHPStan exited with a non-zero exit code.');
-        }
-
-        if ($analysisResult->notFileSpecificErrors !== []) {
-            return $result;
-        }
-
-        $output->writeln('Injecting scope into templates...');
-
-        $scopeInjectionResults = $this->twigScopeInjector->inject($analysisResult->collectedData, $flatteningResults, $scopeInjectionDirectory);
-
-        $output->writeln('Analyzing templates');
-
-        $analysisResult = $this->phpStanRunner->run(
-            $output,
-            $errorOutput,
-            $this->environmentLoader,
-            [],
-            [$scopeInjectionDirectory],
-            $debugMode,
-            $xdebugMode,
-            PHPStanRunMode::AnalyzeTwigTemplates,
-        );
 
         // Transform PHPStan errors to TwigStan errors
-        $errors = $this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult->errors);
         $errors = $this->errorFilter->filter($errors);
         $errors = $this->errorCollapser->collapse($errors);
         $errors = $this->errorTransformer->transform($errors);
 
         if ($this->onlyAnalyzeTemplatesWithContext) {
             // Filter out errors for templates that don't have a render point.
-            $errors = array_values(array_filter($errors, function ($error) use ($errorOutput, $templateToRenderPoint) {
+            $errors = array_values(array_filter($errors, function ($error) use ($templateContext, $errorOutput) {
                 if ($error->twigFile === null) {
                     return true;
                 }
 
-                $hasRenderPoint = array_key_exists(
-                    $error->twigFile,
-                    $templateToRenderPoint,
-                );
+                $hasRenderPoint = $templateContext->hasTemplate($error->twigFile);
 
                 if ( ! $hasRenderPoint) {
                     $errorOutput->writeln(
@@ -511,35 +442,14 @@ final class AnalyzeCommand extends Command
         }
 
         foreach ($analysisResult->errors as $error) {
-            $twigSourceLocation = null;
             $renderPoints = [];
 
             if ($error->sourceLocation !== null) {
-                $lastTwigFileName = null;
-                foreach ($error->sourceLocation as $sourceLocation) {
-                    $twigFilePath = $compilationResults
-                        ->getByTwigFileName($sourceLocation->fileName)
-                        ->twigFilePath;
-
-                    $lastTwigFileName = $sourceLocation->fileName;
-
-                    $twigSourceLocation = SourceLocation::append(
-                        $twigSourceLocation,
-                        new SourceLocation(
-                            $twigFilePath,
-                            $sourceLocation->lineNumber,
-                        ),
+                foreach ($templateContext->getByTemplate($error->sourceLocation->last()->fileName) as [$sourceLocation, $context]) {
+                    $renderPoints[] = new RenderPoint(
+                        $sourceLocation,
+                        $context,
                     );
-                }
-
-                foreach ($templateToRenderPoint[$lastTwigFileName] ?? [] as $renderPointFileName => $lineNumberToContext) {
-                    foreach ($lineNumberToContext as $lineNumber => $context) {
-                        $renderPoints[] = new RenderPoint(
-                            $renderPointFileName,
-                            $lineNumber,
-                            $context,
-                        );
-                    }
                 }
             }
 
@@ -550,7 +460,7 @@ final class AnalyzeCommand extends Command
                     $error->tip,
                     $error->phpFile,
                     $error->phpLine,
-                    $twigSourceLocation,
+                    $error->sourceLocation,
                     $renderPoints,
                 ),
             );
@@ -578,6 +488,170 @@ final class AnalyzeCommand extends Command
             ),
             $relativeFileName,
             $lineNumber,
+        );
+    }
+
+    /**
+     * @param list<string> $twigFileNames
+     *
+     * @throws Throwable
+     */
+    private function compileTemplates(
+        OutputInterface $output,
+        OutputInterface $errorOutput,
+        array $twigFileNames,
+        string $compilationDirectory,
+        TemplateContext $templateContext,
+        bool $debugMode,
+        int $run,
+    ): CompilationResultCollection {
+        $count = count($twigFileNames);
+        $output->writeln(sprintf('Compiling %d templates...', $count));
+
+        $progressBar = new ProgressBar($output, $count);
+        $progressBar->start();
+
+        $compilationResults = new CompilationResultCollection();
+        foreach ($twigFileNames as $twigFile) {
+            try {
+                $compilationResults = $compilationResults->with(
+                    $this->twigCompiler->compile(
+                        $twigFile,
+                        $compilationDirectory,
+                        $templateContext,
+                        $run,
+                    ),
+                );
+            } catch (Throwable $error) {
+                $progressBar->clear();
+                $errorOutput->writeln(
+                    sprintf(
+                        'Error compiling %s: %s',
+                        Path::makeRelative($twigFile, $this->currentWorkingDirectory),
+                        $error->getMessage(),
+                    ),
+                );
+
+                if ($debugMode) {
+                    throw $error;
+                }
+            } finally {
+                $progressBar->advance();
+            }
+        }
+
+        $progressBar->finish();
+        $progressBar->clear();
+
+        return $compilationResults;
+    }
+
+    /**
+     * @param list<string> $twigFileNames
+     * @param positive-int $run
+     * @throws Throwable
+     */
+    private function executeRun(
+        OutputInterface $output,
+        OutputInterface $errorOutput,
+        array $twigFileNames,
+        string $compilationDirectory,
+        string $flatteningDirectory,
+        string $scopeInjectionDirectory,
+        TemplateContext $templateContext,
+        bool $debugMode,
+        bool $xdebugMode,
+        int $run = 1,
+    ): TwigStanRun {
+        if ($run > 1) {
+            $output->writeln(sprintf('Run %d', $run));
+        }
+
+        $compilationResults = $this->compileTemplates(
+            $output,
+            $errorOutput,
+            $twigFileNames,
+            $compilationDirectory,
+            $templateContext,
+            $debugMode,
+            $run,
+        );
+
+        $output->writeln(sprintf('Flattening %d templates...', $compilationResults->count()));
+
+        $flatteningResults = $this->twigFlattener->flatten(
+            $compilationResults,
+            $flatteningDirectory,
+            $run,
+        );
+
+        $output->writeln('Collecting scopes from Twig...');
+
+        $analysisResult1 = $this->phpStanRunner->run(
+            $output,
+            $errorOutput,
+            $this->environmentLoader,
+            [],
+            [Path::join($flatteningDirectory, (string) $run)],
+            $debugMode,
+            $xdebugMode,
+            PHPStanRunMode::CollectTwigBlockContexts,
+        );
+
+        $result = new TwigStanAnalysisResult();
+
+        foreach ($analysisResult1->notFileSpecificErrors as $fileSpecificError) {
+            $result = $result->withFileSpecificError($fileSpecificError);
+
+            $errorOutput->writeln(sprintf('<error>Error</error> %s', $fileSpecificError));
+        }
+
+        if ($analysisResult1->exitCode !== 0) {
+            throw new LogicException('PHPStan exited with a non-zero exit code.');
+        }
+
+        if ($analysisResult1->notFileSpecificErrors !== []) {
+            throw new LogicException('PHPStan exicted with not file specific errors.');
+        }
+
+        $output->writeln('Injecting scope into templates...');
+
+        $scopeInjectionResults = $this->twigScopeInjector->inject(
+            $analysisResult1->collectedData,
+            $flatteningResults,
+            $scopeInjectionDirectory,
+            $run,
+        );
+
+        $output->writeln('Analyzing templates');
+
+        $analysisResult2 = $this->phpStanRunner->run(
+            $output,
+            $errorOutput,
+            $this->environmentLoader,
+            [],
+            [Path::join($scopeInjectionDirectory, (string) $run)],
+            $debugMode,
+            $xdebugMode,
+            PHPStanRunMode::AnalyzeTwigTemplates,
+        );
+
+        $newTemplateContext = $this->templateContextFactory->create($analysisResult2);
+
+        $errors = $this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors);
+
+        return new TwigStanRun(
+            $run,
+            $templateContext,
+            $newTemplateContext,
+            $errors,
+            $compilationResults,
+            $flatteningResults,
+            $scopeInjectionResults,
+            [
+                PHPStanRunMode::CollectTwigBlockContexts->value => $analysisResult1,
+                PHPStanRunMode::AnalyzeTwigTemplates->value => $analysisResult2,
+            ],
         );
     }
 }

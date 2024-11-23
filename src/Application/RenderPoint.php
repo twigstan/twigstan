@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace TwigStan\Application;
 
 use Symfony\Component\Filesystem\Path;
+use TwigStan\Twig\SourceLocation;
 
 final readonly class RenderPoint
 {
     public function __construct(
-        public string $fileName,
-        public int $lineNumber,
+        public SourceLocation $sourceLocation,
         public string $context,
     ) {}
 
@@ -18,8 +18,8 @@ final readonly class RenderPoint
     {
         return sprintf(
             '%s:%d',
-            $relativeToDirectory !== null ? Path::makeRelative($this->fileName, $relativeToDirectory) : $this->fileName,
-            $this->lineNumber,
+            $relativeToDirectory !== null ? Path::makeRelative($this->sourceLocation->fileName, $relativeToDirectory) : $this->sourceLocation->fileName,
+            $this->sourceLocation->lineNumber,
         );
     }
 }

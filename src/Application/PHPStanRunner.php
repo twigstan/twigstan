@@ -78,7 +78,7 @@ final readonly class PHPStanRunner
             ],
         ];
 
-        if ($mode === PHPStanRunMode::CollectPhpRenderPoints || $mode === PHPStanRunMode::CollectTwigRenderPoints) {
+        if ($mode === PHPStanRunMode::CollectPhpRenderPoints || $mode === PHPStanRunMode::CollectTwigBlockContexts) {
             $parameters['level'] = null;
             $parameters['customRulesetUsed'] = true;
         }

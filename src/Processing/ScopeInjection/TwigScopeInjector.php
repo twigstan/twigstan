@@ -12,11 +12,8 @@ use PhpParser\NodeVisitor\NameResolver;
 use PHPStan\PhpDocParser\Ast\PhpDoc\VarTagValueNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
-use PHPStan\PhpDocParser\Parser\ConstExprParser;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
-use PHPStan\PhpDocParser\Parser\TypeParser;
-use PHPStan\PhpDocParser\ParserConfig;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use TwigStan\PHP\PrettyPrinter;
@@ -35,23 +32,23 @@ final readonly class TwigScopeInjector
         private Filesystem $filesystem,
         private StrictPhpParser $phpParser,
         private ArrayShapeMerger $arrayShapeMerger,
+        private PhpDocParser $phpDocParser,
+        private Lexer $lexer,
     ) {}
 
     /**
      * @param list<CollectedData> $collectedData
      */
-    public function inject(array $collectedData, FlatteningResultCollection $collection, string $targetDirectory): ScopeInjectionResultCollection
+    public function inject(array $collectedData, FlatteningResultCollection $collection, string $targetDirectory, int $run): ScopeInjectionResultCollection
     {
-        $config = new ParserConfig(usedAttributes: ['lines' => true, 'indexes' => true]);
-        $lexer = new Lexer($config);
-        $constExprParser = new ConstExprParser($config);
-        $typeParser = new TypeParser($config, $constExprParser);
-        $phpDocParser = new PhpDocParser($config, $typeParser, $constExprParser);
+        $targetDirectory = Path::join($targetDirectory, (string) $run);
+
+        $this->filesystem->mkdir($targetDirectory);
 
         $contextBeforeBlock = array_map(
-            function (CollectedData $collectedData) use ($lexer, $phpDocParser) {
-                $phpDocNode = $phpDocParser->parseTagValue(
-                    new TokenIterator($lexer->tokenize($collectedData->data['context'])),
+            function (CollectedData $collectedData) {
+                $phpDocNode = $this->phpDocParser->parseTagValue(
+                    new TokenIterator($this->lexer->tokenize($collectedData->data['context'])),
                     '@var',
                 );
 

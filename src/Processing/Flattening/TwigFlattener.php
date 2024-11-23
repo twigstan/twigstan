@@ -30,8 +30,12 @@ final readonly class TwigFlattener
     /**
      * Flattens the template by inlining the parent template(s) and block(s).
      */
-    public function flatten(CompilationResultCollection $collection, string $targetDirectory): FlatteningResultCollection
+    public function flatten(CompilationResultCollection $collection, string $targetDirectory, int $run): FlatteningResultCollection
     {
+        $targetDirectory = Path::join($targetDirectory, (string) $run);
+
+        $this->filesystem->mkdir($targetDirectory);
+
         $results = new FlatteningResultCollection();
         foreach ($collection as $compilationResult) {
             $metadata = $this->metadataRegistry->getMetadata($compilationResult->twigFilePath);

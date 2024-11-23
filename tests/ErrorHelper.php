@@ -6,11 +6,13 @@ namespace TwigStan;
 
 use JsonException;
 use PHPUnit\Framework\Assert;
+use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Twig\Environment;
 use TwigStan\Application\TwigStanAnalysisResult;
 use TwigStan\Application\TwigStanError;
+use TwigStan\Processing\TemplateContext;
 
 final readonly class ErrorHelper
 {
@@ -101,6 +103,29 @@ final readonly class ErrorHelper
                 json_encode($actual, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT),
             ),
         );
+
+        try {
+            $expectedContext = json_decode(
+                $filesystem->readFile(Path::join($directory, 'context.json')),
+                true,
+                512,
+                JSON_THROW_ON_ERROR,
+            );
+
+            $lastRun = array_key_last($result->runs);
+            $actualContext = self::contextToArray($result->runs[$lastRun]->contextBefore, $directory);
+
+            Assert::assertEqualsCanonicalizing(
+                $expectedContext,
+                $actualContext,
+                sprintf(
+                    'Context do not match with expectations. The actual context is: %s',
+                    json_encode($actualContext, JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT),
+                ),
+            );
+        } catch (IOException) {
+            // Ignore
+        }
     }
 
     /**
@@ -143,9 +168,28 @@ final readonly class ErrorHelper
             'tip' => $error->tip,
             'twigSourceLocation' => $error->twigSourceLocation?->toString($directory),
             'renderPoints' => array_map(
-                fn($sourceLocation) => $sourceLocation->toString($directory),
+                fn($renderPoint) => $renderPoint->toString($directory),
                 $error->renderPoints,
             ),
         ];
+    }
+
+    /**
+     * @return array<string, non-empty-list<array{string, string}>>
+     */
+    private static function contextToArray(TemplateContext $templateContext, string $directory): array
+    {
+        $result = [];
+
+        foreach ($templateContext->context as $template => $renderPoints) {
+            foreach ($renderPoints as [$sourceLocation, $context]) {
+                $result[Path::makeRelative($template, $directory)][] = [
+                    $sourceLocation->toString($directory),
+                    $context,
+                ];
+            }
+        }
+
+        return $result;
     }
 }
