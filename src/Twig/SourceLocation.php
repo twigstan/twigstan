@@ -106,9 +106,9 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
         }
     }
 
-    public function getHash(): int
+    public function getHash(): string
     {
-        return crc32($this->toString());
+        return hash('crc32b', $this->toString());
     }
 
     public function sort(SourceLocation $other): int
