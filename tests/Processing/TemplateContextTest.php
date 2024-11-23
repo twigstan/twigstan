@@ -15,26 +15,26 @@ final class TemplateContextTest extends TestCase
     {
         $left = new TemplateContext([
             'layout.twig' => [
-                1 => [new SourceLocation('HomepageController.php', 23), 'array{}'],
-                2 => [new SourceLocation('HomepageController.php', 34), 'array{name: string}'],
+                'hash1' => [new SourceLocation('HomepageController.php', 23), 'array{}'],
+                'hash2' => [new SourceLocation('HomepageController.php', 34), 'array{name: string}'],
             ],
             'contact.twig' => [
-                3 => [new SourceLocation('ContactController.php', 2), 'array{name: string}'],
+                'hash3' => [new SourceLocation('ContactController.php', 2), 'array{name: string}'],
             ],
             'footer.twig' => [
-                4 => [new SourceLocation('FooterController.php', 45), 'array{title: string}'],
+                'hash4' => [new SourceLocation('FooterController.php', 45), 'array{title: string}'],
             ],
         ]);
 
         $right = new TemplateContext([
             'footer.twig' => [
-                5 => [new SourceLocation('layout.twig', 45), 'array{title: string}'],
+                'hash5' => [new SourceLocation('layout.twig', 45), 'array{title: string}'],
             ],
             'contact.twig' => [
-                6 => [new SourceLocation('layout.twig', 22), 'array{name: string}'],
+                'hash6' => [new SourceLocation('layout.twig', 22), 'array{name: string}'],
             ],
             'other.twig' => [
-                7 => [new SourceLocation('footer.twig', 45), 'array{title: string}'],
+                'hash7' => [new SourceLocation('footer.twig', 45), 'array{title: string}'],
             ],
         ]);
 
@@ -43,19 +43,19 @@ final class TemplateContextTest extends TestCase
 
         self::assertEquals([
             'layout.twig' => [
-                1 => [new SourceLocation('HomepageController.php', 23), 'array{}'],
-                2 => [new SourceLocation('HomepageController.php', 34), 'array{name: string}'],
+                'hash1' => [new SourceLocation('HomepageController.php', 23), 'array{}'],
+                'hash2' => [new SourceLocation('HomepageController.php', 34), 'array{name: string}'],
             ],
             'contact.twig' => [
-                3 => [new SourceLocation('ContactController.php', 2), 'array{name: string}'],
-                6 => [new SourceLocation('layout.twig', 22), 'array{name: string}'],
+                'hash3' => [new SourceLocation('ContactController.php', 2), 'array{name: string}'],
+                'hash6' => [new SourceLocation('layout.twig', 22), 'array{name: string}'],
             ],
             'footer.twig' => [
-                4 => [new SourceLocation('FooterController.php', 45), 'array{title: string}'],
-                5 => [new SourceLocation('layout.twig', 45), 'array{title: string}'],
+                'hash4' => [new SourceLocation('FooterController.php', 45), 'array{title: string}'],
+                'hash5' => [new SourceLocation('layout.twig', 45), 'array{title: string}'],
             ],
             'other.twig' => [
-                7 => [new SourceLocation('footer.twig', 45), 'array{title: string}'],
+                'hash7' => [new SourceLocation('footer.twig', 45), 'array{title: string}'],
             ],
         ], $context->context);
 
@@ -69,21 +69,21 @@ final class TemplateContextTest extends TestCase
     {
         $left = new TemplateContext([
             'contact.twig' => [
-                1 => [new SourceLocation('ContactController.php', 2), 'array{name: string}'],
+                'hash1' => [new SourceLocation('ContactController.php', 2), 'array{name: string}'],
             ],
             'footer.twig' => [
-                4 => [new SourceLocation('FooterController.php', 45), 'array{title: string}'],
+                'hash4' => [new SourceLocation('FooterController.php', 45), 'array{title: string}'],
             ],
         ]);
 
         $right = new TemplateContext([
             'footer.twig' => [
-                2 => [new SourceLocation('contact.twig', 22), 'array{title: null|string}'],
-                3 => [new SourceLocation('layout.twig', 45), 'array{title: null|string}'],
+                'hash2' => [new SourceLocation('contact.twig', 22), 'array{title: null|string}'],
+                'hash3' => [new SourceLocation('layout.twig', 45), 'array{title: null|string}'],
             ],
             'header.twig' => [
-                5 => [new SourceLocation('contact.twig', 22), 'array{title: null|string}'],
-                6 => [new SourceLocation('layout.twig', 45), 'array{title: null|string}'],
+                'hash5' => [new SourceLocation('contact.twig', 22), 'array{title: null|string}'],
+                'hash6' => [new SourceLocation('layout.twig', 45), 'array{title: null|string}'],
             ],
         ]);
 
@@ -92,14 +92,14 @@ final class TemplateContextTest extends TestCase
 
         self::assertEquals([
             'contact.twig' => [
-                1 => [new SourceLocation('ContactController.php', 2), 'array{name: string}'],
+                'hash1' => [new SourceLocation('ContactController.php', 2), 'array{name: string}'],
             ],
             'footer.twig' => [
-                4 => [new SourceLocation('FooterController.php', 45), 'array{title: string}'],
-                2 => [new SourceLocation('contact.twig', 22), 'array{title: null|string}'],
+                'hash4' => [new SourceLocation('FooterController.php', 45), 'array{title: string}'],
+                'hash2' => [new SourceLocation('contact.twig', 22), 'array{title: null|string}'],
             ],
             'header.twig' => [
-                5 => [new SourceLocation('contact.twig', 22), 'array{title: null|string}'],
+                'hash5' => [new SourceLocation('contact.twig', 22), 'array{title: null|string}'],
             ],
         ], $context->context);
 

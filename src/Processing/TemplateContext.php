@@ -9,12 +9,12 @@ use TwigStan\Twig\SourceLocation;
 final readonly class TemplateContext
 {
     /**
-     * @var array<string, array<int, array{SourceLocation, string}>>
+     * @var array<string, array<string, array{SourceLocation, string}>>
      */
     public array $context;
 
     /**
-     * @param array<string, array<int, array{SourceLocation, string}>> $context
+     * @param array<string, array<string, array{SourceLocation, string}>> $context
      */
     public function __construct(
         array $context,
@@ -43,7 +43,7 @@ final readonly class TemplateContext
     }
 
     /**
-     * @return array<int, array{SourceLocation, string}>
+     * @return array<string, array{SourceLocation, string}>
      */
     public function getByTemplate(string $template): array
     {
