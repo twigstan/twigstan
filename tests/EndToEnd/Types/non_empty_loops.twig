@@ -1,0 +1,10 @@
+{% types {
+    dates: 'non-empty-list<DateTime>',
+} %}
+
+{% for date in dates %}
+    {% assert_type date 'DateTime' %}
+{% else %}
+    This should not happen, and be reported on line 7 instead of 6
+    https://github.com/twigphp/Twig/pull/4473
+{% endfor %}
