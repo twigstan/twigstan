@@ -9,6 +9,14 @@ services:
 		class: TwigStan\PHPStan\Collector\ContextFromTwigIncludeCallCollector
 		tags:
 			- phpstan.collector
+	-
+		class: TwigStan\PHPStan\Rules\GetAttributeRule
+		tags:
+			- phpstan.rules.rule
+	-
+		class: TwigStan\PHPStan\Visitor\AssertTypeVisitor
+		tags:
+			- phpstan.parser.richParserNodeVisitor
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
 	- TwigStan\Twig\TwigFileCanonicalizer
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.twigEnvironmentLoader%)

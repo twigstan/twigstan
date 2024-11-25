@@ -6,6 +6,20 @@
             "tip": null,
             "twigSourceLocation": "broken.twig:4",
             "renderPoints": []
+        },
+        {
+            "message": "Cannot get attribute 'unknownMethod' on TwigStan\\Fixtures\\User.",
+            "identifier": "getAttribute.unknown",
+            "tip": "See https:\/\/twig.symfony.com\/doc\/3.x\/templates.html#dot_operator",
+            "twigSourceLocation": "print.twig:5",
+            "renderPoints": []
+        },
+        {
+            "message": "Cannot get attribute 'unknownProperty' on TwigStan\\Fixtures\\User.",
+            "identifier": "getAttribute.unknown",
+            "tip": "See https:\/\/twig.symfony.com\/doc\/3.x\/templates.html#dot_operator",
+            "twigSourceLocation": "print.twig:6",
+            "renderPoints": []
         }
     ],
     "fileSpecificErrors": []
