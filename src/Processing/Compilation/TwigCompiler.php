@@ -25,6 +25,7 @@ use TwigStan\Processing\Compilation\PhpVisitor\MakeFinalVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorExtensionCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\RemoveLineNumberFromGetAttributeCallVisitor;
 use TwigStan\Processing\TemplateContext;
 use TwigStan\Processing\TemplateContextToArrayShape;
 
@@ -75,6 +76,7 @@ final readonly class TwigCompiler
             new RemoveImportsVisitor(),
             new AddTypeCommentsToTemplateVisitor($this->templateContextToArrayShape->getByTemplate($templateContext, $twigFilePath)),
             new IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor(),
+            new RemoveLineNumberFromGetAttributeCallVisitor(),
             new AddGetExtensionMethodVisitor(),
             new RefactorExtensionCallVisitor(),
             ...(Environment::MAJOR_VERSION >= 4 ? [new RefactorLoopClosureVisitor()] : []),

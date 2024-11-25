@@ -1,0 +1,13 @@
+{% types {
+    user: 'TwigStan\\Fixtures\\User',
+} %}
+
+{% if user.lastPurchaseAt %}
+    {% assert_type user.lastPurchaseAt 'DateTimeImmutable' %}
+    {% assert_type user.lastPurchaseAt.format('Y-m-d') 'string' %}
+{% else %}
+    {% assert_type user.lastPurchaseAt 'null' %}
+    {% assert_type user.lastPurchaseAt.format('Y-m-d') '*ERROR*' %}
+{% endif %}
+
+{% assert_type user.lastPurchaseAt.format('Y-m-d') '*ERROR*' %}
