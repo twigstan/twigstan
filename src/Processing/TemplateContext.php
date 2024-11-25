@@ -72,7 +72,7 @@ final readonly class TemplateContext
         foreach ($other->context as $template => $renderPoints) {
             if ( ! isset($mergedContext[$template])) {
                 foreach ($renderPoints as $hash => [$sourceLocation, $context]) {
-                    if ( ! isset($this->context[$sourceLocation->fileName])) {
+                    if (isset($mergedContext[$sourceLocation->fileName][$hash])) {
                         continue;
                     }
 

@@ -1,0 +1,96 @@
+{
+    "_footer.twig": [
+        [
+            "include_block.twig:3",
+            "array{}"
+        ],
+        [
+            "include_block.twig:4",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true}"
+        ],
+        [
+            "include_block.twig:5",
+            "array{title: 'Hello, World!'}"
+        ],
+        [
+            "include_block.twig:6",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true, title: 'Hello, World!'}"
+        ],
+        [
+            "include_block.twig:17",
+            "array{}"
+        ],
+        [
+            "include_block.twig:23",
+            "array{}"
+        ],
+        [
+            "include_function.twig:3",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true}"
+        ],
+        [
+            "include_function.twig:4",
+            "array{}"
+        ],
+        [
+            "include_function.twig:5",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true, title: 'Hello, World!'}"
+        ],
+        [
+            "include_function.twig:6",
+            "array{title: 'Hello, World!'}"
+        ],
+        [
+            "include_function.twig:16",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true, template: '@EndToEnd\/Include\/_footer.twig'}"
+        ],
+        [
+            "include_function.twig:22",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true, template: '@EndToEnd\/Include\/_footer.twig', isMobile: bool}"
+        ]
+    ],
+    "@EndToEnd\/Include\/maybe-exists.twig": [
+        [
+            "include_block.twig:8",
+            "array{}"
+        ],
+        [
+            "include_block.twig:9",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true}"
+        ],
+        [
+            "include_block.twig:10",
+            "array{title: 'Hello, World!'}"
+        ],
+        [
+            "include_block.twig:11",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true, title: 'Hello, World!'}"
+        ],
+        [
+            "include_function.twig:8",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true}"
+        ],
+        [
+            "include_function.twig:9",
+            "array{}"
+        ],
+        [
+            "include_function.twig:10",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true, title: 'Hello, World!'}"
+        ],
+        [
+            "include_function.twig:11",
+            "array{title: 'Hello, World!'}"
+        ]
+    ],
+    "@EndToEnd\/Include\/isMobile.twig": [
+        [
+            "include_block.twig:23",
+            "array{}"
+        ],
+        [
+            "include_function.twig:22",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, somethingInTheContext: true, template: '@EndToEnd\/Include\/_footer.twig', isMobile: bool}"
+        ]
+    ]
+}

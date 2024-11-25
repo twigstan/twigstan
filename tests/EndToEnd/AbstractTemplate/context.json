@@ -1,0 +1,18 @@
+{
+    "child.twig": [
+        [
+            "Controller.php:16",
+            "array{title: 'RenderAction', description: 'Description'}"
+        ],
+        [
+            "Controller.php:24",
+            "array{title: 'RenderViewAction', description: 'Description'}"
+        ]
+    ],
+    "layout.twig": [
+        [
+            "Controller.php:32",
+            "array{}"
+        ]
+    ]
+}
