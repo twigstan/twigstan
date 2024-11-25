@@ -1,11 +1,11 @@
 {% types {
     titles: 'list<string>',
-} %}
-{% assert_type titles[0] 'string' %}
-
-{% types {
     user: 'TwigStan\\Fixtures\\User',
 } %}
+{% assert_type user.lastPurchaseAt.format('Y-m-d') '*ERROR*' %}
+
+{% assert_type titles[0] 'string' %}
+
 {% assert_type user.roles 'array<int, string>' %}
 {% assert_type user.roles[0] 'string' %}
 

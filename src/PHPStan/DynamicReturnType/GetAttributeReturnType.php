@@ -14,9 +14,9 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
-use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use Twig\Extension\CoreExtension;
+use Twig\Template;
 
 final readonly class GetAttributeReturnType implements DynamicStaticMethodReturnTypeExtension
 {
@@ -69,20 +69,13 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
 
         $type = $typeStrings[0]->getValue();
 
-        if (in_array($type, [\Twig\Template::ANY_CALL, \Twig\Template::ARRAY_CALL], true)) {
+        if (in_array($type, [Template::ANY_CALL, Template::ARRAY_CALL], true)) {
             if ($objectType->isArray()->yes()) {
                 return $objectType->getOffsetValueType($propertyOrMethodType);
             }
         }
 
-        $nullable = false;
-
         if ($objectType->isNull()->maybe()) {
-            $nullable = true;
-            $objectType = $objectType->tryRemove(new NullType());
-        }
-
-        if ($objectType === null) {
             return new ErrorType();
         }
 
@@ -90,21 +83,17 @@ final readonly class GetAttributeReturnType implements DynamicStaticMethodReturn
         //    return new ErrorType(); // @todo prob array?
         // }
 
-        if (in_array($type, [\Twig\Template::ANY_CALL], true)) {
+        if (in_array($type, [Template::ANY_CALL], true)) {
             if ($objectType->hasProperty((string) $propertyOrMethod)->yes()) {
                 $property = $objectType->getProperty((string) $propertyOrMethod, $scope);
 
                 if ($property->isPublic()) {
-                    // if ($nullable) {
-                    //    return new UnionType([$property->getReadableType(), new NullType()]);
-                    // }
-
                     return $property->getReadableType();
                 }
             }
         }
 
-        if (in_array($type, [\Twig\Template::ANY_CALL, \Twig\Template::METHOD_CALL], true)) {
+        if (in_array($type, [Template::ANY_CALL, Template::METHOD_CALL], true)) {
             foreach (['', 'get', 'is', 'has'] as $prefix) {
                 if ( ! $objectType->hasMethod($prefix . $propertyOrMethod)->yes()) {
                     continue;

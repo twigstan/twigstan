@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TwigStan\Fixtures;
 
+use DateTimeImmutable;
+
 final class User
 {
     public function __construct(public string $firstName, public string $lastName) {}
@@ -21,6 +23,11 @@ final class User
     public function hasEmail(): bool
     {
         return false;
+    }
+
+    public function getLastPurchaseAt(): ?DateTimeImmutable
+    {
+        return mt_rand(0, 1) === 1 ? new DateTimeImmutable() : null;
     }
 
     /**
