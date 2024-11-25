@@ -306,6 +306,12 @@ final class AnalyzeCommand extends Command
 
         $result = $result->withContext($templateContext);
 
+        // Filter out templates that do not exist.
+        $changedTemplates = array_values(array_filter(
+            $changedTemplates,
+            fn($template) => $this->filesystem->exists($template),
+        ));
+
         $errors = $run->errors;
 
         if ($changedTemplates !== []) {

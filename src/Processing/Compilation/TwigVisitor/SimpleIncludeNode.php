@@ -39,7 +39,9 @@ final class SimpleIncludeNode extends IncludeNode
 
     public function compile(Compiler $compiler): void
     {
-        $compiler->write(sprintf('%s::include(', CoreExtension::class))
+        $compiler
+            ->addDebugInfo($this)
+            ->write(sprintf('yield %s::include(', CoreExtension::class))
             ->raw('$this->env, $context, ')
             ->subcompile($this->getNode('expr'))
             ->raw(', ');

@@ -1,0 +1,14 @@
+{
+    "case4.twig": [
+        [
+            "Case4Controller.php:13",
+            "array{title: 'Welcome', subtitle: 'Welcome'}"
+        ]
+    ],
+    "@EndToEnd\/Inheritance\/_random_footer.twig": [
+        [
+            "case6.twig:29",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, subtitle: 'Hello'}"
+        ]
+    ]
+}
