@@ -8,17 +8,24 @@
             "renderPoints": []
         },
         {
+            "message": "Cannot get attribute 'format' on DateTimeImmutable|null.",
+            "identifier": "getAttribute.unknown",
+            "tip": "See https:\/\/twig.symfony.com\/doc\/3.x\/templates.html#dot_operator",
+            "twigSourceLocation": "print.twig:6",
+            "renderPoints": []
+        },
+        {
             "message": "Cannot get attribute 'unknownMethod' on TwigStan\\Fixtures\\User.",
             "identifier": "getAttribute.unknown",
             "tip": "See https:\/\/twig.symfony.com\/doc\/3.x\/templates.html#dot_operator",
-            "twigSourceLocation": "print.twig:5",
+            "twigSourceLocation": "print.twig:8",
             "renderPoints": []
         },
         {
             "message": "Cannot get attribute 'unknownProperty' on TwigStan\\Fixtures\\User.",
             "identifier": "getAttribute.unknown",
             "tip": "See https:\/\/twig.symfony.com\/doc\/3.x\/templates.html#dot_operator",
-            "twigSourceLocation": "print.twig:6",
+            "twigSourceLocation": "print.twig:9",
             "renderPoints": []
         }
     ],
