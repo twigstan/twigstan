@@ -10,6 +10,6 @@ final class IncludeTest extends AbstractEndToEndTestCase
 {
     public function test(): void
     {
-        parent::runTests(__DIR__);
+        parent::runAnalysis(__DIR__);
     }
 }

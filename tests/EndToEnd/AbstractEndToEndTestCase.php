@@ -55,7 +55,7 @@ abstract class AbstractEndToEndTestCase extends TestCase
      * @throws Throwable
      * @throws JsonException
      */
-    protected function runTests(string $directory, array $files = []): void
+    protected function runAnalysis(string $directory, array $files = []): void
     {
         $this->directory = $directory;
         $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
