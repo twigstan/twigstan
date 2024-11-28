@@ -1,0 +1,20 @@
+{% print_assert_type user.doesNotExist() '*ERROR*' %}
+{% print_assert_type user.firstName 'string' %}
+{% print_assert_type user.getFirstName 'string' %}
+{% print_assert_type user.firstName() 'string' %}
+{% print_assert_type user.email 'bool' %}
+{% print_assert_type user.hasEmail 'bool' %}
+{% print_assert_type user.admin 'bool' %}
+{% print_assert_type user.isAdmin 'bool' %}
+{% print_assert_type user.phoneNumber 'bool' %}
+{% print_assert_type user.hasPhoneNumber 'bool' %}
+---OUTPUT---
+Ruud
+Ruud
+Ruud
+1
+1
+1
+1
+1
+1

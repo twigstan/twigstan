@@ -1,9 +1,0 @@
-{% types {
-    user: 'TwigStan\\Fixtures\\User',
-} %}
-
-{# Cannot call on nullable #}
-{{ user.lastPurchaseAt.format('Y-m-d') }}
-
-{{ user.unknownMethod() }}
-{{ user.unknownProperty }}

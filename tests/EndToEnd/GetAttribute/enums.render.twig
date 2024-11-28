@@ -1,0 +1,8 @@
+{% print_assert_type status.DoesNotExist '*ERROR*' %}
+{% assert_type status 'TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\OrderStatus::Paid' %}
+{% print_assert_type status.name "'Paid'" %}
+{% print_assert_type status.Shipped.name "'Shipped'" %}
+{% assert_type status.Shipped 'TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\OrderStatus::Shipped' %}
+---OUTPUT---
+Paid
+Shipped

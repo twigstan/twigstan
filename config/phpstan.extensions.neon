@@ -1,4 +1,5 @@
 services:
+	- TwigStan\PHPStan\GetAttributeCheck
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
 		tags:

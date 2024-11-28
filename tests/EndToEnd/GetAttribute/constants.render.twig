@@ -1,0 +1,4 @@
+{% print_assert_type state.DOESNOTEXIST '*ERROR*' %}
+{% print_assert_type state.ACTIVE "'active'" %}
+---OUTPUT---
+active
