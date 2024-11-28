@@ -1,12 +1,15 @@
-[
-    {
-        "message": "Negated boolean expression is always false.",
-        "identifier": "booleanNot.alwaysFalse",
-        "tip": null,
-        "twigSourceLocation": "simple.html.twig:8",
-        "renderPoints": [
-            "CustomRenderPointController.php:17",
-            "SimpleTemplateAttributeController.php:21"
-        ]
-    }
-]
+{
+    "errors": [
+        {
+            "message": "Negated boolean expression is always false.",
+            "identifier": "booleanNot.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "simple.html.twig:8",
+            "renderPoints": [
+                "CustomRenderPointController.php:17",
+                "SimpleTemplateAttributeController.php:21"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}

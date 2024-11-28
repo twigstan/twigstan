@@ -45,14 +45,25 @@ final readonly class ErrorHelper
         $versionSpecificErrorsFile = Path::join($directory, sprintf('errors.v%d.json', Environment::MAJOR_VERSION));
 
         if (file_exists($versionSpecificErrorsFile)) {
+            $versionSpecificErrors = json_decode(
+                $filesystem->readFile($versionSpecificErrorsFile),
+                true,
+                512,
+                JSON_THROW_ON_ERROR,
+            );
+
+            Assert::assertIsArray($versionSpecificErrors);
+            Assert::assertArrayHasKey('errors', $versionSpecificErrors);
+            Assert::assertArrayHasKey('fileSpecificErrors', $versionSpecificErrors);
+
             $expectedErrors['errors'] = [
                 ...$expectedErrors['errors'],
-                ...json_decode(
-                    $filesystem->readFile($versionSpecificErrorsFile),
-                    true,
-                    512,
-                    JSON_THROW_ON_ERROR,
-                ),
+                ...$versionSpecificErrors['errors'],
+            ];
+
+            $expectedErrors['fileSpecificErrors'] = [
+                ...$expectedErrors['fileSpecificErrors'],
+                ...$versionSpecificErrors['fileSpecificErrors'],
             ];
         }
 
