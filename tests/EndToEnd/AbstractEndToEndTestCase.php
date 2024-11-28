@@ -6,9 +6,11 @@ namespace TwigStan\EndToEnd;
 
 use JsonException;
 use PHPUnit\Framework\TestCase;
+use SplFileInfo;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Path;
+use Symfony\Component\Finder\Finder;
 use Throwable;
 use TwigStan\Application\AnalyzeCommand;
 use TwigStan\Application\TwigStanAnalysisResult;
@@ -61,11 +63,26 @@ abstract class AbstractEndToEndTestCase extends TestCase
         $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
 
         $relativeDirectory = Path::makeRelative($directory, dirname(__DIR__, 2));
+
+        $paths = [$relativeDirectory];
+
+        // When files are specified, we need to make sure that `*Test.php` files are also analyzed, because they could
+        // be used to read context.
+        if ($files !== []) {
+            $paths = [
+                ...array_map(
+                    fn(string $file) => Path::join($relativeDirectory, $file),
+                    $files,
+                ),
+                ...array_values(array_map(
+                    fn(SplFileInfo $file) => $file->getPathname(),
+                    iterator_to_array(Finder::create()->files()->name('*Test.php')->in($directory)->depth(0)),
+                )),
+            ];
+        }
+
         $this->result = $this->command->analyze(
-            $files !== [] ? array_map(
-                fn(string $file) => Path::join($relativeDirectory, $file),
-                $files,
-            ) : [$relativeDirectory],
+            $paths,
             $this->output,
             $this->errorOutput,
             true,
