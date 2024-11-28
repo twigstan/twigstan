@@ -1,0 +1,5 @@
+{% print_assert_type account.doesNotExist '*ERROR*' %}
+{% print_assert_type account.privateId '*ERROR*' %}
+{% print_assert_type account.name 'string' %}
+---OUTPUT---
+TwigStan

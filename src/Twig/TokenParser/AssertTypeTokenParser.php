@@ -4,12 +4,20 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig\TokenParser;
 
+use Twig\Node\EmptyNode;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 
 final class AssertTypeTokenParser extends AbstractTokenParser
 {
-    public function parse(Token $token): AssertTypeNode
+    /**
+     * @param bool $compile Whether or not to compile the PHPStan assertType call.
+     */
+    public function __construct(
+        private readonly bool $compile = true,
+    ) {}
+
+    public function parse(Token $token): AssertTypeNode | EmptyNode
     {
         $stream = $this->parser->getStream();
 
@@ -18,6 +26,10 @@ final class AssertTypeTokenParser extends AbstractTokenParser
         $expectedType = $stream->expect(Token::STRING_TYPE);
 
         $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
+
+        if ( ! $this->compile) {
+            return new EmptyNode($token->getLine());
+        }
 
         return new AssertTypeNode($name, $expectedType->getValue(), $token->getLine());
     }

@@ -1,0 +1,9 @@
+{% types {
+    user: 'TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User',
+    dateImmutable: 'DateTimeImmutable',
+} %}
+
+{{ user.getRelativeBirthday() }}
+{{ user.getRelativeBirthday(true) }}
+{{ user.getRelativeBirthday(date()) }}
+{{ user.getRelativeBirthday(dateImmutable, true) }}

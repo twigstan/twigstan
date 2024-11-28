@@ -1,32 +1,88 @@
 {
     "errors": [
         {
-            "message": "Expected type string|null, actual: *ERROR*",
-            "identifier": "phpstan.type",
+            "message": "Method TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User::getRelativeBirthday() invoked with 0 parameters, 1 required.",
+            "identifier": "arguments.count",
             "tip": null,
-            "twigSourceLocation": "broken.twig:4",
+            "twigSourceLocation": "arguments.twig:6",
             "renderPoints": []
         },
         {
-            "message": "Cannot get attribute 'format' on DateTimeImmutable|null.",
-            "identifier": "getAttribute.unknown",
-            "tip": "See https:\/\/twig.symfony.com\/doc\/3.x\/templates.html#dot_operator",
-            "twigSourceLocation": "print.twig:6",
+            "message": "Parameter #1 $relativeTo of method TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User::getRelativeBirthday() expects DateTimeImmutable, true given.",
+            "identifier": "argument.type",
+            "tip": null,
+            "twigSourceLocation": "arguments.twig:7",
             "renderPoints": []
         },
         {
-            "message": "Cannot get attribute 'unknownMethod' on TwigStan\\Fixtures\\User.",
-            "identifier": "getAttribute.unknown",
-            "tip": "See https:\/\/twig.symfony.com\/doc\/3.x\/templates.html#dot_operator",
-            "twigSourceLocation": "print.twig:8",
+            "message": "Method TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User::getRelativeBirthday() invoked with 2 parameters, 1 required.",
+            "identifier": "arguments.count",
+            "tip": null,
+            "twigSourceLocation": "arguments.twig:9",
             "renderPoints": []
         },
         {
-            "message": "Cannot get attribute 'unknownProperty' on TwigStan\\Fixtures\\User.",
+            "message": "Cannot get offset \"3\" on \"array{'Hello, World!', 'Bonjour, le monde!'}\".",
+            "identifier": "getAttribute.array",
+            "tip": null,
+            "twigSourceLocation": "array.render.twig:4",
+            "renderPoints": [
+                "RenderTest.php:0"
+            ]
+        },
+        {
+            "message": "Cannot get \"format\" on DateTimeImmutable|null.",
             "identifier": "getAttribute.unknown",
-            "tip": "See https:\/\/twig.symfony.com\/doc\/3.x\/templates.html#dot_operator",
-            "twigSourceLocation": "print.twig:9",
-            "renderPoints": []
+            "tip": null,
+            "twigSourceLocation": "call_on_null.render.twig:1",
+            "renderPoints": [
+                "RenderTest.php:0"
+            ]
+        },
+        {
+            "message": "Neither the property \"doesNotExist\" nor one of the methods \"doesNotExist()\", \"getdoesNotExist()\", \"isdoesNotExist()\", \"hasdoesNotExist()\" or \"__call()\" exist and have public access in class \"TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User\".",
+            "identifier": "getAttribute.notFound",
+            "tip": null,
+            "twigSourceLocation": "method_calls.render.twig:1",
+            "renderPoints": [
+                "RenderTest.php:0"
+            ]
+        },
+        {
+            "message": "Neither the property \"DOESNOTEXIST\" nor one of the methods \"DOESNOTEXIST()\", \"getDOESNOTEXIST()\", \"isDOESNOTEXIST()\", \"hasDOESNOTEXIST()\" or \"__call()\" exist and have public access in class \"TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\State\".",
+            "identifier": "getAttribute.notFound",
+            "tip": null,
+            "twigSourceLocation": "constants.render.twig:1",
+            "renderPoints": [
+                "RenderTest.php:0"
+            ]
+        },
+        {
+            "message": "Neither the property \"DoesNotExist\" nor one of the methods \"DoesNotExist()\", \"getDoesNotExist()\", \"isDoesNotExist()\", \"hasDoesNotExist()\" or \"__call()\" exist and have public access in class \"TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\OrderStatus::Paid\".",
+            "identifier": "getAttribute.notFound",
+            "tip": null,
+            "twigSourceLocation": "enums.render.twig:1",
+            "renderPoints": [
+                "RenderTest.php:0"
+            ]
+        },
+        {
+            "message": "Neither the property \"doesNotExist\" nor one of the methods \"doesNotExist()\", \"getdoesNotExist()\", \"isdoesNotExist()\", \"hasdoesNotExist()\" or \"__call()\" exist and have public access in class \"TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\Account\".",
+            "identifier": "getAttribute.notFound",
+            "tip": null,
+            "twigSourceLocation": "properties.render.twig:1",
+            "renderPoints": [
+                "RenderTest.php:0"
+            ]
+        },
+        {
+            "message": "Neither the property \"privateId\" nor one of the methods \"privateId()\", \"getprivateId()\", \"isprivateId()\", \"hasprivateId()\" or \"__call()\" exist and have public access in class \"TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\Account\".",
+            "identifier": "getAttribute.notFound",
+            "tip": null,
+            "twigSourceLocation": "properties.render.twig:2",
+            "renderPoints": [
+                "RenderTest.php:0"
+            ]
         }
     ],
     "fileSpecificErrors": []

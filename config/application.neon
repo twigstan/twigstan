@@ -75,6 +75,7 @@ services:
 	- TwigStan\Twig\Node\NodeFinder
 	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
+	- TwigStan\Twig\TokenParser\PrintAssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigEnvironmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer

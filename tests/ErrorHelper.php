@@ -24,24 +24,46 @@ final readonly class ErrorHelper
     public static function assertAnalysisResultMatchesJsonFile(TwigStanAnalysisResult $result, string $directory, array $files = []): void
     {
         $filesystem = new Filesystem();
-        $expectedErrors = json_decode(
-            $filesystem->readFile(Path::join($directory, 'errors.json')),
-            true,
-            512,
-            JSON_THROW_ON_ERROR,
-        );
+        $expectedErrors = [
+            'errors' => [],
+            'fileSpecificErrors' => [],
+        ];
+
+        if (file_exists(Path::join($directory, 'errors.json'))) {
+            $expectedErrors = json_decode(
+                $filesystem->readFile(Path::join($directory, 'errors.json')),
+                true,
+                512,
+                JSON_THROW_ON_ERROR,
+            );
+
+            Assert::assertIsArray($expectedErrors);
+            Assert::assertArrayHasKey('errors', $expectedErrors);
+            Assert::assertArrayHasKey('fileSpecificErrors', $expectedErrors);
+        }
 
         $versionSpecificErrorsFile = Path::join($directory, sprintf('errors.v%d.json', Environment::MAJOR_VERSION));
 
         if (file_exists($versionSpecificErrorsFile)) {
+            $versionSpecificErrors = json_decode(
+                $filesystem->readFile($versionSpecificErrorsFile),
+                true,
+                512,
+                JSON_THROW_ON_ERROR,
+            );
+
+            Assert::assertIsArray($versionSpecificErrors);
+            Assert::assertArrayHasKey('errors', $versionSpecificErrors);
+            Assert::assertArrayHasKey('fileSpecificErrors', $versionSpecificErrors);
+
             $expectedErrors['errors'] = [
                 ...$expectedErrors['errors'],
-                ...json_decode(
-                    $filesystem->readFile($versionSpecificErrorsFile),
-                    true,
-                    512,
-                    JSON_THROW_ON_ERROR,
-                ),
+                ...$versionSpecificErrors['errors'],
+            ];
+
+            $expectedErrors['fileSpecificErrors'] = [
+                ...$expectedErrors['fileSpecificErrors'],
+                ...$versionSpecificErrors['fileSpecificErrors'],
             ];
         }
 

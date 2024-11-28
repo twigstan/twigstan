@@ -1,0 +1,8 @@
+{% print_assert_type titles[0] "'Hello, World!'" %}
+{% print_assert_type titles.0 "'Hello, World!'" %}
+{% print_assert_type titles[1] "'Bonjour, le monde!'" %}
+{% print_assert_type titles[3] '*ERROR*' %}
+---OUTPUT---
+Hello, World!
+Hello, World!
+Bonjour, le monde!
