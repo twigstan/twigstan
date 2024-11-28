@@ -11,12 +11,20 @@ use function Castor\context;
 use function Castor\exit_code;
 use function Castor\fs;
 use function Castor\io;
+use function Castor\run;
 use Symfony\Component\Console\Input\InputOption;
 
-#[AsTask(name: 'install', namespace: 'composer')]
+#[AsTask(name: 'install', namespace: 'composer', aliases: ['install'])]
 function composer_install(): int
 {
     return exit_code(['composer', 'install']);
+}
+
+#[AsTask(name: 'install-twig4', namespace: 'composer', aliases: ['twig4'])]
+function install_twig4(): void
+{
+    run("composer req 'twig/twig:4.x-dev as 3.9999'");
+    run('git restore composer.lock composer.json');
 }
 
 #[AsTask(name: 'phpunit', aliases: ['tests', 'test'], ignoreValidationErrors: true)]
