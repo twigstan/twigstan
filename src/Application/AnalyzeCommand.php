@@ -245,17 +245,6 @@ final class AnalyzeCommand extends Command
 
         $twigFileNamesToAnalyze = $twigFileNames;
 
-        $output->writeln(sprintf('Finding dependencies for %d templates...', count($twigFileNamesToAnalyze)));
-
-        // Maybe this should be done using a graph later.
-        $dependencies = $this->dependencyFinder->getDependencies($twigFileNames);
-        $twigFileNames = array_values(array_unique([...$dependencies, ...$twigFileNames]));
-        $twigFileNames = $this->dependencySorter->sortByDependencies($twigFileNames);
-
-        $count = count($twigFileNames);
-        $dependencyCount = $count - count($twigFileNamesToAnalyze);
-        $output->writeln(sprintf('Found %d %s...', $dependencyCount, $dependencyCount === 1 ? 'dependency' : 'dependencies'));
-
         $output->writeln('Collecting scopes from render points...');
 
         $analysisResult = $this->phpStanRunner->run(
@@ -599,6 +588,19 @@ final class AnalyzeCommand extends Command
         if ($run > 1) {
             $output->writeln(sprintf('Run %d', $run));
         }
+
+        $twigFileNamesToAnalyze = $twigFileNames;
+
+        $output->writeln(sprintf('Finding dependencies for %d templates...', count($twigFileNamesToAnalyze)));
+
+        // Maybe this should be done using a graph later.
+        $dependencies = $this->dependencyFinder->getDependencies($twigFileNames);
+        $twigFileNames = array_values(array_unique([...$dependencies, ...$twigFileNames]));
+        $twigFileNames = $this->dependencySorter->sortByDependencies($twigFileNames);
+
+        $count = count($twigFileNames);
+        $dependencyCount = $count - count($twigFileNamesToAnalyze);
+        $output->writeln(sprintf('Found %d %s...', $dependencyCount, $dependencyCount === 1 ? 'dependency' : 'dependencies'));
 
         $compilationResults = $this->compileTemplates(
             $output,
