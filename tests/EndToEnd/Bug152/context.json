@@ -1,0 +1,14 @@
+{
+    "homepage.twig": [
+        [
+            "Controller.php:13",
+            "array{title: 'Welcome'}"
+        ]
+    ],
+    "page.twig": [
+        [
+            "homepage.twig:1",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'Welcome'}"
+        ]
+    ]
+}
