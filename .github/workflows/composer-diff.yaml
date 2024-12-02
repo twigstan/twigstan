@@ -1,0 +1,29 @@
+name: Composer Lock Diff
+on:
+    pull_request:
+        types:
+            - opened
+            - synchronize
+            - reopened
+concurrency:
+    group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+    cancel-in-progress: true
+permissions:
+    pull-requests: write
+    contents: read
+jobs:
+    composer-lock-diff:
+        if: github.event.sender.login == 'dependabot[bot]' || contains(github.event.pull_request.labels.*.name, 'dependencies')
+        name: Composer Lock Diff
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4.2.2
+                with:
+                    ref: ${{ github.event.pull_request.head.sha }}
+                    fetch-depth: 0
+            -   name: Comment composer.lock diff
+                uses: WyriHaximus/github-action-composer.lock-diff@v2.1.0
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
