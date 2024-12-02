@@ -1,0 +1,15 @@
+{
+    "name": "twigstan/twigstan-tools-phar",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "humbug/box": "^4.6.2",
+        "nette/neon": "^3.4.4"
+    },
+    "minimum-stability": "stable",
+    "config": {
+        "bump-after-update": true,
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

@@ -9,10 +9,19 @@ services:
 	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
-	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
-	- TwigStan\Twig\TwigFileCanonicalizer
-	- TwigStan\Twig\TwigFactory(environmentLoader: %twigstan.twigEnvironmentLoader%)
-	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
-	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
-	- TwigStan\Twig\TokenParser\PrintAssertTypeTokenParser
-	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
+	-
+		class: TwigStan\Processing\Compilation\Parser\TwigNodeParser
+	-
+		class: TwigStan\Twig\TwigFileCanonicalizer
+	-
+		class: TwigStan\Twig\TwigFactory
+		arguments:
+			environmentLoader: %twigstan.twigEnvironmentLoader%
+	-
+		class: TwigStan\Twig\TokenParser\AssertTypeTokenParser
+	-
+		class: TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
+	-
+		class: TwigStan\Twig\TokenParser\PrintAssertTypeTokenParser
+	-
+		class: TwigStan\Twig\TokenParser\DumpTypeTokenParser

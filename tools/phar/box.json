@@ -1,0 +1,30 @@
+{
+    "base-path": "../../",
+    "banner": false,
+    "compression": "GZ",
+    "compactors": [
+        "KevinGH\\Box\\Compactor\\Php",
+        "KevinGH\\Box\\Compactor\\PhpScoper",
+        "KevinGH\\Box\\Compactor\\Json"
+    ],
+    "annotations": false,
+    "check-requirements": false,
+    "directories": [
+        "bin",
+        "config",
+        "src",
+        "vendor"
+    ],
+    "directories-bin": [
+        "example",
+        "stubs"
+    ],
+    "files": [
+        "LICENSE",
+        "vendor/autoload.php"
+    ],
+    "blacklist": [
+        "tools"
+    ],
+    "php-scoper": "tools/phar/scoper.inc.php"
+}

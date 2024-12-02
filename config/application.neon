@@ -4,87 +4,135 @@ parameters:
 		indexes: true
 
 services:
-	-
-		class: Twig\Environment
-		factory: @TwigStan\Twig\TwigFactory::create
-	- Symfony\Component\Filesystem\Filesystem
-	- TwigStan\Application\AnalyzeCommand(
-		environmentLoader: %twigEnvironmentLoader%
-		tempDirectory: %tempDir%
-		currentWorkingDirectory: %currentWorkingDirectory%
-		configurationFile: %configurationFile%
-		baselineFile: %baselineFile%
-		onlyAnalyzeTemplatesWithContext: %onlyAnalyzeTemplatesWithContext%
-		phpFilesFinder: TwigStan\Finder\FilesFinder(
+	phpFilesFinder:
+		class: TwigStan\Finder\FilesFinder
+		arguments:
 			extensions: %phpExtensions%
 			paths: %phpPaths%
 			exclusions: %phpExcludes%
 			currentWorkingDirectory: %currentWorkingDirectory%
-		)
-		twigFilesFinder: TwigStan\Finder\FilesFinder(
+	twigFilesFinder:
+		class: TwigStan\Finder\FilesFinder
+		arguments:
 			extensions: %twigExtensions%
 			paths: %twigPaths%
 			exclusions: %twigExcludes%
 			currentWorkingDirectory: %currentWorkingDirectory%
-		)
-		givenFilesFinder: TwigStan\Finder\GivenFilesFinder(
+	givenFilesFinder:
+		class: TwigStan\Finder\GivenFilesFinder
+		arguments:
 			currentWorkingDirectory: %currentWorkingDirectory%
 			phpExtensions: %phpExtensions%
 			twigExtensions: %twigExtensions%
-		)
-		phpExtensions: %phpExtensions%
-		twigExtensions: %twigExtensions%
-		editorUrl: %editorUrl%
-	)
-	- TwigStan\Application\PHPStanRunner(
-		phpstanBinPath: %phpstanBinPath%
-		phpstanConfigurationFile: %phpstanConfigurationFile%
-		phpstanMemoryLimit: %phpstanMemoryLimit%
-		currentWorkingDirectory: %currentWorkingDirectory%
-		tempDirectory: %tempDir%
-		twigContextCollectors: %twigContextCollectors%
-	)
-	- TwigStan\PHP\PrettyPrinter
-	- TwigStan\PHP\StrictPhpParser
-	- TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader
-	- TwigStan\Error\ErrorCollapser
-	- TwigStan\Error\ErrorFilter(
-		ignoreErrors: %ignoreErrors%
-	)
-	- TwigStan\Error\BaselineErrorFilter(
-		baselineErrors: %baselineErrors%
-		reportUnmatchedIgnoredErrors: %reportUnmatchedIgnoredErrors%
-	)
-	- TwigStan\Error\ErrorToSourceFileMapper
-	- TwigStan\Error\ErrorTransformer
-	- TwigStan\Processing\Compilation\ModifiedCompiler
-	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
-	- TwigStan\Processing\Compilation\TwigCompiler
-	- TwigStan\Processing\Compilation\TwigVisitor\DisableGetAttributeOptimizationVisitor
-	- TwigStan\Processing\Compilation\TwigVisitor\RemoveProfilingNodeVisitor
-	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceIncludeNodeNodeVisitor
-	- TwigStan\Processing\Compilation\TwigVisitor\MarkNameExpressionAsAlwaysDefinedVisitor
-	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceTypesNodeVisitor
-	- TwigStan\Processing\Flattening\TwigFlattener
-	- TwigStan\Processing\ScopeInjection\TwigScopeInjector
-	- TwigStan\Processing\ScopeInjection\ArrayShapeMerger
-	- TwigStan\Twig\DependencyFinder
-	- TwigStan\Twig\DependencySorter
-	- TwigStan\Twig\Metadata\MetadataAnalyzer
-	- TwigStan\Twig\Metadata\MetadataRegistry
-	- TwigStan\Twig\Node\NodeFinder
-	- TwigStan\Twig\TokenParser\AssertTypeTokenParser
-	- TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
-	- TwigStan\Twig\TokenParser\PrintAssertTypeTokenParser
-	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
-	- TwigStan\Twig\TwigFactory(environmentLoader: %twigEnvironmentLoader%)
-	- TwigStan\Twig\TwigFileCanonicalizer
-	- TwigStan\Processing\TemplateContextFactory
-	- TwigStan\Processing\TemplateContextToArrayShape
-	- PHPStan\PhpDocParser\Lexer\Lexer
-	- PHPStan\PhpDocParser\Parser\ConstExprParser
-	- PHPStan\PhpDocParser\Parser\TypeParser
-	- PHPStan\PhpDocParser\Parser\PhpDocParser
-	- PHPStan\PhpDocParser\ParserConfig(
-		usedAttributes: %phpDocParserConfig%
-	)
+	-
+		class: TwigStan\Application\AnalyzeCommand
+		arguments:
+			environmentLoader: %twigEnvironmentLoader%
+			tempDirectory: %tempDir%
+			currentWorkingDirectory: %currentWorkingDirectory%
+			configurationFile: %configurationFile%
+			baselineFile: %baselineFile%
+			onlyAnalyzeTemplatesWithContext: %onlyAnalyzeTemplatesWithContext%
+			phpFilesFinder: @phpFilesFinder
+			twigFilesFinder: @twigFilesFinder
+			givenFilesFinder: @givenFilesFinder
+			phpExtensions: %phpExtensions%
+			twigExtensions: %twigExtensions%
+			editorUrl: %editorUrl%
+	-
+		class: Twig\Environment
+		factory: @TwigStan\Twig\TwigFactory::create
+	-
+		class: Symfony\Component\Filesystem\Filesystem
+	-
+		class: TwigStan\Application\PHPStanRunner
+		arguments:
+			phpstanBinPath: %phpstanBinPath%
+			phpstanConfigurationFile: %phpstanConfigurationFile%
+			phpstanMemoryLimit: %phpstanMemoryLimit%
+			currentWorkingDirectory: %currentWorkingDirectory%
+			tempDirectory: %tempDir%
+			twigContextCollectors: %twigContextCollectors%
+	-
+		class: TwigStan\PHP\PrettyPrinter
+	-
+		class: TwigStan\PHP\StrictPhpParser
+	-
+		class: TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader
+	-
+		class: TwigStan\Error\ErrorCollapser
+	-
+		class: TwigStan\Error\ErrorFilter
+		arguments:
+			ignoreErrors: %ignoreErrors%
+	-
+		class: TwigStan\Error\BaselineErrorFilter
+		arguments:
+			baselineErrors: %baselineErrors%
+			reportUnmatchedIgnoredErrors: %reportUnmatchedIgnoredErrors%
+	-
+		class: TwigStan\Error\ErrorToSourceFileMapper
+	-
+		class: TwigStan\Error\ErrorTransformer
+	-
+		class: TwigStan\Processing\Compilation\ModifiedCompiler
+	-
+		class: TwigStan\Processing\Compilation\Parser\TwigNodeParser
+	-
+		class: TwigStan\Processing\Compilation\TwigCompiler
+	-
+		class: TwigStan\Processing\Compilation\TwigVisitor\DisableGetAttributeOptimizationVisitor
+	-
+		class: TwigStan\Processing\Compilation\TwigVisitor\RemoveProfilingNodeVisitor
+	-
+		class: TwigStan\Processing\Compilation\TwigVisitor\ReplaceIncludeNodeNodeVisitor
+	-
+		class: TwigStan\Processing\Compilation\TwigVisitor\MarkNameExpressionAsAlwaysDefinedVisitor
+	-
+		class: TwigStan\Processing\Compilation\TwigVisitor\ReplaceTypesNodeVisitor
+	-
+		class: TwigStan\Processing\Flattening\TwigFlattener
+	-
+		class: TwigStan\Processing\ScopeInjection\TwigScopeInjector
+	-
+		class: TwigStan\Processing\ScopeInjection\ArrayShapeMerger
+	-
+		class: TwigStan\Twig\DependencyFinder
+	-
+		class: TwigStan\Twig\DependencySorter
+	-
+		class: TwigStan\Twig\Metadata\MetadataAnalyzer
+	-
+		class: TwigStan\Twig\Metadata\MetadataRegistry
+	-
+		class: TwigStan\Twig\Node\NodeFinder
+	-
+		class: TwigStan\Twig\TokenParser\AssertTypeTokenParser
+	-
+		class: TwigStan\Twig\TokenParser\AssertVariableExistsTokenParser
+	-
+		class: TwigStan\Twig\TokenParser\PrintAssertTypeTokenParser
+	-
+		class: TwigStan\Twig\TokenParser\DumpTypeTokenParser
+	-
+		class: TwigStan\Twig\TwigFactory
+		arguments:
+			environmentLoader: %twigEnvironmentLoader%
+	-
+		class: TwigStan\Twig\TwigFileCanonicalizer
+	-
+		class: TwigStan\Processing\TemplateContextFactory
+	-
+		class: TwigStan\Processing\TemplateContextToArrayShape
+	-
+		class: PHPStan\PhpDocParser\Lexer\Lexer
+	-
+		class: PHPStan\PhpDocParser\Parser\ConstExprParser
+	-
+		class: PHPStan\PhpDocParser\Parser\TypeParser
+	-
+		class: PHPStan\PhpDocParser\Parser\PhpDocParser
+	-
+		class: PHPStan\PhpDocParser\ParserConfig
+		arguments:
+			usedAttributes: %phpDocParserConfig%

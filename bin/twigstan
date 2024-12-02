@@ -3,7 +3,16 @@
 
 declare(strict_types=1);
 
-include $_composer_autoload_path ?? __DIR__ . '/../vendor/autoload.php';
+if (false === in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
+    echo sprintf("TwigStan may only be invoked from a command line, got '%s'\n", PHP_SAPI);
+    exit(1);
+}
+
+include __DIR__ . '/../vendor/autoload.php';
+
+if (extension_loaded('phar') && Phar::running() !== '') {
+    include getcwd() . '/vendor/autoload.php';
+}
 
 use Composer\InstalledVersions;
 use Symfony\Component\Console\Application;

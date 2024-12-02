@@ -10,3 +10,4 @@
 /.phpstan
 /.castor.stub.php
 /.twig-cs-fixer.cache
+/bin/twigstan.phar

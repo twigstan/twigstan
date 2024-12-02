@@ -11,8 +11,11 @@ use function Castor\context;
 use function Castor\exit_code;
 use function Castor\fs;
 use function Castor\io;
+use function Castor\mount;
 use function Castor\run;
 use Symfony\Component\Console\Input\InputOption;
+
+mount(__DIR__ . '/tools/phar');
 
 #[AsTask(name: 'install', namespace: 'composer', aliases: ['install'])]
 function composer_install(): int

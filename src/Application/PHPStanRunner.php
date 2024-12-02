@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Application;
 
 use Nette\Neon\Neon;
+use Phar;
 use PhpParser\Node;
 use ReflectionClass;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -109,6 +110,7 @@ final readonly class PHPStanRunner
                     '--error-format=%s',
                     'analysisResultToJson',
                 ),
+                extension_loaded('phar') && Phar::running() !== '' ? sprintf('--autoload-file=%s/vendor/autoload.php', Phar::running()): null,
                 $debugMode ? '-v' : null,
                 $debugMode ? '--debug' : null,
                 $xdebugMode ? '--xdebug' : null,
