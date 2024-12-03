@@ -23,6 +23,7 @@ use TwigStan\Error\ErrorCollapser;
 use TwigStan\Error\ErrorFilter;
 use TwigStan\Error\ErrorToSourceFileMapper;
 use TwigStan\Error\ErrorTransformer;
+use TwigStan\Error\IgnoreByIdentifierWhenSourceLocationHasPrevious;
 use TwigStan\Error\IgnoreError;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
@@ -337,12 +338,16 @@ final class AnalyzeCommand extends Command
         // Ignore errors for abstract templates
         $abstractTemplates = $this->metadataRegistry->getAbstractTemplates();
 
-        $errors = (new ErrorFilter(
-            array_map(
+        $errors = (new ErrorFilter([
+            ...array_map(
                 fn($template) => IgnoreError::path($template),
                 $abstractTemplates,
             ),
-        ))->filter($errors);
+            new IgnoreByIdentifierWhenSourceLocationHasPrevious([
+                'function.alreadyNarrowedType',
+                'function.impossibleType',
+            ]),
+        ]))->filter($errors);
 
         foreach ($abstractTemplates as $abstractTemplate) {
             // We only want to error when an abstract template is rendered from PHP.
