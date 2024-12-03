@@ -7,6 +7,10 @@ services:
 		tags:
 			- phpstan.collector
 	-
+		class: TwigStan\PHPStan\Collector\MacroCollector
+		tags:
+			- phpstan.collector
+	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
