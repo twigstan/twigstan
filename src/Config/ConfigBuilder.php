@@ -63,7 +63,7 @@ final class ConfigBuilder
     /**
      * @var list<IgnoreError>
      */
-    private array $ignoreErrors;
+    private array $ignoreErrors = [];
 
     /**
      * @var list<BaselineError>
@@ -81,65 +81,6 @@ final class ConfigBuilder
         }
 
         $this->projectRootDirectory = $projectRootDirectory;
-
-        $this->ignoreErrors = [
-            IgnoreError::identifier('isset.variable'),
-
-            // It's perfectly fine to do `a == b ? 'yes' : 'no'` in Twig.
-            IgnoreError::identifier('equal.notAllowed'),
-
-            // It's perfectly fine to do `a != b ? 'no' : 'yes'` in Twig.
-            IgnoreError::identifier('notEqual.notAllowed'),
-
-            // It's perfectly fine to do `if(var)` in Twig.
-            IgnoreError::identifier('if.condNotBoolean'),
-
-            IgnoreError::identifier('ternary.condNotBoolean'),
-
-            IgnoreError::identifier('booleanAnd.leftNotBoolean'),
-
-            // It's perfectly fine to do `var ?: default` in Twig.
-            IgnoreError::identifier('ternary.shortNotAllowed'),
-
-            // The context is backed up before a loop and restored after it.
-            // Therefore this is a non-issue in Twig templates.
-            IgnoreError::identifier('foreach.valueOverwrite'),
-
-            // These identifiers don't make sense for compiled Twig templates.
-            IgnoreError::identifier('missingType.checkedException'),
-            IgnoreError::identifier('missingType.parameter'),
-            IgnoreError::identifier('missingType.return'),
-            IgnoreError::identifier('method.missingOverride'),
-            IgnoreError::identifier('return.unusedType'),
-
-            // We cannot guarantee that a short arrow closure uses the context/macros/blocks variable.
-            IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$context\.#', 'closure.unusedUse'),
-            IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$macros\.#', 'closure.unusedUse'),
-            IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$blocks#', 'closure.unusedUse'),
-
-            // When the variable that is passed does not exist, this produces an error.
-            IgnoreError::messageAndIdentifier('#CoreExtension::ensureTraversable#', 'argument.templateType'),
-
-            // The context can contain anything, so we don't want to be strict here.
-            IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'missingType.iterableValue'),
-            IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'missingType.generics'),
-            IgnoreError::messageAndIdentifier('#Method __TwigTemplate_\w+::\w+\(\) has parameter#', 'parameter.deprecatedClass'),
-            IgnoreError::messageAndIdentifier('#Parameter \$context of method __TwigTemplate_\w+::\w+\(\) has typehint#', 'parameter.deprecatedClass'),
-
-            // We cannot guarantee that the property will be used in the compiled template.
-            IgnoreError::messageAndIdentifier('#Property __TwigTemplate_\w+::\$source is never read, only written\.#', 'property.onlyWritten'),
-
-            // This happens because the parent method accepts an array.
-            IgnoreError::messageAndIdentifier("#Parameter .* of method __TwigTemplate_\w+::doDisplay\(\) should be contravariant with parameter#", 'method.childParameterType'),
-
-            // Currently Dynamic Inheritance is not (yet) supported. Ignoring the errors for now.
-            // @see https://github.com/twigstan/twigstan/issues/6
-            IgnoreError::messageAndIdentifier('#Access to an undefined property __TwigTemplate_\w+::\$blocks\.#', 'property.notFound'),
-            IgnoreError::messageAndIdentifier('#Call to an undefined method __TwigTemplate_\w+::getParent\(\)\.#', 'method.notFound'),
-
-            // @see https://github.com/twigphp/Twig/pull/4415
-            IgnoreError::messageAndIdentifier('#Cannot call method unwrap\(\) on Twig\\\Template\|Twig\\\TemplateWrapper\|false\.#', 'method.nonObject'),
-        ];
     }
 
     public static function extend(string $configurationFile): self
