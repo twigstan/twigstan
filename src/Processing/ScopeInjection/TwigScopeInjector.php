@@ -20,8 +20,10 @@ use TwigStan\PHP\PrettyPrinter;
 use TwigStan\PHP\StrictPhpParser;
 use TwigStan\PHPStan\Analysis\CollectedData;
 use TwigStan\PHPStan\Collector\BlockContextCollector;
+use TwigStan\PHPStan\Collector\MacroCollector;
 use TwigStan\Processing\Flattening\FlatteningResultCollection;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
+use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectMacroVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
 use TwigStan\Twig\SourceLocation;
 
@@ -45,10 +47,15 @@ final readonly class TwigScopeInjector
 
         $this->filesystem->mkdir($targetDirectory);
 
-        $contextBeforeBlock = array_map(
-            function (CollectedData $collectedData) {
+        $contextBeforeBlock = [];
+        $macros = [];
+
+        foreach ($collectedData as $data) {
+            if ($data->collecterType === MacroCollector::class) {
+                $macros[$data->filePath] = $data->data['macros'];
+            } elseif ($data->collecterType === BlockContextCollector::class) {
                 $phpDocNode = $this->phpDocParser->parseTagValue(
-                    new TokenIterator($this->lexer->tokenize($collectedData->data['context'])),
+                    new TokenIterator($this->lexer->tokenize($data->data['context'])),
                     '@var',
                 );
 
@@ -62,18 +69,14 @@ final readonly class TwigScopeInjector
                     $context = ArrayShapeNode::createSealed([]);
                 }
 
-                return [
-                    'blockName' => $collectedData->data['blockName'],
-                    'sourceLocation' => SourceLocation::decode($collectedData->data['sourceLocation']),
+                $contextBeforeBlock[] = [
+                    'blockName' => $data->data['blockName'],
+                    'sourceLocation' => SourceLocation::decode($data->data['sourceLocation']),
                     'context' => $context,
-                    'parent' => $collectedData->data['parent'],
+                    'parent' => $data->data['parent'],
                 ];
-            },
-            array_filter(
-                $collectedData,
-                fn($collectedData) => $collectedData->collecterType === BlockContextCollector::class,
-            ),
-        );
+            }
+        }
 
         $results = new ScopeInjectionResultCollection();
         foreach ($collection as $flatteningResult) {
@@ -88,6 +91,7 @@ final readonly class TwigScopeInjector
                     $contextBeforeBlockRelatedToTemplate,
                     $this->arrayShapeMerger,
                 ),
+                ...isset($macros[$flatteningResult->phpFile]) ? [new InjectMacroVisitor($macros[$flatteningResult->phpFile])] : [],
             );
 
             $phpSource = $this->prettyPrinter->prettyPrintFile($stmts);
