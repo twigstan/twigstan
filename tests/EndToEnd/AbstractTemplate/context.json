@@ -14,5 +14,11 @@
             "Controller.php:32",
             "array{}"
         ]
+    ],
+    "footer.twig": [
+        [
+            "child.twig:6",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'RenderAction'|'RenderViewAction', description: 'Description', year: 2024}"
+        ]
     ]
 }
