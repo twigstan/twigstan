@@ -29,6 +29,12 @@ $config->ignoreErrorsOnPackagesAndPaths(
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );
 
+// TODO: shipmonk-rnd/composer-dependency-analyser#202
+$config->ignoreErrorsOnPackage(
+    'symfony/polyfill-php84',
+    [ErrorType::UNUSED_DEPENDENCY],
+);
+
 $config->addPathRegexToExclude('#\.twigstan/#');
 
 return $config;

@@ -345,7 +345,23 @@ final class AnalyzeCommand extends Command
         ))->filter($errors);
 
         foreach ($abstractTemplates as $abstractTemplate) {
-            if ( ! $templateContext->hasTemplate($abstractTemplate)) {
+            // We only want to error when an abstract template is rendered from PHP.
+            $found = array_any(
+                $templateContext->getByTemplate($abstractTemplate),
+                function ($context) {
+                    foreach ($context[0] as $sourceLocation) {
+                        if (str_ends_with($sourceLocation->fileName, '.twig')) {
+                            continue;
+                        }
+
+                        return true;
+                    }
+
+                    return false;
+                },
+            );
+
+            if ( ! $found) {
                 continue;
             }
 
