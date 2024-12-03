@@ -7,7 +7,7 @@ namespace TwigStan\Error;
 use InvalidArgumentException;
 use TwigStan\PHPStan\Analysis\Error;
 
-final class IgnoreError
+final class IgnoreError implements Ignorable
 {
     /**
      * @param null|string $path Path to Twig file or directory. This can contain wildcards.

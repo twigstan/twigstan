@@ -9,7 +9,7 @@ use TwigStan\PHPStan\Analysis\Error;
 final readonly class ErrorFilter
 {
     /**
-     * @param list<IgnoreError> $ignoreErrors
+     * @param list<Ignorable> $ignoreErrors
      */
     public function __construct(private array $ignoreErrors) {}
 
