@@ -39,7 +39,11 @@ final readonly class ContainerFactory
             throw new InvalidArgumentException(sprintf('Configuration file "%s" must return an instance of %s.', $configurationFile, TwigStanConfig::class));
         }
 
-        return new self($currentWorkingDirectory, $configurationFile, $configuration);
+        return new self(
+            $currentWorkingDirectory,
+            $configurationFile,
+            $configuration,
+        );
     }
 
     public function create(): Container
