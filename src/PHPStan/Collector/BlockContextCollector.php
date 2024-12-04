@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace TwigStan\PHPStan\Collector;
 
+use LogicException;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 use PHPStan\PhpDocParser\Printer\Printer;
-use PHPStan\ShouldNotHappenException;
 use TwigStan\Twig\CommentHelper;
 use TwigStan\Twig\SourceLocation;
 
@@ -88,7 +88,7 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
         }
 
         if ($sourceLocation === null) {
-            throw new ShouldNotHappenException(sprintf('Could not find Twig line number on %s:%d.', $scope->getFile(), $node->getStartLine()));
+            throw new LogicException(sprintf('Could not find Twig line number on %s:%d.', $scope->getFile(), $node->getStartLine()));
         }
 
         return [
