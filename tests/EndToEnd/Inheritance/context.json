@@ -5,6 +5,12 @@
             "array{title: 'Welcome', subtitle: 'Welcome'}"
         ]
     ],
+    "bug_164.twig": [
+        [
+            "Case4Controller.php:21",
+            "array{template: '@EndToEnd\/Inheritance\/layout.twig'}"
+        ]
+    ],
     "@EndToEnd\/Inheritance\/_random_footer.twig": [
         [
             "case6.twig:29",

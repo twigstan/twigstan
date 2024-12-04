@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Processing\Compilation\PhpVisitor;
 
+use PhpParser\Comment;
 use PhpParser\Node;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeVisitorAbstract;
@@ -59,10 +60,10 @@ final class AddExtraLineNumberCommentVisitor extends NodeVisitorAbstract
             }
 
             if ($stmt->getComments() === []) {
-                continue;
+                $target->setAttribute('comments', [new Comment('// line 1')]);
+            } else {
+                $target->setAttribute('comments', $stmt->getComments());
             }
-
-            $target->setAttribute('comments', $stmt->getComments());
 
             return $node;
         }
