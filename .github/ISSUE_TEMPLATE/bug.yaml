@@ -1,0 +1,33 @@
+name: Bug report 🐛
+description: If something isn't working as expected.
+labels: [ "bug" ]
+
+body:
+    -   type: markdown
+        attributes:
+            label: Bug report
+            description: Please describe your problem here
+        validations:
+            required: true
+
+    -   type: input
+        attributes:
+            label: TwigStan version
+            description: Please paste the output of `vendor/bin/twigstan version` here
+        validations:
+            required: true
+
+    -   type: textarea
+        attributes:
+            label: Twig template
+            description: Please paste the Twig template here. Use code blocks (```twig) to format the code
+        validations:
+            required: false
+
+    -   type: textarea
+        attributes:
+            label: Compiled PHP code
+            description: Please paste the compiled PHP code here. Use code blocks (```php) to format the code
+        validations:
+            required: false
+
