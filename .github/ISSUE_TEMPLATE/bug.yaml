@@ -5,8 +5,7 @@ labels: [ "bug" ]
 body:
     -   type: markdown
         attributes:
-            label: Bug report
-            description: Please describe your problem here
+            value: Please describe your problem here
         validations:
             required: true
 
