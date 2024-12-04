@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace TwigStan\Application;
 
 use LogicException;
-use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputArgument;
@@ -40,7 +39,6 @@ use TwigStan\Twig\DependencySorter;
 use TwigStan\Twig\Metadata\MetadataRegistry;
 use TwigStan\Twig\SourceLocation;
 
-#[AsCommand(name: 'analyze', aliases: ['analyse'])]
 final class AnalyzeCommand extends Command
 {
     /**
