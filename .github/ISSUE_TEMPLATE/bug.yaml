@@ -5,7 +5,16 @@ labels: [ "bug" ]
 body:
     -   type: markdown
         attributes:
-            value: Please describe your problem here
+            value: |
+                Please keep in mind that this project is still very experimental.
+                It requires a significant amount of my time and effort to develop 😅.
+                If you find it valuable and see the potential, please consider [sponsoring](https://github.com/sponsors/twigstan) me.
+                Your support is truly appreciated! 🙏
+
+    -   type: textarea
+        attributes:
+            label: Problem
+            description: Please describe your problem here
         validations:
             required: true
 
