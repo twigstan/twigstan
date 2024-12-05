@@ -1,4 +1,4 @@
-{% set somethingInTheContext = true %}
+{% set something_in_the_context = true %}
 
 {% include '@EndToEnd/Include/_footer.twig' %}
 {% include '@EndToEnd/Include/_footer.twig' only %}
@@ -17,7 +17,7 @@
 {% include template %}
 
 {% types {
-    isMobile: 'bool',
+    is_mobile: 'bool',
 } %}
 
-{% include isMobile ? '@EndToEnd/Include/isMobile.twig' : '@EndToEnd/Include/_footer.twig' %}
+{% include is_mobile ? '@EndToEnd/Include/isMobile.twig' : '@EndToEnd/Include/_footer.twig' %}

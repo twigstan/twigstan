@@ -4,11 +4,11 @@
 
 {% assert_type dates 'array<int, list<DateTime>>' %}
 
-{% for id, dateList in dates %}
+{% for id, date_list in dates %}
     {% assert_type id 'int' %}
-    {% assert_type dateList 'list<DateTime>' %}
+    {% assert_type date_list 'list<DateTime>' %}
 
-    {% for date in dateList %}
+    {% for date in date_list %}
         {% assert_type date 'DateTime' %}
 
         {% set result = date.getOffset() %}
