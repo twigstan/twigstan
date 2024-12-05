@@ -11,8 +11,6 @@ $ruleset->addStandard(new TwigCsFixer\Standard\TwigCsFixer());
 
 $ruleset->removeRule(IncludeFunctionRule::class);
 
-$ruleset->overrideRule(new TwigCsFixer\Rules\Variable\VariableNameRule(TwigCsFixer\Rules\Variable\VariableNameRule::CAMEL_CASE));
-
 // And then add/remove/override some rules
 $ruleset->overrideRule(new TwigCsFixer\Rules\Punctuation\PunctuationSpacingRule(
     [

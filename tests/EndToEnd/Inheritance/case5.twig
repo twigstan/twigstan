@@ -8,12 +8,12 @@
     <h1>{{ subtitle }}</h1>
     {% set name = 'Ruud' %}
 
-    {% assert_type variableSetAfterHeaderBlockBeforeMainBlock 'true' %}
-    {% assert_type variableSetAfterMainBlockBeforeFooterBlock '*ERROR*' %}
+    {% assert_type variable_set_after_header_block_before_main_block 'true' %}
+    {% assert_type variable_set_after_main_block_before_footer_block '*ERROR*' %}
 {% endblock %}
 
 {% block footer %}
     <footer>Copyright</footer>
-    {% assert_type variableSetAfterHeaderBlockBeforeMainBlock 'true' %}
-    {% assert_type variableSetAfterMainBlockBeforeFooterBlock 'true' %}
+    {% assert_type variable_set_after_header_block_before_main_block 'true' %}
+    {% assert_type variable_set_after_main_block_before_footer_block 'true' %}
 {% endblock %}
