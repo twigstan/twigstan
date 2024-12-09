@@ -1,8 +1,6 @@
-{% print_assert_type titles[0] "'Hello, World!'" %}
-{% print_assert_type titles.0 "'Hello, World!'" %}
-{% print_assert_type titles[1] "'Bonjour, le monde!'" %}
-{% print_assert_type titles[3] '*ERROR*' %}
+{% print_assert_type userIds[0] 'TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\UserId' %}
+{% print_assert_type userIds[1] 'TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\UserId' %}
+{% print_assert_type userIds[999] 'TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\UserId' %}
 ---OUTPUT---
-Hello, World!
-Hello, World!
-Bonjour, le monde!
+1
+2

@@ -10,6 +10,7 @@ use TwigStan\EndToEnd\GetAttribute\Fixtures\Account;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\OrderStatus;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\State;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\User;
+use TwigStan\EndToEnd\GetAttribute\Fixtures\UserId;
 
 final class RenderTest extends AbstractRenderingTestCase
 {
@@ -18,6 +19,13 @@ final class RenderTest extends AbstractRenderingTestCase
     {
         yield 'array.render.twig' => [
             'template' => __DIR__ . '/array.render.twig',
+            'context' => [
+                'userIds' => self::getUserIds(),
+            ],
+        ];
+
+        yield 'constant_array.render.twig' => [
+            'template' => __DIR__ . '/constant_array.render.twig',
             'context' => [
                 'titles' => [
                     'Hello, World!',
@@ -71,6 +79,17 @@ final class RenderTest extends AbstractRenderingTestCase
             'context' => [
                 'account' => new Account('123', 'TwigStan'),
             ],
+        ];
+    }
+
+    /**
+     * @return list<UserId>
+     */
+    private static function getUserIds(): array
+    {
+        return [
+            new UserId('1'),
+            new UserId('2'),
         ];
     }
 }
