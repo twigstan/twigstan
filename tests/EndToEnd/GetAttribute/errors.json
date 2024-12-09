@@ -22,10 +22,10 @@
             "renderPoints": []
         },
         {
-            "message": "Cannot get offset \"3\" on \"array{'Hello, World!', 'Bonjour, le monde!'}\".",
-            "identifier": "getAttribute.array",
+            "message": "Offset 3 does not exist on array{'Hello, World!', 'Bonjour, le monde!'}.",
+            "identifier": "offsetAccess.notFound",
             "tip": null,
-            "twigSourceLocation": "array.render.twig:4",
+            "twigSourceLocation": "constant_array.render.twig:4",
             "renderPoints": [
                 "RenderTest.php:0"
             ]

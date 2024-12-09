@@ -14,6 +14,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\Rules\Arrays\NonexistentOffsetInArrayDimFetchCheck;
 use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Methods\MethodCallCheck;
@@ -31,6 +32,7 @@ final readonly class GetAttributeCheck
     public function __construct(
         private MethodCallCheck $methodCallCheck,
         private FunctionCallParametersCheck $parametersCheck,
+        private NonexistentOffsetInArrayDimFetchCheck $nonexistentOffsetInArrayDimFetchCheck,
         private ReflectionProvider $reflectionProvider,
     ) {}
 
@@ -100,13 +102,16 @@ final readonly class GetAttributeCheck
             }
 
             if ($objectType->isArray()->yes()) {
-                $errors[] = RuleErrorBuilder::message(sprintf(
-                    'Cannot get offset "%s" on "%s".',
-                    $propertyOrMethod,
-                    $objectType->describe(VerbosityLevel::precise()),
-                ))->identifier('getAttribute.array')->build();
-
-                return [new ErrorType(), $errors];
+                return [$objectType->getOffsetValueType($propertyOrMethodType), [
+                    ...$errors,
+                    // @phpstan-ignore phpstanApi.method
+                    ...$this->nonexistentOffsetInArrayDimFetchCheck->check(
+                        $scope,
+                        new TypeExpr($objectType),
+                        sprintf('Access to offset %s on an unknown class %%s.', $propertyOrMethodType->describe(VerbosityLevel::value())),
+                        $propertyOrMethodType,
+                    ),
+                ]];
             }
 
             $errors[] = RuleErrorBuilder::message(sprintf(
