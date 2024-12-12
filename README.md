@@ -118,7 +118,7 @@ Use the `dump_type` tag to debug if types are properly resolved.
 
 When you have a template that is not rendered directly, but is used as a parent template, you can mark it as abstract.
 
-The benfit of this is that it will not be analyzed as a standalone template, but only as part of the template hierarchy.
+The benefit of this is that it will not be analyzed as a standalone template, but only as part of the template hierarchy.
 
 You can mark a template as abstract by adding a comment at the top of the file:
 ```twig
