@@ -721,7 +721,7 @@ final class AnalyzeCommand extends Command
         }
 
         if ($analysisResult1->notFileSpecificErrors !== []) {
-            throw new LogicException('PHPStan exicted with not file specific errors.');
+            throw new LogicException('PHPStan exited with not file specific errors.');
         }
 
         $output->writeln('Injecting scope into templates...');
