@@ -9,8 +9,6 @@ updates:
             timezone: Europe/Amsterdam
         rebase-strategy: disabled
         allow:
-            # require
-            -   dependency-name: "twig/twig"
             # require-dev
             -   dependency-name: "editorconfig-checker/editorconfig-checker"
             -   dependency-name: "ergebnis/composer-normalize"
