@@ -2,28 +2,28 @@
     "errors": [
         {
             "message": "Method TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User::getRelativeBirthday() invoked with 0 parameters, 1 required.",
-            "identifier": "arguments.count",
+            "identifier": "getAttribute.arguments.count",
             "tip": null,
             "twigSourceLocation": "arguments.twig:6",
             "renderPoints": []
         },
         {
             "message": "Parameter #1 $relativeTo of method TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User::getRelativeBirthday() expects DateTimeImmutable, true given.",
-            "identifier": "argument.type",
+            "identifier": "getAttribute.argument.type",
             "tip": null,
             "twigSourceLocation": "arguments.twig:7",
             "renderPoints": []
         },
         {
             "message": "Method TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User::getRelativeBirthday() invoked with 2 parameters, 1 required.",
-            "identifier": "arguments.count",
+            "identifier": "getAttribute.arguments.count",
             "tip": null,
             "twigSourceLocation": "arguments.twig:9",
             "renderPoints": []
         },
         {
             "message": "Offset 3 does not exist on array{'Hello, World!', 'Bonjour, le monde!'}.",
-            "identifier": "offsetAccess.notFound",
+            "identifier": "getAttribute.offsetAccess.notFound",
             "tip": null,
             "twigSourceLocation": "constant_array.render.twig:4",
             "renderPoints": [

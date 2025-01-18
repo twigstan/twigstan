@@ -2,7 +2,6 @@ services:
 	-
 		class: TwigStan\PHPStan\GetAttributeCheck
 		arguments:
-			checkNullables: %checkNullables%
 			checkUnionTypes: %checkUnionTypes%
 			checkBenevolentUnionTypes: %checkBenevolentUnionTypes%
 	-

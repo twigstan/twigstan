@@ -15,11 +15,15 @@ use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\Arrays\NonexistentOffsetInArrayDimFetchCheck;
+use PHPStan\Rules\FileRuleError;
 use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\IdentifierRuleError;
+use PHPStan\Rules\LineRuleError;
+use PHPStan\Rules\MetadataRuleError;
 use PHPStan\Rules\Methods\MethodCallCheck;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\RuleLevelHelper;
+use PHPStan\Rules\TipRuleError;
 use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Enum\EnumCaseObjectType;
@@ -39,7 +43,6 @@ final readonly class GetAttributeCheck
         private NonexistentOffsetInArrayDimFetchCheck $nonexistentOffsetInArrayDimFetchCheck,
         private ReflectionProvider $reflectionProvider,
         private RuleLevelHelper $ruleLevelHelper,
-        private bool $checkNullables,
         private bool $checkUnionTypes,
         private bool $checkBenevolentUnionTypes,
     ) {}
@@ -105,7 +108,7 @@ final readonly class GetAttributeCheck
                     $arguments['args'],
                 );
 
-                if (!$result[0] instanceof ErrorType) {
+                if ( ! $result[0] instanceof ErrorType) {
                     $subTypeResults[] = $result[0];
                 }
 
@@ -175,7 +178,7 @@ final readonly class GetAttributeCheck
                 RuleErrorBuilder::message(sprintf(
                     'Cannot get "%s" on null.',
                     $propertyOrMethod,
-                ))->identifier('getAttribute.null')->build()
+                ))->identifier('getAttribute.null')->build(),
             ];
 
             return [new ErrorType(), $errors];
@@ -190,12 +193,12 @@ final readonly class GetAttributeCheck
             ) {
                 return [$objectType->getOffsetValueType($propertyOrMethodType), [
                     // @phpstan-ignore phpstanApi.method
-                    ...$this->nonexistentOffsetInArrayDimFetchCheck->check(
+                    ...$this->prefixErrorIdentifier($this->nonexistentOffsetInArrayDimFetchCheck->check(
                         $scope,
                         new TypeExpr($objectType),
                         sprintf('Access to offset %s on an unknown class %%s.', $propertyOrMethodType->describe(VerbosityLevel::value())),
                         $propertyOrMethodType,
-                    ),
+                    )),
                 ]];
             }
 
@@ -257,7 +260,7 @@ final readonly class GetAttributeCheck
                     $parametersAcceptor->getReturnType(),
                     [
                         // @phpstan-ignore phpstanApi.method
-                        ...$this->parametersCheck->check(
+                        ...$this->prefixErrorIdentifier($this->parametersCheck->check(
                             $parametersAcceptor,
                             $scope,
                             $declaringClass->isBuiltin(),
@@ -283,7 +286,7 @@ final readonly class GetAttributeCheck
                             'Return type of call to method ' . $messagesMethodName . ' contains unresolvable type.',
                             '%s of method ' . $messagesMethodName . ' contains unresolvable type.',
                             'Method ' . $messagesMethodName . ' invoked with %s, but it\'s not allowed because of @no-named-arguments.',
-                        ),
+                        )),
                     ],
                 ];
             }
@@ -368,5 +371,39 @@ final readonly class GetAttributeCheck
         }
 
         return $argsByName;
+    }
+
+    /**
+     * @param array<IdentifierRuleError> $errors
+     *
+     * @return list<IdentifierRuleError>
+     */
+    private function prefixErrorIdentifier(array $errors): array
+    {
+        $errorFormatted = [];
+        foreach ($errors as $error) {
+            $errorBuilder = RuleErrorBuilder::message($error->getMessage())
+                ->identifier('getAttribute.' . $error->getIdentifier());
+
+            if ($error instanceof LineRuleError) {
+                $errorBuilder->line($error->getLine());
+            }
+
+            if ($error instanceof FileRuleError) {
+                $errorBuilder->file($error->getFile(), $error->getFileDescription());
+            }
+
+            if ($error instanceof TipRuleError) {
+                $errorBuilder->tip($error->getTip());
+            }
+
+            if ($error instanceof MetadataRuleError) {
+                $errorBuilder->metadata($error->getMetadata());
+            }
+
+            $errorFormatted[] = $errorBuilder->build();
+        }
+
+        return $errorFormatted;
     }
 }
