@@ -1,5 +1,10 @@
 services:
-	- TwigStan\PHPStan\GetAttributeCheck
+	-
+		class: TwigStan\PHPStan\GetAttributeCheck
+		arguments:
+			checkNullables: %checkNullables%
+			checkUnionTypes: %checkUnionTypes%
+			checkBenevolentUnionTypes: %checkBenevolentUnionTypes%
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\TypeHintReturnType
 		tags:

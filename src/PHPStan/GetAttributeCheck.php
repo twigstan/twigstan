@@ -20,6 +20,7 @@ use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Methods\MethodCallCheck;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\RuleLevelHelper;
+use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\ErrorType;
@@ -37,6 +38,10 @@ final readonly class GetAttributeCheck
         private FunctionCallParametersCheck $parametersCheck,
         private NonexistentOffsetInArrayDimFetchCheck $nonexistentOffsetInArrayDimFetchCheck,
         private ReflectionProvider $reflectionProvider,
+        private RuleLevelHelper $ruleLevelHelper,
+        private bool $checkNullables,
+        private bool $checkUnionTypes,
+        private bool $checkBenevolentUnionTypes,
     ) {}
 
     /**
@@ -50,8 +55,12 @@ final readonly class GetAttributeCheck
             return null;
         }
 
-        // TODO: Use `$this->ruleLevelHelper->findTypeToCheck` here.
-        $objectType = $scope->getType($arguments['object']);
+        $objectType = $this->ruleLevelHelper->findTypeToCheck(
+            $scope,
+            $arguments['object'],
+            '',
+            static fn (Type $type): bool => true, // To complicate to filter unions, we'll do it manually.
+        )->getType();
 
         if ($objectType instanceof MixedType) {
             return [new MixedType(), []];
@@ -103,7 +112,6 @@ final readonly class GetAttributeCheck
                 $subTypeErrors[] = $result[1];
             }
 
-            $reportMaybe = true; // TODO: Inject the reportMaybe property.
             if ($subTypeResults === []) {
                 $errors = [
                     RuleErrorBuilder::message(sprintf(
@@ -114,7 +122,10 @@ final readonly class GetAttributeCheck
                     ->identifier('getAttribute.notFound')
                     ->build()
                 ];
-            } elseif ($reportMaybe) {
+            } elseif (
+                ($this->checkUnionTypes && !$type instanceof BenevolentUnionType)
+                || ($this->checkBenevolentUnionTypes && $type instanceof BenevolentUnionType)
+            ) {
                 $errorBuilder = RuleErrorBuilder::message(sprintf(
                     'TODO Might not exists',
                 ))
