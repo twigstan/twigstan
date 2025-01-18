@@ -19,11 +19,14 @@ use PHPStan\Rules\FunctionCallParametersCheck;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Methods\MethodCallCheck;
 use PHPStan\Rules\RuleErrorBuilder;
+use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
+use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use Twig\Template;
 
@@ -41,29 +44,29 @@ final readonly class GetAttributeCheck
      */
     public function check(StaticCall $node, Scope $scope): ?array
     {
-        $errors = [];
-
         $arguments = $this->getNormalizedArguments($node);
 
         if ($arguments === null) {
             return null;
         }
 
+        // TODO: Use `$this->ruleLevelHelper->findTypeToCheck` here.
         $objectType = $scope->getType($arguments['object']);
 
         if ($objectType instanceof MixedType) {
-            return [new MixedType(), $errors];
+            return [new MixedType(), []];
         }
 
         $propertyOrMethodType = $scope->getType($arguments['item']);
 
         if ($propertyOrMethodType instanceof ConstantIntegerType) {
-            $propertyOrMethod = $propertyOrMethodType->getValue();
+            $propertyOrMethod = (string) $propertyOrMethodType->getValue();
         } else {
             $constantStringTypes = $propertyOrMethodType->getConstantStrings();
 
-            if ($constantStringTypes === []) {
-                return [new MixedType(), $errors];
+            // TODO: Handle more than 1 constant string type
+            if (count($constantStringTypes) !== 1) {
+                return [new MixedType(), []];
             }
 
             $propertyOrMethod = $constantStringTypes[0]->getValue();
@@ -75,35 +78,103 @@ final readonly class GetAttributeCheck
             $typeStrings = $scope->getType($arguments['type'])->getConstantScalarTypes();
 
             if (count($typeStrings) !== 1) {
-                return [new MixedType(), $errors];
+                return [new MixedType(), []];
             }
 
             $type = $typeStrings[0]->getValue();
         }
 
-        // vendor/twig/twig/src/Extension/CoreExtension.php:1643
-        if ($type !== Template::METHOD_CALL) {
-            if ($objectType->isConstantArray()->yes()) {
-                if ($objectType->hasOffsetValueType($propertyOrMethodType)->yes()) {
-                    return [$objectType->getOffsetValueType($propertyOrMethodType), $errors];
+        if ($objectType instanceof UnionType) {
+            $subTypeResults = [];
+            $subTypeErrors = [];
+            foreach ($objectType->getTypes() as $subTypes) {
+                $result = $this->checkSingleType(
+                    $type,
+                    $subTypes,
+                    $propertyOrMethodType,
+                    $propertyOrMethod,
+                    $scope,
+                    $arguments['args'],
+                );
+
+                if (!$result[0] instanceof ErrorType) {
+                    $subTypeResults[] = $result[0];
                 }
+                $subTypeErrors[] = $result[1];
             }
+
+            $reportMaybe = true; // TODO: Inject the reportMaybe property.
+            if ($subTypeResults === []) {
+                $errors = [
+                    RuleErrorBuilder::message(sprintf(
+                        'Neither the property "%1$s" nor one of the methods "%1$s()", "get%1$s()", "is%1$s()", "has%1$s()" or "__call()" exist and have public access in class "%2$s".',
+                        $propertyOrMethod,
+                        $objectType->describe(VerbosityLevel::typeOnly()),
+                    ))
+                    ->identifier('getAttribute.notFound')
+                    ->build()
+                ];
+            } elseif ($reportMaybe) {
+                $errorBuilder = RuleErrorBuilder::message(sprintf(
+                    'TODO Might not exists',
+                ))
+                    ->identifier('getAttribute.maybeNotFound');
+
+                $errors = array_merge(...$subTypeErrors);
+                foreach ($errors as $error) {
+                    $errorBuilder->addTip($error->getMessage());
+                }
+                $errors = [$errorBuilder->build()];
+            } else {
+                $errors = [];
+            }
+
+            return [
+                TypeCombinator::union(...$subTypeResults),
+                $errors,
+            ];
         }
 
-        // vendor/twig/twig/src/Extension/CoreExtension.php:1704
-        if ( ! $objectType->isObject()->yes()) {
-            if ($objectType->isNull()->yes()) {
-                $errors[] = RuleErrorBuilder::message(sprintf(
-                    'Cannot get "%s" on null.',
-                    $propertyOrMethod,
-                ))->identifier('getAttribute.null')->build();
+        return $this->checkSingleType(
+            $type,
+            $objectType,
+            $propertyOrMethodType,
+            $propertyOrMethod,
+            $scope,
+            $arguments['args'],
+        );
+    }
 
-                return [new ErrorType(), $errors];
-            }
+    /**
+     * @param list<Arg> $args
+     *
+     * @return array
+     */
+    public function checkSingleType(
+        string $callType,
+        Type $objectType,
+        Type $propertyOrMethodType,
+        string $propertyOrMethod,
+        Scope $scope,
+        array $args
+    ): array {
+        if ($objectType->isNull()->yes()) {
+            $errors[] = RuleErrorBuilder::message(sprintf(
+                'Cannot get "%s" on null.',
+                $propertyOrMethod,
+            ))->identifier('getAttribute.null')->build();
 
-            if ($objectType->isArray()->yes()) {
+            return [new ErrorType(), $errors];
+        }
+
+        // vendor/twig/twig/src/Extension/CoreExtension.php:1643
+        if ($callType !== Template::METHOD_CALL) {
+            if (
+                $callType === Template::ARRAY_CALL
+                || $objectType->isObject()->no()
+                || $objectType->hasOffsetValueType($propertyOrMethodType)->yes() // Handle ArrayObject and ArrayAccess.
+            ) {
                 return [$objectType->getOffsetValueType($propertyOrMethodType), [
-                    ...$errors,
                     // @phpstan-ignore phpstanApi.method
                     ...$this->nonexistentOffsetInArrayDimFetchCheck->check(
                         $scope,
@@ -114,72 +185,37 @@ final readonly class GetAttributeCheck
                 ]];
             }
 
-            $errors[] = RuleErrorBuilder::message(sprintf(
-                'Cannot get "%s" on %s.',
-                $propertyOrMethod,
-                $objectType->describe(VerbosityLevel::value()),
-            ))->identifier('getAttribute.unknown')->build();
-
-            return [new ErrorType(), $errors];
-        }
-
-        if (in_array($type, [Template::ANY_CALL, Template::ARRAY_CALL], true)) {
-            if ($objectType->isArray()->yes()) {
-                return [
-                    $objectType->getOffsetValueType($propertyOrMethodType),
-                    $errors,
-                ];
-            }
-        }
-
-        if ($objectType->isNull()->maybe()) {
-            return [new ErrorType(), $errors];
-        }
-
-        // if (is_int($propertyOrMethod)) {
-        //    return new ErrorType(); // @todo prob array?
-        // }
-
-        // object property
-        // vendor/twig/twig/src/Extension/CoreExtension.php:1728
-        if ($type !== Template::METHOD_CALL) {
-            if ($objectType->hasProperty((string) $propertyOrMethod)->yes()) {
-                $property = $objectType->getProperty((string) $propertyOrMethod, $scope);
+            // object property
+            // vendor/twig/twig/src/Extension/CoreExtension.php:1728
+            if ($objectType->hasProperty($propertyOrMethod)->yes()) {
+                $property = $objectType->getProperty($propertyOrMethod, $scope);
 
                 if ($property->isPublic()) {
-                    return [$property->getReadableType(), $errors];
+                    return [$property->getReadableType(), []];
                 }
             }
-
-            // if ($object instanceof \DateTimeInterface && \in_array($item, ['date', 'timezone', 'timezone_type'], true)) {
-            //                if ($isDefinedTest) {
-            //                    return true;
-            //                }
-            //
-            //                return ((array) $object)[$item];
-            //            }
 
             if ($objectType->isEnum()->yes()) {
                 $className = $objectType->getObjectClassNames()[0];
                 $classReflection = $this->reflectionProvider->getClass($className);
 
-                if ($classReflection->hasEnumCase((string) $propertyOrMethod)) {
+                if ($classReflection->hasEnumCase($propertyOrMethod)) {
                     return [
-                        new EnumCaseObjectType($className, (string) $propertyOrMethod, $classReflection),
-                        $errors,
+                        new EnumCaseObjectType($className, $propertyOrMethod, $classReflection),
+                        [],
                     ];
                 }
             }
 
-            if ($objectType->hasConstant((string) $propertyOrMethod)->yes()) {
+            if ($objectType->hasConstant($propertyOrMethod)->yes()) {
                 return [
-                    $scope->getType($objectType->getConstant((string) $propertyOrMethod)->getValueExpr()),
-                    $errors,
+                    $scope->getType($objectType->getConstant($propertyOrMethod)->getValueExpr()),
+                    [],
                 ];
             }
         }
 
-        if (in_array($type, [Template::ANY_CALL, Template::METHOD_CALL], true)) {
+        if (in_array($callType, [Template::ANY_CALL, Template::METHOD_CALL], true)) {
             foreach (['', 'get', 'is', 'has'] as $prefix) {
                 if ( ! $objectType->hasMethod($prefix . $propertyOrMethod)->yes()) {
                     continue;
@@ -198,7 +234,7 @@ final readonly class GetAttributeCheck
 
                 $parametersAcceptor = ParametersAcceptorSelector::selectFromArgs(
                     $scope,
-                    $arguments['args'],
+                    $args,
                     $methodReflection->getVariants(),
                     $methodReflection->getNamedArgumentsVariants(),
                 );
@@ -206,7 +242,6 @@ final readonly class GetAttributeCheck
                 return [
                     $parametersAcceptor->getReturnType(),
                     [
-                        ...$errors,
                         // @phpstan-ignore phpstanApi.method
                         ...$this->parametersCheck->check(
                             $parametersAcceptor,
@@ -215,7 +250,7 @@ final readonly class GetAttributeCheck
                             new Expr\MethodCall(
                                 new TypeExpr($objectType),
                                 new Identifier($methodReflection->getName()),
-                                $arguments['args'],
+                                $args,
                             ),
                             'method',
                             $methodReflection->acceptsNamedArguments(),
