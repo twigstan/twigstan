@@ -59,7 +59,7 @@ final readonly class GetAttributeCheck
             $scope,
             $arguments['object'],
             '',
-            static fn (Type $type): bool => true, // To complicate to filter unions, we'll do it manually.
+            static fn(Type $type): bool => true, // To complicate to filter unions, we'll do it manually.
         )->getType();
 
         if ($objectType instanceof MixedType) {
@@ -73,7 +73,6 @@ final readonly class GetAttributeCheck
         } else {
             $constantStringTypes = $propertyOrMethodType->getConstantStrings();
 
-            // TODO: Handle more than 1 constant string type
             if (count($constantStringTypes) !== 1) {
                 return [new MixedType(), []];
             }
@@ -90,7 +89,7 @@ final readonly class GetAttributeCheck
                 return [new MixedType(), []];
             }
 
-            $type = $typeStrings[0]->getValue();
+            $type = (string) $typeStrings[0]->getValue();
         }
 
         if ($objectType instanceof UnionType) {
@@ -109,6 +108,7 @@ final readonly class GetAttributeCheck
                 if (!$result[0] instanceof ErrorType) {
                     $subTypeResults[] = $result[0];
                 }
+
                 $subTypeErrors[] = $result[1];
             }
 
@@ -120,11 +120,11 @@ final readonly class GetAttributeCheck
                         $objectType->describe(VerbosityLevel::typeOnly()),
                     ))
                     ->identifier('getAttribute.notFound')
-                    ->build()
+                    ->build(),
                 ];
             } elseif (
-                ($this->checkUnionTypes && !$type instanceof BenevolentUnionType)
-                || ($this->checkBenevolentUnionTypes && $type instanceof BenevolentUnionType)
+                ($this->checkUnionTypes && ! $objectType instanceof BenevolentUnionType)
+                || ($this->checkBenevolentUnionTypes && $objectType instanceof BenevolentUnionType)
             ) {
                 $errorBuilder = RuleErrorBuilder::message(sprintf(
                     'TODO Might not exists',
@@ -135,6 +135,7 @@ final readonly class GetAttributeCheck
                 foreach ($errors as $error) {
                     $errorBuilder->addTip($error->getMessage());
                 }
+
                 $errors = [$errorBuilder->build()];
             } else {
                 $errors = [];
@@ -159,7 +160,7 @@ final readonly class GetAttributeCheck
     /**
      * @param list<Arg> $args
      *
-     * @return array
+     * @return array{Type, list<IdentifierRuleError>}
      */
     public function checkSingleType(
         string $callType,
@@ -167,13 +168,15 @@ final readonly class GetAttributeCheck
         Type $propertyOrMethodType,
         string $propertyOrMethod,
         Scope $scope,
-        array $args
+        array $args,
     ): array {
         if ($objectType->isNull()->yes()) {
-            $errors[] = RuleErrorBuilder::message(sprintf(
-                'Cannot get "%s" on null.',
-                $propertyOrMethod,
-            ))->identifier('getAttribute.null')->build();
+            $errors = [
+                RuleErrorBuilder::message(sprintf(
+                    'Cannot get "%s" on null.',
+                    $propertyOrMethod,
+                ))->identifier('getAttribute.null')->build()
+            ];
 
             return [new ErrorType(), $errors];
         }
@@ -286,13 +289,15 @@ final readonly class GetAttributeCheck
             }
         }
 
-        $errors[] = RuleErrorBuilder::message(sprintf(
-            'Neither the property "%1$s" nor one of the methods "%1$s()", "get%1$s()", "is%1$s()", "has%1$s()" or "__call()" exist and have public access in class "%2$s".',
-            $propertyOrMethod,
-            $objectType->describe(VerbosityLevel::typeOnly()),
-        ))
+        $errors = [
+            RuleErrorBuilder::message(sprintf(
+                'Neither the property "%1$s" nor one of the methods "%1$s()", "get%1$s()", "is%1$s()", "has%1$s()" or "__call()" exist and have public access in class "%2$s".',
+                $propertyOrMethod,
+                $objectType->describe(VerbosityLevel::typeOnly()),
+            ))
             ->identifier('getAttribute.notFound')
-            ->build();
+            ->build(),
+        ];
 
         return [new ErrorType(), $errors];
     }
