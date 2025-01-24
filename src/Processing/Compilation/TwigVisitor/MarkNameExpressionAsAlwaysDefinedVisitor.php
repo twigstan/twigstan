@@ -17,6 +17,10 @@ final readonly class MarkNameExpressionAsAlwaysDefinedVisitor implements NodeVis
             return $node;
         }
 
+        if ($node->getAttribute('is_defined_test') === true) {
+            return $node;
+        }
+
         // Instead of printing: ($context["name"] ?? null)
         // We want: $context["name"]
         $node->setAttribute('always_defined', true);
