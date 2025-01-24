@@ -1,0 +1,9 @@
+{% types {
+    dates: 'non-empty-list<DateTime>',
+} %}
+
+{% for date in dates %}
+    {% assert_type date 'DateTime' %}
+{% else %}
+    This should not be reached
+{% endfor %}
