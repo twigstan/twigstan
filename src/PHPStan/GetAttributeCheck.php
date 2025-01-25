@@ -115,6 +115,8 @@ final readonly class GetAttributeCheck
                 $subTypeErrors[] = $result[1];
             }
 
+            $subTypeErrors = array_merge(...$subTypeErrors);
+
             if ($subTypeResults === []) {
                 $errors = [
                     RuleErrorBuilder::message(sprintf(
@@ -126,17 +128,19 @@ final readonly class GetAttributeCheck
                     ->build(),
                 ];
             } elseif (
-                ($this->checkUnionTypes && ! $objectType instanceof BenevolentUnionType)
-                || ($this->checkBenevolentUnionTypes && $objectType instanceof BenevolentUnionType)
+                count($subTypeErrors) > 0
+                && (
+                    ($this->checkUnionTypes && ! $objectType instanceof BenevolentUnionType)
+                    || ($this->checkBenevolentUnionTypes && $objectType instanceof BenevolentUnionType)
+                )
             ) {
                 $errorBuilder = RuleErrorBuilder::message(sprintf(
                     'TODO Might not exists',
                 ))
                     ->identifier('getAttribute.maybeNotFound');
 
-                $errors = array_merge(...$subTypeErrors);
-                foreach ($errors as $error) {
-                    $errorBuilder->addTip($error->getMessage());
+                foreach ($subTypeErrors as $subTypeError) {
+                    $errorBuilder->addTip($subTypeError->getMessage());
                 }
 
                 $errors = [$errorBuilder->build()];
