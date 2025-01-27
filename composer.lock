@@ -5730,16 +5730,16 @@
         },
         {
             "name": "shipmonk/composer-dependency-analyser",
-            "version": "1.8.1",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/shipmonk-rnd/composer-dependency-analyser.git",
-                "reference": "0acd9d94be4d9397055ff012d0abf2ae88072e99"
+                "reference": "f374f5366028fd7ece8aeaffa76895d73dc0a05a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shipmonk-rnd/composer-dependency-analyser/zipball/0acd9d94be4d9397055ff012d0abf2ae88072e99",
-                "reference": "0acd9d94be4d9397055ff012d0abf2ae88072e99",
+                "url": "https://api.github.com/repos/shipmonk-rnd/composer-dependency-analyser/zipball/f374f5366028fd7ece8aeaffa76895d73dc0a05a",
+                "reference": "f374f5366028fd7ece8aeaffa76895d73dc0a05a",
                 "shasum": ""
             },
             "require": {
@@ -5790,9 +5790,9 @@
             ],
             "support": {
                 "issues": "https://github.com/shipmonk-rnd/composer-dependency-analyser/issues",
-                "source": "https://github.com/shipmonk-rnd/composer-dependency-analyser/tree/1.8.1"
+                "source": "https://github.com/shipmonk-rnd/composer-dependency-analyser/tree/1.8.2"
             },
-            "time": "2024-11-18T12:58:21+00:00"
+            "time": "2024-12-30T12:31:04+00:00"
         },
         {
             "name": "staabm/phpstan-todo-by",
