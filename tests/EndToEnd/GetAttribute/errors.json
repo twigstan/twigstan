@@ -31,9 +31,9 @@
             ]
         },
         {
-            "message": "Cannot get \"format\" on DateTimeImmutable|null.",
-            "identifier": "getAttribute.unknown",
-            "tip": null,
+            "message": "The attribute \"format\" may not be valid for all possible types of the union \"DateTimeImmutable|null\".",
+            "identifier": "getAttribute.maybeNotFound",
+            "tip": "Cannot get \"format\" on null.",
             "twigSourceLocation": "call_on_null.render.twig:1",
             "renderPoints": [
                 "RenderTest.php:0"

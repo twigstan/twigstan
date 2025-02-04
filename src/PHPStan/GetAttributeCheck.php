@@ -135,7 +135,9 @@ final readonly class GetAttributeCheck
                 )
             ) {
                 $errorBuilder = RuleErrorBuilder::message(sprintf(
-                    'TODO Might not exists',
+                    'The attribute "%1$s" may not be valid for all possible types of the union "%2$s".',
+                    $propertyOrMethod,
+                    $objectType->describe(VerbosityLevel::typeOnly()),
                 ))
                     ->identifier('getAttribute.maybeNotFound');
 
