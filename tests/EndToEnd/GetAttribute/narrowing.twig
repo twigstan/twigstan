@@ -10,4 +10,4 @@
     {% assert_type user.lastPurchaseAt.format('Y-m-d') '*ERROR*' %}
 {% endif %}
 
-{% assert_type user.lastPurchaseAt.format('Y-m-d') '*ERROR*' %}
+{% assert_type user.lastPurchaseAt.format('Y-m-d') 'string' %}

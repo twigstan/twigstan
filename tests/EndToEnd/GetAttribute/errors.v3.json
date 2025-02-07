@@ -2,7 +2,7 @@
     "errors": [
         {
             "message": "Parameter #1 $relativeTo of method TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\User::getRelativeBirthday() expects DateTimeImmutable, DateTime|DateTimeImmutable given.",
-            "identifier": "argument.type",
+            "identifier": "getAttribute.argument.type",
             "tip": null,
             "twigSourceLocation": "arguments.twig:8",
             "renderPoints": []
