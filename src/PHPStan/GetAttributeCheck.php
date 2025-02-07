@@ -195,7 +195,7 @@ final readonly class GetAttributeCheck
             if (
                 $callType === Template::ARRAY_CALL
                 || $objectType->isObject()->no()
-                || $objectType->hasOffsetValueType($propertyOrMethodType)->yes() // Handle ArrayObject and ArrayAccess.
+                || $objectType->hasOffsetValueType($propertyOrMethodType)->yes()
             ) {
                 return [$objectType->getOffsetValueType($propertyOrMethodType), [
                     // @phpstan-ignore phpstanApi.method
@@ -296,6 +296,19 @@ final readonly class GetAttributeCheck
                     ],
                 ];
             }
+        }
+
+        // We already excluded `Yes` certainty, but it can still be `Maybe` for ArrayObject and ArrayAccess.
+        if ($callType !== Template::METHOD_CALL && $objectType->hasOffsetValueType($propertyOrMethodType)->maybe()) {
+            return [$objectType->getOffsetValueType($propertyOrMethodType), [
+                // @phpstan-ignore phpstanApi.method
+                ...$this->prefixErrorIdentifier($this->nonexistentOffsetInArrayDimFetchCheck->check(
+                    $scope,
+                    new TypeExpr($objectType),
+                    sprintf('Access to offset %s on an unknown class %%s.', $propertyOrMethodType->describe(VerbosityLevel::value())),
+                    $propertyOrMethodType,
+                )),
+            ]];
         }
 
         $errors = [
