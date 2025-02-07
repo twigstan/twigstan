@@ -4,7 +4,7 @@
             "message": "Negated boolean expression is always false.",
             "identifier": "booleanNot.alwaysFalse",
             "tip": null,
-            "twigSourceLocation": "simple.html.twig:8",
+            "twigSourceLocation": "simple.html.twig:11",
             "renderPoints": [
                 "CustomRenderPointController.php:17",
                 "SimpleTemplateAttributeController.php:21"
