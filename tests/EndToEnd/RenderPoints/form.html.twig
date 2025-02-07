@@ -1,2 +1,6 @@
 {% assert_type form1 'Symfony\\Component\\Form\\FormView' %}
 {% assert_type form2 'Symfony\\Component\\Form\\FormView' %}
+
+{% assert_type form1.name 'mixed' %}
+
+{{ form1.name }}
