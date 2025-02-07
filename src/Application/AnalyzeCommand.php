@@ -355,10 +355,13 @@ final class AnalyzeCommand extends Command
 
             // It's perfectly fine to do `if(var)` in Twig.
             IgnoreError::identifier('if.condNotBoolean'),
-
+            IgnoreError::identifier('elseif.condNotBoolean'),
             IgnoreError::identifier('ternary.condNotBoolean'),
-
             IgnoreError::identifier('booleanAnd.leftNotBoolean'),
+            IgnoreError::identifier('booleanAnd.rightNotBoolean'),
+            IgnoreError::identifier('booleanOr.leftNotBoolean'),
+            IgnoreError::identifier('booleanOr.rightNotBoolean'),
+            IgnoreError::identifier('booleanNot.exprNotBoolean'),
 
             // It's perfectly fine to do `var ?: default` in Twig.
             IgnoreError::identifier('ternary.shortNotAllowed'),
@@ -373,6 +376,20 @@ final class AnalyzeCommand extends Command
             IgnoreError::identifier('missingType.return'),
             IgnoreError::identifier('method.missingOverride'),
             IgnoreError::identifier('return.unusedType'),
+
+            // It's not possible to unset variable in Twig templates.
+            IgnoreError::identifier('unset.offset'),
+            IgnoreError::identifier('unset.variable'),
+
+            // It's not possible to increment or decrement values in Twig templates.
+            IgnoreError::identifier('preInc.type'),
+            IgnoreError::identifier('preInc.nonNumeric'),
+            IgnoreError::identifier('postInc.type'),
+            IgnoreError::identifier('postInc.nonNumeric'),
+            IgnoreError::identifier('preDec.type'),
+            IgnoreError::identifier('preDec.nonNumeric'),
+            IgnoreError::identifier('postDec.type'),
+            IgnoreError::identifier('postDec.nonNumeric'),
 
             // We cannot guarantee that a short arrow closure uses the context/macros/blocks variable.
             IgnoreError::messageAndIdentifier('#Anonymous function has an unused use \$context\.#', 'closure.unusedUse'),
