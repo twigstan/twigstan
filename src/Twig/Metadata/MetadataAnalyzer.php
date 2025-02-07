@@ -9,9 +9,9 @@ use Twig\Environment;
 use Twig\Node\BodyNode;
 use Twig\Node\Expression\ArrayExpression;
 use Twig\Node\Expression\Binary\ConcatBinary;
-use Twig\Node\Expression\ConditionalExpression;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\ParentExpression;
+use Twig\Node\Expression\Ternary\ConditionalTernary;
 use Twig\Node\Expression\Variable\ContextVariable;
 use Twig\Node\ImportNode;
 use Twig\Node\Node;
@@ -124,7 +124,7 @@ final readonly class MetadataAnalyzer
             return $strings;
         }
 
-        if ($node instanceof ConditionalExpression) {
+        if ($node instanceof ConditionalTernary) {
             return [
                 ...$this->getStringsFromExpression($node->getNode('expr2')),
                 ...$this->getStringsFromExpression($node->getNode('expr3')),

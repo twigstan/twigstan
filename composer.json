@@ -20,7 +20,7 @@
         "symfony/finder": "^7.1",
         "symfony/polyfill-php84": "^1.31",
         "symfony/process": "^7.1",
-        "twig/twig": "^3.16.0"
+        "twig/twig": "^3.19.0"
     },
     "require-dev": {
         "editorconfig-checker/editorconfig-checker": "^10.6",
