@@ -242,8 +242,6 @@ final class AnalyzeCommand extends Command
             return new TwigStanAnalysisResult();
         }
 
-        $twigFileNamesToAnalyze = $twigFileNames;
-
         $output->writeln('Collecting scopes from render points...');
 
         $analysisResult = $this->phpStanRunner->run(
@@ -302,7 +300,8 @@ final class AnalyzeCommand extends Command
 
         $errors = $run->errors;
 
-        if ($changedTemplates !== []) {
+        $runNumber = 1;
+        while ($changedTemplates !== []) {
             $output->writeln('Found new template context in Twig templates...');
 
             $output->writeln('Recompiling templates...');
@@ -325,12 +324,23 @@ final class AnalyzeCommand extends Command
                 $templateContext,
                 $debugMode,
                 $xdebugMode,
-                2,
+                ++$runNumber,
             );
 
             $result = $result->withRun($run);
 
             $errors = [...$errors, ...$run->errors];
+
+            $changedTemplates = [];
+            $templateContext = $templateContext->merge($run->contextAfter, $changedTemplates);
+
+            $result = $result->withContext($templateContext);
+
+            // Filter out templates that do not exist.
+            $changedTemplates = array_values(array_filter(
+                $changedTemplates,
+                fn($template) => $this->filesystem->exists($template),
+            ));
         }
 
         // Ignore errors for abstract templates
