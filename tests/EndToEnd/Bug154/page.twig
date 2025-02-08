@@ -1,0 +1,6 @@
+{% extends '@EndToEnd/Bug154/layout.twig' %}
+
+{% block container %}
+    {% assert_type title "'Welcome'" %}
+    {{ include('@EndToEnd/Bug154/include.twig') }}
+{% endblock %}

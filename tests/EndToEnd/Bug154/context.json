@@ -1,0 +1,14 @@
+{
+    "page.twig": [
+        [
+            "Controller.php:13",
+            "array{title: 'Welcome'}"
+        ]
+    ],
+    "include.twig": [
+        [
+            "page.twig:5",
+            "array{title: 'Welcome'}"
+        ]
+    ]
+}
