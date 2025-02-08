@@ -770,34 +770,12 @@ final class AnalyzeCommand extends Command
             [Path::join($scopeInjectionDirectory, (string) $run)],
             $debugMode,
             $xdebugMode,
-            PHPStanRunMode::CollectTwigBlockContexts,
-        );
-
-        $output->writeln('Injecting scope into templates...');
-
-        $scopeInjectionResults = $this->twigScopeInjector->inject(
-            $analysisResult2->collectedData,
-            $flatteningResults,
-            $scopeInjectionDirectory,
-            $run,
-        );
-
-        $output->writeln('Analyzing templates');
-
-        $analysisResult3 = $this->phpStanRunner->run(
-            $output,
-            $errorOutput,
-            $this->environmentLoader,
-            [],
-            [Path::join($scopeInjectionDirectory, (string) $run)],
-            $debugMode,
-            $xdebugMode,
             PHPStanRunMode::AnalyzeTwigTemplates,
         );
 
-        $newTemplateContext = $this->templateContextFactory->create($analysisResult3);
+        $newTemplateContext = $this->templateContextFactory->create($analysisResult2);
 
-        $errors = $this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult3->errors);
+        $errors = $this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors);
 
         return new TwigStanRun(
             $run,
@@ -808,8 +786,8 @@ final class AnalyzeCommand extends Command
             $flatteningResults,
             $scopeInjectionResults,
             [
-                PHPStanRunMode::CollectTwigBlockContexts->value => $analysisResult2,
-                PHPStanRunMode::AnalyzeTwigTemplates->value => $analysisResult3,
+                PHPStanRunMode::CollectTwigBlockContexts->value => $analysisResult1,
+                PHPStanRunMode::AnalyzeTwigTemplates->value => $analysisResult2,
             ],
         );
     }

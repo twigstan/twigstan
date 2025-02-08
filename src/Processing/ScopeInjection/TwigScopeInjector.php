@@ -47,7 +47,7 @@ final readonly class TwigScopeInjector
 
         $this->filesystem->mkdir($targetDirectory);
 
-        $contextBeforeBlock = [];
+        $contextBeforeBlockByBlock = [];
         $macros = [];
 
         foreach ($collectedData as $data) {
@@ -69,12 +69,21 @@ final readonly class TwigScopeInjector
                     $context = ArrayShapeNode::createSealed([]);
                 }
 
-                $contextBeforeBlock[] = [
+                $contextBeforeBlockByBlock[$data->data['blockName']][] = [
                     'blockName' => $data->data['blockName'],
                     'sourceLocation' => SourceLocation::decode($data->data['sourceLocation']),
                     'context' => $context,
                     'parent' => $data->data['parent'],
+                    'relatedBlockName' => $data->data['relatedBlockName'],
+                    'relatedParent' => $data->data['relatedParent'],
                 ];
+            }
+        }
+
+        $contextBeforeBlock = [];
+        foreach ($contextBeforeBlockByBlock as $contexts) {
+            foreach ($contexts as $context) {
+                $contextBeforeBlock[] = $this->getRecursiveContext($context, $contextBeforeBlockByBlock);
             }
         }
 
@@ -117,6 +126,71 @@ final readonly class TwigScopeInjector
         }
 
         return $results;
+    }
+
+    /**
+     * @param array{
+     *     blockName: string|null,
+     *     sourceLocation: SourceLocation,
+     *     context: \PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode,
+     *     parent: bool,
+     *     relatedBlockName: string|null,
+     *     relatedParent: bool,
+     *  } $context
+     * @param array<array<array{
+     *     blockName: string|null,
+     *     sourceLocation: SourceLocation,
+     *     context: \PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode,
+     *     parent: bool,
+     *     relatedBlockName: string|null,
+     *     relatedParent: bool,
+     * }>> $contextBeforeBlockByBlock
+     *
+     * @return array{
+     *     blockName: string|null,
+     *     sourceLocation: SourceLocation,
+     *     context: \PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode,
+     *     parent: bool,
+     *     relatedBlockName: string|null,
+     *     relatedParent: bool,
+     * }
+     */
+    private function getRecursiveContext(array $context, array $contextBeforeBlockByBlock): array
+    {
+        if ($context['relatedBlockName'] === null) {
+            return $context;
+        }
+
+        if ( ! isset($contextBeforeBlockByBlock[$context['relatedBlockName']])) {
+            return $context;
+        }
+
+        $parent = null;
+        foreach ($contextBeforeBlockByBlock[$context['relatedBlockName']] as $parentContext) {
+            if ($context['relatedParent'] !== $parentContext['relatedParent']) {
+                continue;
+            }
+
+            if ($context['sourceLocation']->last()->fileName !== $parentContext['sourceLocation']->last()->fileName) {
+                continue;
+            }
+
+            $parentContext = $this->getRecursiveContext($parentContext, $contextBeforeBlockByBlock);
+
+            if ($parent === null) {
+                $parent = $parentContext['context'];
+            } else {
+                $parent = $this->arrayShapeMerger->merge($parent, $parentContext['context']);
+            }
+        }
+
+        if ($parent === null) {
+            return $context;
+        }
+
+        $context['context'] = $this->arrayShapeMerger->merge($context['context'], $parent, true);
+
+        return $context;
     }
 
     /**
