@@ -16,7 +16,7 @@ final class InjectContextVisitor extends NodeVisitorAbstract
 {
     /**
      * @param list<array{
-     *     blockName: string,
+     *     blockName: string|null,
      *     sourceLocation: SourceLocation,
      *     context: \PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode,
      *     parent: bool
