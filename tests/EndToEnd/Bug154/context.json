@@ -5,10 +5,16 @@
             "array{title: 'Welcome'}"
         ]
     ],
+    "sub-include.twig": [
+        [
+            "include.twig:3",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'Welcome'}"
+        ]
+    ],
     "include.twig": [
         [
             "page.twig:5",
-            "array{title: 'Welcome'}"
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'Welcome'}"
         ]
     ]
 }
