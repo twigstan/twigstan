@@ -3,6 +3,8 @@
 
 {% block body %}
     {% assert_type title "'Welcome'" %}
-    {% block container %}
+    {% block thing %}
+        {% block container %}
+        {% endblock %}
     {% endblock %}
 {% endblock %}
