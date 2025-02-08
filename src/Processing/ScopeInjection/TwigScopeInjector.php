@@ -47,7 +47,7 @@ final readonly class TwigScopeInjector
 
         $this->filesystem->mkdir($targetDirectory);
 
-        $contextBeforeBlockByBlock = [];
+        $contextBeforeBlockByFilename = [];
         $macros = [];
 
         foreach ($collectedData as $data) {
@@ -69,9 +69,11 @@ final readonly class TwigScopeInjector
                     $context = ArrayShapeNode::createSealed([]);
                 }
 
-                $contextBeforeBlockByBlock[$data->data['blockName']][] = [
+                $sourceLocation = SourceLocation::decode($data->data['sourceLocation']);
+
+                $contextBeforeBlockByFilename[$sourceLocation->last()->fileName][] = [
                     'blockName' => $data->data['blockName'],
-                    'sourceLocation' => SourceLocation::decode($data->data['sourceLocation']),
+                    'sourceLocation' => $sourceLocation,
                     'context' => $context,
                     'parent' => $data->data['parent'],
                     'relatedBlockName' => $data->data['relatedBlockName'],
@@ -81,9 +83,9 @@ final readonly class TwigScopeInjector
         }
 
         $contextBeforeBlock = [];
-        foreach ($contextBeforeBlockByBlock as $contexts) {
+        foreach ($contextBeforeBlockByFilename as $contexts) {
             foreach ($contexts as $context) {
-                $contextBeforeBlock[] = $this->getRecursiveContext($context, $contextBeforeBlockByBlock);
+                $contextBeforeBlock[] = $this->getRecursiveContext($context, $contextBeforeBlockByFilename);
             }
         }
 
@@ -144,7 +146,7 @@ final readonly class TwigScopeInjector
      *     parent: bool,
      *     relatedBlockName: string|null,
      *     relatedParent: bool,
-     * }>> $contextBeforeBlockByBlock
+     * }>> $contextBeforeBlockByFilename
      *
      * @return array{
      *     blockName: string|null,
@@ -155,40 +157,35 @@ final readonly class TwigScopeInjector
      *     relatedParent: bool,
      * }
      */
-    private function getRecursiveContext(array $context, array $contextBeforeBlockByBlock): array
+    private function getRecursiveContext(array $context, array $contextBeforeBlockByFilename): array
     {
         if ($context['relatedBlockName'] === null) {
             return $context;
         }
 
-        if ( ! isset($contextBeforeBlockByBlock[$context['relatedBlockName']])) {
-            return $context;
-        }
-
-        $parent = null;
-        foreach ($contextBeforeBlockByBlock[$context['relatedBlockName']] as $parentContext) {
-            if ($context['relatedParent'] !== $parentContext['relatedParent']) {
+        $parentContext = null;
+        foreach ($contextBeforeBlockByFilename[$context['sourceLocation']->last()->fileName] as $fileContext) {
+            if (
+                $context['relatedBlockName'] !== $fileContext['blockName']
+                || $context['relatedParent'] !== $fileContext['parent']
+            ) {
                 continue;
             }
 
-            if ($context['sourceLocation']->last()->fileName !== $parentContext['sourceLocation']->last()->fileName) {
-                continue;
-            }
+            $fileContext = $this->getRecursiveContext($fileContext, $contextBeforeBlockByFilename);
 
-            $parentContext = $this->getRecursiveContext($parentContext, $contextBeforeBlockByBlock);
-
-            if ($parent === null) {
-                $parent = $parentContext['context'];
+            if ($parentContext === null) {
+                $parentContext = $fileContext['context'];
             } else {
-                $parent = $this->arrayShapeMerger->merge($parent, $parentContext['context']);
+                $parentContext = $this->arrayShapeMerger->merge($parentContext, $fileContext['context']);
             }
         }
 
-        if ($parent === null) {
+        if ($parentContext === null) {
             return $context;
         }
 
-        $context['context'] = $this->arrayShapeMerger->merge($context['context'], $parent, true);
+        $context['context'] = $this->arrayShapeMerger->merge($context['context'], $parentContext, true);
 
         return $context;
     }
