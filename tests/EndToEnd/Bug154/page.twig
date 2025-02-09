@@ -1,6 +1,6 @@
-{% extends '@EndToEnd/Bug154/layout.twig' %}
+{% extends '@EndToEnd/Bug154/superLayout.twig' %}
 
-{% block container %}
+{% block setup_body %}
     {% assert_type title "'Welcome'" %}
     {{ include('@EndToEnd/Bug154/include.twig') }}
 {% endblock %}
