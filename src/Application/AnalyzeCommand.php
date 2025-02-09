@@ -312,7 +312,7 @@ final class AnalyzeCommand extends Command
                     fn($template) => IgnoreError::path($template),
                     $changedTemplates,
                 ),
-            ))->filter($run->errors);
+            ))->filter($errors);
 
             $run = $this->executeRun(
                 $output,
