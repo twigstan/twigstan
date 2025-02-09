@@ -40,7 +40,7 @@ use TwigStan\Twig\SourceLocation;
 final class TwigScopeInjector
 {
     /**
-     * @var array<string, ArrayShapeNode|null>
+     * @var array<string, null|ArrayShapeNode>
      */
     private array $cachedParentContext = [];
 
@@ -169,6 +169,7 @@ final class TwigScopeInjector
         $file = $context['sourceLocation']->last()->fileName;
 
         $cacheKey = sprintf('%s#%s#%d', $file, $relatedBlockName, (int) $relatedParent);
+
         if (array_key_exists($cacheKey, $this->cachedParentContext)) {
             $parentContext = $this->cachedParentContext[$cacheKey];
         } else {

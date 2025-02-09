@@ -11,7 +11,6 @@ use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Printer\Printer;
 use TwigStan\Processing\ScopeInjection\ArrayShapeMerger;
 use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
-use TwigStan\Twig\SourceLocation;
 
 /**
  * @phpstan-import-type ContextData from TwigScopeInjector
