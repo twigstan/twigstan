@@ -27,15 +27,30 @@ use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectMacroVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
 use TwigStan\Twig\SourceLocation;
 
-final readonly class TwigScopeInjector
+/**
+ * @phpstan-type ContextData = array{
+ *      blockName: null|string,
+ *      sourceLocation: SourceLocation,
+ *      context: ArrayShapeNode,
+ *      parent: bool,
+ *      relatedBlockName: null|string,
+ *      relatedParent: bool,
+ * }
+ */
+final class TwigScopeInjector
 {
+    /**
+     * @var array<string, ArrayShapeNode|null>
+     */
+    private array $cachedParentContext = [];
+
     public function __construct(
-        private PrettyPrinter $prettyPrinter,
-        private Filesystem $filesystem,
-        private StrictPhpParser $phpParser,
-        private ArrayShapeMerger $arrayShapeMerger,
-        private PhpDocParser $phpDocParser,
-        private Lexer $lexer,
+        private readonly PrettyPrinter $prettyPrinter,
+        private readonly Filesystem $filesystem,
+        private readonly StrictPhpParser $phpParser,
+        private readonly ArrayShapeMerger $arrayShapeMerger,
+        private readonly PhpDocParser $phpDocParser,
+        private readonly Lexer $lexer,
     ) {}
 
     /**
@@ -83,6 +98,7 @@ final readonly class TwigScopeInjector
         }
 
         $contextBeforeBlock = [];
+        $this->cachedParentContext = [];
         foreach ($contextBeforeBlockByFilename as $contexts) {
             foreach ($contexts as $context) {
                 $contextBeforeBlock[] = $this->getRecursiveContext($context, $contextBeforeBlockByFilename);
@@ -131,54 +147,42 @@ final readonly class TwigScopeInjector
     }
 
     /**
-     * @param array{
-     *     blockName: string|null,
-     *     sourceLocation: SourceLocation,
-     *     context: \PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode,
-     *     parent: bool,
-     *     relatedBlockName: string|null,
-     *     relatedParent: bool,
-     *  } $context
-     * @param array<array<array{
-     *     blockName: string|null,
-     *     sourceLocation: SourceLocation,
-     *     context: \PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode,
-     *     parent: bool,
-     *     relatedBlockName: string|null,
-     *     relatedParent: bool,
-     * }>> $contextBeforeBlockByFilename
+     * @param ContextData $context
+     * @param array<array<ContextData>> $contextBeforeBlockByFilename
      *
-     * @return array{
-     *     blockName: string|null,
-     *     sourceLocation: SourceLocation,
-     *     context: \PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode,
-     *     parent: bool,
-     *     relatedBlockName: string|null,
-     *     relatedParent: bool,
-     * }
+     * @return ContextData
      */
     private function getRecursiveContext(array $context, array $contextBeforeBlockByFilename): array
     {
-        if ($context['relatedBlockName'] === null) {
+        $relatedBlockName = $context['relatedBlockName'];
+        $relatedParent = $context['relatedParent'];
+
+        if ($relatedBlockName === null) {
             return $context;
         }
 
-        $parentContext = null;
-        foreach ($contextBeforeBlockByFilename[$context['sourceLocation']->last()->fileName] as $fileContext) {
-            if (
-                $context['relatedBlockName'] !== $fileContext['blockName']
-                || $context['relatedParent'] !== $fileContext['parent']
-            ) {
-                continue;
+        $file = $context['sourceLocation']->last()->fileName;
+
+        $cacheKey = sprintf('%s#%s#%d', $file, $relatedBlockName, (int) $relatedParent);
+        if (array_key_exists($cacheKey, $this->cachedParentContext)) {
+            $parentContext = $this->cachedParentContext[$cacheKey];
+        } else {
+            $parentContext = null;
+            foreach ($contextBeforeBlockByFilename[$file] as $fileContext) {
+                if ($relatedBlockName !== $fileContext['blockName'] || $relatedParent !== $fileContext['parent']) {
+                    continue;
+                }
+
+                $fileContext = $this->getRecursiveContext($fileContext, $contextBeforeBlockByFilename);
+
+                if ($parentContext === null) {
+                    $parentContext = $fileContext['context'];
+                } else {
+                    $parentContext = $this->arrayShapeMerger->merge($parentContext, $fileContext['context']);
+                }
             }
 
-            $fileContext = $this->getRecursiveContext($fileContext, $contextBeforeBlockByFilename);
-
-            if ($parentContext === null) {
-                $parentContext = $fileContext['context'];
-            } else {
-                $parentContext = $this->arrayShapeMerger->merge($parentContext, $fileContext['context']);
-            }
+            $this->cachedParentContext[$cacheKey] = $parentContext;
         }
 
         if ($parentContext === null) {

@@ -10,17 +10,16 @@ use PhpParser\NodeVisitorAbstract;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Printer\Printer;
 use TwigStan\Processing\ScopeInjection\ArrayShapeMerger;
+use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
 use TwigStan\Twig\SourceLocation;
 
+/**
+ * @phpstan-import-type ContextData from TwigScopeInjector
+ */
 final class InjectContextVisitor extends NodeVisitorAbstract
 {
     /**
-     * @param list<array{
-     *     blockName: string|null,
-     *     sourceLocation: SourceLocation,
-     *     context: \PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode,
-     *     parent: bool
-     * }> $contextBeforeBlock
+     * @param list<ContextData> $contextBeforeBlock
      */
     public function __construct(
         private readonly array $contextBeforeBlock,

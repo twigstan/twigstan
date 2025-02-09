@@ -13,14 +13,15 @@ use TwigStan\Twig\CommentHelper;
 use TwigStan\Twig\SourceLocation;
 
 /**
- * @implements Collector<Node\Stmt\Expression, array{
+ * @phpstan-type ContextData = array{
  *     blockName: null|string,
  *     sourceLocation: SourceLocation,
  *     context: string,
  *     parent: bool,
  *     relatedBlockName: null|string,
  *     relatedParent: bool,
- * }>
+ * }
+ * @implements Collector<Node\Stmt\Expression, ContextData>
  */
 final readonly class BlockContextCollector implements Collector, ExportingCollector
 {
