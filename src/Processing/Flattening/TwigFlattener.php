@@ -18,13 +18,18 @@ use TwigStan\Processing\Flattening\PhpVisitor\MainMethodFinderVisitor;
 use TwigStan\Twig\Metadata\MetadataRegistry;
 use TwigStan\Twig\SourceLocation;
 
-final readonly class TwigFlattener
+final class TwigFlattener
 {
+    /**
+     * @var array<string, list<string>>
+     */
+    private array $cachedBlocks = [];
+
     public function __construct(
-        private PrettyPrinter $prettyPrinter,
-        private Filesystem $filesystem,
-        private MetadataRegistry $metadataRegistry,
-        private StrictPhpParser $phpParser,
+        private readonly PrettyPrinter $prettyPrinter,
+        private readonly Filesystem $filesystem,
+        private readonly MetadataRegistry $metadataRegistry,
+        private readonly StrictPhpParser $phpParser,
     ) {}
 
     /**
@@ -37,6 +42,7 @@ final readonly class TwigFlattener
         $this->filesystem->mkdir($targetDirectory);
 
         $results = new FlatteningResultCollection();
+        $this->cachedBlocks = [];
         foreach ($collection as $compilationResult) {
             $metadata = $this->metadataRegistry->getMetadata($compilationResult->twigFilePath);
 
@@ -45,7 +51,7 @@ final readonly class TwigFlattener
                     $parentMetadata = $this->metadataRegistry->getMetadata($parent);
 
                     $blocksNeededFromParent = array_diff(
-                        $parentMetadata->blocks,
+                        $this->getRecursiveBlocks($parent),
                         $metadata->blocks,
                     );
 
@@ -133,5 +139,26 @@ final readonly class TwigFlattener
         }
 
         return $results;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function getRecursiveBlocks(string $parent): array
+    {
+        if ( ! isset($this->cachedBlocks[$parent])) {
+            $parentMetadata = $this->metadataRegistry->getMetadata($parent);
+
+            if ([] === $parentMetadata->parents) {
+                $this->cachedBlocks[$parent] = $parentMetadata->blocks;
+            } else {
+                $this->cachedBlocks[$parent] = array_values(array_unique(array_merge(
+                    $parentMetadata->blocks,
+                    $this->getRecursiveBlocks($parentMetadata->parents[0]),
+                )));
+            }
+        }
+
+        return $this->cachedBlocks[$parent];
     }
 }
