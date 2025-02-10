@@ -1,0 +1,10 @@
+{# @twigstan-abstract #}
+{% extends '@EndToEnd/Bug154/base.twig' %}
+
+{% block body %}
+    {% assert_type title "'Welcome'" %}
+    {% block thing %}
+        {% block container %}
+        {% endblock %}
+    {% endblock %}
+{% endblock %}

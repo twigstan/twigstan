@@ -1,0 +1,20 @@
+{
+    "page.twig": [
+        [
+            "Controller.php:13",
+            "array{title: 'Welcome'}"
+        ]
+    ],
+    "sub-include.twig": [
+        [
+            "include.twig:3",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'Welcome'}"
+        ]
+    ],
+    "include.twig": [
+        [
+            "page.twig:5",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'Welcome'}"
+        ]
+    ]
+}

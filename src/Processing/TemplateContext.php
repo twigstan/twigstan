@@ -88,7 +88,9 @@ final readonly class TemplateContext
 
             foreach ($renderPoints as $hash => [$sourceLocation, $context]) {
                 if (isset($mergedContext[$template][$hash])) {
-                    continue;
+                    if ($mergedContext[$template][$hash][1] === $context) {
+                        continue;
+                    }
                 }
 
                 if ( ! isset($this->context[$sourceLocation->last()->fileName])) {
