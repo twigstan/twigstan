@@ -48,8 +48,6 @@ final class TwigFlattener
 
             if ($metadata->hasResolvableParents()) {
                 foreach ($metadata->parents as $parent) {
-                    $parentMetadata = $this->metadataRegistry->getMetadata($parent);
-
                     $blocksNeededFromParent = array_diff(
                         $this->getRecursiveBlocks($parent),
                         $metadata->blocks,
