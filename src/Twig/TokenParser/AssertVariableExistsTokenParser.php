@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig\TokenParser;
 
+use Twig\Environment;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 
@@ -13,7 +14,8 @@ final class AssertVariableExistsTokenParser extends AbstractTokenParser
     {
         $stream = $this->parser->getStream();
 
-        $name = $this->parser->getExpressionParser()->parseExpression();
+        // @phpstan-ignore method.notFound
+        $name = Environment::VERSION_ID <= 32000 ? $this->parser->getExpressionParser()->parseExpression() : $this->parser->parseExpression();
 
         $certainty = $stream->expect(Token::NAME_TYPE, ['no', 'maybe', 'yes']);
 

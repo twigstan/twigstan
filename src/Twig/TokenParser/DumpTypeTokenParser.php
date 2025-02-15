@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig\TokenParser;
 
+use Twig\Environment;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 
@@ -16,7 +17,8 @@ final class DumpTypeTokenParser extends AbstractTokenParser
         $expr = null;
 
         if ( ! $stream->test(Token::BLOCK_END_TYPE)) {
-            $expr = $this->parser->getExpressionParser()->parseExpression();
+            // @phpstan-ignore method.notFound
+            $expr = Environment::VERSION_ID <= 32000 ? $this->parser->getExpressionParser()->parseExpression() : $this->parser->parseExpression();
         }
 
         $this->parser->getStream()->expect(Token::BLOCK_END_TYPE);
