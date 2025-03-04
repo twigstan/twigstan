@@ -20,6 +20,13 @@
             "tip": null,
             "twigSourceLocation": "always_false.twig:5",
             "renderPoints": []
+        },
+        {
+            "message": "Negated boolean expression is always false.",
+            "identifier": "booleanNot.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "non_empty_loops.twig:6",
+            "renderPoints": []
         }
     ],
     "fileSpecificErrors": []
