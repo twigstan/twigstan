@@ -74,12 +74,14 @@ final readonly class FlatteningResultCollection implements IteratorAggregate
     public function hasTwigFileName(string $fileName): bool
     {
         $fileName = str_replace('\\', '/', $fileName);
+
         return isset($this->results[$fileName]);
     }
 
     public function getByTwigFileName(string $fileName): FlatteningResult
     {
         $fileName = str_replace('\\', '/', $fileName);
+
         return $this->results[$fileName] ?? throw new InvalidArgumentException(sprintf('No FlatteningResult found for Twig file "%s".', $fileName));
     }
 }
