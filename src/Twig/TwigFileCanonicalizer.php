@@ -55,7 +55,7 @@ final class TwigFileCanonicalizer
         if (Path::isAbsolute($name)) {
             foreach ($this->loader->getNamespaces() as $namespace) {
                 foreach ($this->loader->getPaths($namespace) as $path) {
-                    $path = rtrim($path, DIRECTORY_SEPARATOR);
+                    $path = str_replace('\\','/', rtrim($path, DIRECTORY_SEPARATOR));
 
                     if (str_starts_with($name, $path)) {
                         $twigPath = sprintf('@%s/%s', $namespace, ltrim(substr($name, strlen($path)), DIRECTORY_SEPARATOR));
