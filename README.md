@@ -98,7 +98,7 @@ flattened in a child template.
 ### Installation
 
 ```command
-composer require --dev twigstan/twigstan:dev-main
+composer require --dev twigstan/twigstan
 ```
 
 Then run TwigStan and it will explain what to do next:
