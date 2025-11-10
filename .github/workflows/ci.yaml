@@ -4,8 +4,6 @@ on:
     pull_request:
     push:
         branches: [ main ]
-    #schedule:
-    #    -   cron: '0 6 * * *'
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +17,7 @@ jobs:
                 operating-system: [ ubuntu-latest ]
                 php: [ '8.3', '8.4' ]
                 twig: [ 3 ]
-        name: Tests on PHP ${{ matrix.php }}, Twig ${{ matrix.twig }} on ${{ matrix.operating-system }}
+        name: Tests with PHP ${{ matrix.php }}, Twig ${{ matrix.twig }} on ${{ matrix.operating-system }}
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
@@ -54,8 +52,13 @@ jobs:
                 run: vendor/bin/phpunit
 
     code-style:
-        runs-on: ubuntu-latest
-
+        runs-on: ${{ matrix.operating-system }}
+        strategy:
+            fail-fast: false
+            matrix:
+                operating-system: [ ubuntu-latest ]
+                php: [ '8.3', '8.4' ]
+        name: PHP CS Fixer with ${{ matrix.php }} on ${{ matrix.operating-system }}
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v4
@@ -65,7 +68,7 @@ jobs:
             -   name: Set up PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: '8.3'
+                    php-version: '${{ matrix.php }}'
                     coverage: none
                     tools: castor
 
@@ -85,13 +88,13 @@ jobs:
                 run: castor verify-commits
 
     phpstan:
-        runs-on: ubuntu-latest
+        runs-on: ${{ matrix.operating-system }}
         strategy:
             fail-fast: false
             matrix:
-                php: [ '8.3' ]
-                dependency-versions: [ lowest, highest ]
-        name: PHPStan on PHP ${{ matrix.php }} & ${{ matrix.dependency-versions }} dependencies
+                operating-system: [ ubuntu-latest ]
+                php: [ '8.3', '8.4' ]
+        name: PHPStan with ${{ matrix.php }} on ${{ matrix.operating-system }}
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v4
@@ -116,8 +119,12 @@ jobs:
                 run: castor phpstan --no-local
 
     composer:
-        runs-on: ubuntu-latest
-
+        runs-on: ${{ matrix.operating-system }}
+        strategy:
+            fail-fast: false
+            matrix:
+                operating-system: [ ubuntu-latest ]
+                php: [ '8.3', '8.4' ]
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v4
@@ -125,7 +132,7 @@ jobs:
             -   name: Set up PHP
                 uses: shivammathur/setup-php@v2
                 with:
-                    php-version: '8.3'
+                    php-version: '${{ matrix.php }}'
                     coverage: none
                     tools: castor
 
