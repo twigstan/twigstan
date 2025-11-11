@@ -106,6 +106,25 @@ Then run TwigStan and it will explain what to do next:
 vendor/bin/twigstan
 ```
 
+#### Recommended Setup
+
+* Create a dedicated phpstan config file for TwigStan, to be able to adjust PHPStan's `level` and extensions independently. In `twigstan.php`:
+    ```php
+    ->phpstanConfigurationFile(__DIR__ . '/phpstan-twigstan.neon')
+    ```
+* If you're using [phpstan/extension-installer](https://github.com/phpstan/extension-installer), TwigStan will automatically
+    load all your PHPStan extensions, which will probably give you tons of errors. The solution is to remove `phpstan/extension-installer`,
+    and switch to manual installation of your extensions in PHPStan - example:
+    ```yaml
+    # phpstan.neon
+    includes:
+        - vendor/phpstan/phpstan-symfony/extension.neon
+        - vendor/phpstan/phpstan-doctrine/extension.neon
+        - vendor/phpstan/phpstan-doctrine/rules.neon
+        # ...
+    ```
+    Then enable your needed extensions in `phpstan-twigstan.neon` likewise.
+
 ## Usage
 
 Make sure that you configure your `phpPaths` to point to the PHP codebase that renders the Twig templates.
