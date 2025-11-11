@@ -30,7 +30,7 @@ jobs:
                     tools: castor
 
             -   name: Install Composer packages
-                run: ramsey/composer-install@v3
+                uses: ramsey/composer-install@v3
 
             -   name: Setup Twig 4
                 if: ${{ matrix.twig == '4' }}
