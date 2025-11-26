@@ -18,6 +18,7 @@ use Symfony\Component\Filesystem\Path;
 use TwigStan\Application\AnalyzeCommand;
 use TwigStan\Application\VersionCommand;
 use TwigStan\DependencyInjection\ContainerFactory;
+use TwigStan\Finder\FileReader;
 
 $input = new ArgvInput();
 $output = new ConsoleOutput();
@@ -63,7 +64,7 @@ $application->add(new LazyCommand(
 
             $filesystem->dumpFile(
                 $configurationFile,
-                $filesystem->readFile(__DIR__ . '/../example/twigstan.php'),
+                FileReader::readFile($filesystem, __DIR__ . '/../example/twigstan.php'),
             );
 
             $io->success(sprintf('Configuration file "%s" has been created.', $configurationFile));
@@ -74,12 +75,12 @@ $application->add(new LazyCommand(
                 if (InstalledVersions::isInstalled('symfony/framework-bundle')) {
                     $filesystem->dumpFile(
                         $twigEnvironmentLoader,
-                        $filesystem->readFile(__DIR__ . '/../example/twig-loader-symfony.php'),
+                        FileReader::readFile($filesystem, __DIR__ . '/../example/twig-loader-symfony.php'),
                     );
                 } else {
                     $filesystem->dumpFile(
                         $twigEnvironmentLoader,
-                        $filesystem->readFile(__DIR__ . '/../example/twig-loader.php'),
+                        FileReader::readFile($filesystem, __DIR__ . '/../example/twig-loader.php'),
                     );
                 }
 

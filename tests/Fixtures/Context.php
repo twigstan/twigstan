@@ -7,7 +7,7 @@ namespace TwigStan\Fixtures;
 use ArrayAccess;
 
 /**
- * @implements ArrayAccess<string, string|null>
+ * @implements ArrayAccess<string, null|string>
  */
 final class Context implements ArrayAccess
 {

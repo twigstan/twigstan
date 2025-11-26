@@ -11,7 +11,7 @@ use TwigStan\Twig\SourceLocation;
 final class TemplateContextTest extends TestCase
 {
     #[Test]
-    public function it_should_merge(): void
+    public function itShouldMerge(): void
     {
         $left = new TemplateContext([
             'layout.twig' => [

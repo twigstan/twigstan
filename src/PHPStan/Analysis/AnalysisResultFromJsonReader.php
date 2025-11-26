@@ -6,6 +6,7 @@ namespace TwigStan\PHPStan\Analysis;
 
 use InvalidArgumentException;
 use Symfony\Component\Filesystem\Filesystem;
+use TwigStan\Finder\FileReader;
 
 final readonly class AnalysisResultFromJsonReader
 {
@@ -26,7 +27,7 @@ final readonly class AnalysisResultFromJsonReader
             );
         }
 
-        $content = $this->filesystem->readFile($file);
+        $content = FileReader::readFile($this->filesystem, $file);
 
         if ( ! json_validate($content)) {
             throw new InvalidArgumentException(sprintf('File "%s" is not a valid JSON file.', $file));

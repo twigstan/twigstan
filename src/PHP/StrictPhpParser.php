@@ -9,6 +9,7 @@ use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
+use TwigStan\Finder\FileReader;
 
 final readonly class StrictPhpParser
 {
@@ -39,6 +40,6 @@ final readonly class StrictPhpParser
      */
     public function parseFile(string $phpFile): array
     {
-        return $this->parse($this->filesystem->readFile($phpFile));
+        return $this->parse(FileReader::readFile($this->filesystem, $phpFile));
     }
 }

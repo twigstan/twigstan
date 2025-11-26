@@ -17,7 +17,8 @@ jobs:
                 operating-system: [ ubuntu-latest ]
                 php: [ '8.3', '8.4' ]
                 twig: [ 3 ]
-        name: Tests with PHP ${{ matrix.php }}, Twig ${{ matrix.twig }} on ${{ matrix.operating-system }}
+                dependency-version: ['lowest', 'highest']
+        name: Tests with PHP ${{ matrix.php }}, dependency version ${{ matrix.dependency-version }}, Twig ${{ matrix.twig }} on ${{ matrix.operating-system }}
         steps:
             -   name: Checkout
                 uses: actions/checkout@v4
@@ -31,6 +32,9 @@ jobs:
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
+                with:
+                    custom-cache-key: "php-${{ matrix.php }}-${{ matrix.dependency-version }}-${{ hashFiles('**/composer.json') }}"
+                    dependency-versions: ${{ matrix.dependency-version }}
 
             -   name: Setup Twig 4
                 if: ${{ matrix.twig == '4' }}
@@ -82,7 +86,8 @@ jobs:
             matrix:
                 operating-system: [ ubuntu-latest ]
                 php: [ '8.3', '8.4' ]
-        name: PHPStan with ${{ matrix.php }} on ${{ matrix.operating-system }}
+                dependency-version: ['lowest', 'highest']
+        name: PHPStan with ${{ matrix.php }}, dependency version ${{ matrix.dependency-version }}, on ${{ matrix.operating-system }}
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v4
@@ -96,6 +101,9 @@ jobs:
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
+                with:
+                    custom-cache-key: "php-${{ matrix.php }}-${{ matrix.dependency-version }}-${{ hashFiles('**/composer.lock') }}"
+                    dependency-versions: ${{ matrix.dependency-version }}
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3

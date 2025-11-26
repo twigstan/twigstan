@@ -12,6 +12,7 @@ use Symfony\Component\Filesystem\Path;
 use Twig\Environment;
 use TwigStan\Application\TwigStanAnalysisResult;
 use TwigStan\Application\TwigStanError;
+use TwigStan\Finder\FileReader;
 use TwigStan\Processing\TemplateContext;
 
 final readonly class ErrorHelper
@@ -31,7 +32,7 @@ final readonly class ErrorHelper
 
         if (file_exists(Path::join($directory, 'errors.json'))) {
             $expectedErrors = json_decode(
-                $filesystem->readFile(Path::join($directory, 'errors.json')),
+                FileReader::readFile($filesystem, Path::join($directory, 'errors.json')),
                 true,
                 512,
                 JSON_THROW_ON_ERROR,
@@ -46,7 +47,7 @@ final readonly class ErrorHelper
 
         if (file_exists($versionSpecificErrorsFile)) {
             $versionSpecificErrors = json_decode(
-                $filesystem->readFile($versionSpecificErrorsFile),
+                FileReader::readFile($filesystem, $versionSpecificErrorsFile),
                 true,
                 512,
                 JSON_THROW_ON_ERROR,
@@ -128,7 +129,7 @@ final readonly class ErrorHelper
 
         try {
             $expectedContext = json_decode(
-                $filesystem->readFile(Path::join($directory, 'context.json')),
+                FileReader::readFile($filesystem, Path::join($directory, 'context.json')),
                 true,
                 512,
                 JSON_THROW_ON_ERROR,
@@ -153,9 +154,9 @@ final readonly class ErrorHelper
      * @return array{
      *     errors: list<array{
      *          message: string,
-     *          identifier: string|null,
-     *          tip: string|null,
-     *          twigSourceLocation: string|null,
+     *          identifier: null|string,
+     *          tip: null|string,
+     *          twigSourceLocation: null|string,
      *          renderPoints: array<string>,
      *     }>,
      *     fileSpecificErrors: list<string>,
@@ -175,9 +176,9 @@ final readonly class ErrorHelper
     /**
      * @return array{
      *      message: string,
-     *      identifier: string|null,
-     *      tip: string|null,
-     *      twigSourceLocation: string|null,
+     *      identifier: null|string,
+     *      tip: null|string,
+     *      twigSourceLocation: null|string,
      *      renderPoints: array<string>,
      * }
      */

@@ -14,6 +14,7 @@ use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
+use TwigStan\Finder\FileReader;
 use TwigStan\Twig\TokenParser\AssertTypeTokenParser;
 use TwigStan\Twig\TokenParser\PrintAssertTypeTokenParser;
 
@@ -67,7 +68,7 @@ abstract class AbstractRenderingTestCase extends TestCase
     public function testRendering(string $template, array $context): void
     {
         $filesystem = new Filesystem();
-        $templateBody = $filesystem->readFile($template);
+        $templateBody = FileReader::readFile($filesystem, $template);
         Assert::assertStringContainsString('---OUTPUT---', $templateBody, 'A render template must contain the "---OUTPUT---" separator.');
 
         [$twigTemplate, $expectedOutput] = explode('---OUTPUT---', $templateBody);
