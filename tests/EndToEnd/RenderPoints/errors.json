@@ -12,6 +12,24 @@
             ]
         },
         {
+            "message": "Expected type mixed, actual: Symfony\\Component\\Form\\FormView",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "form.html.twig:4",
+            "renderPoints": [
+                "RenderFromAbstractController.php:41"
+            ]
+        },
+        {
+            "message": "Generator expects value type bool|float|int|string|Stringable|null, Symfony\\Component\\Form\\FormView given.",
+            "identifier": "generator.valueType",
+            "tip": null,
+            "twigSourceLocation": "form.html.twig:6",
+            "renderPoints": [
+                "RenderFromAbstractController.php:41"
+            ]
+        },
+        {
             "message": "Variable 'error' does not exist.",
             "identifier": "offsetAccess.notFound",
             "tip": null,

@@ -1,6 +1,26 @@
 {
     "errors": [
         {
+            "message": "Variable 'title' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "base.twig:4, child.twig:1",
+            "renderPoints": [
+                "Controller.php:16",
+                "Controller.php:24"
+            ]
+        },
+        {
+            "message": "Variable 'description' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "child.twig:4",
+            "renderPoints": [
+                "Controller.php:16",
+                "Controller.php:24"
+            ]
+        },
+        {
             "message": "Template is marked as abstract but is rendered directly.",
             "identifier": null,
             "tip": null,

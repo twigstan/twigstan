@@ -1,4 +1,47 @@
 {
-    "errors": [],
+    "errors": [
+        {
+            "message": "Casting to *NEVER* something that's already *NEVER*.",
+            "identifier": "cast.useless",
+            "tip": null,
+            "twigSourceLocation": "include_block.twig:23",
+            "renderPoints": []
+        },
+        {
+            "message": "Instanceof between true and Twig\\Markup will always evaluate to false.",
+            "identifier": "instanceof.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "include_block.twig:23",
+            "renderPoints": []
+        },
+        {
+            "message": "Result of && is always false.",
+            "identifier": "booleanAnd.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "include_block.twig:23",
+            "renderPoints": []
+        },
+        {
+            "message": "Casting to *NEVER* something that's already *NEVER*.",
+            "identifier": "cast.useless",
+            "tip": null,
+            "twigSourceLocation": "include_function.twig:22",
+            "renderPoints": []
+        },
+        {
+            "message": "Instanceof between true and Twig\\Markup will always evaluate to false.",
+            "identifier": "instanceof.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "include_function.twig:22",
+            "renderPoints": []
+        },
+        {
+            "message": "Result of && is always false.",
+            "identifier": "booleanAnd.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "include_function.twig:22",
+            "renderPoints": []
+        }
+    ],
     "fileSpecificErrors": []
 }

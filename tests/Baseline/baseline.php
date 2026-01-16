@@ -6,8 +6,20 @@ use TwigStan\Error\BaselineError;
 
 return [
     new BaselineError(
-        'If condition is always false.',
-        'if.alwaysFalse',
+        'Casting to *NEVER* something that\'s already *NEVER*.',
+        'cast.useless',
+        __DIR__ . '/homepage.html.twig',
+        1,
+    ),
+    new BaselineError(
+        'Instanceof between *NEVER* and Twig\\Markup will always evaluate to false.',
+        'instanceof.alwaysFalse',
+        __DIR__ . '/homepage.html.twig',
+        1,
+    ),
+    new BaselineError(
+        'Left side of && is always false.',
+        'booleanAnd.leftAlwaysFalse',
         __DIR__ . '/homepage.html.twig',
         1,
     ),

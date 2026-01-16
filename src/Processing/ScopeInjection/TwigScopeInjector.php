@@ -67,33 +67,69 @@ final class TwigScopeInjector
 
         foreach ($collectedData as $data) {
             if ($data->collecterType === MacroCollector::class) {
-                $macros[$data->filePath] = $data->data['macros'];
+                // PHPStan aggregates collector results per file
+                // Handle both single and double-nested structures for version compatibility
+                foreach ($data->data as $item) {
+                    // Check if this is MacroData directly or needs another level of iteration
+                    if (isset($item['macros'])) {
+                        // Single-nested: $item is MacroData
+                        $macros[$data->filePath] = $item['macros'];
+                    } elseif (is_array($item)) {
+                        // Double-nested: $item is list<MacroData>
+                        foreach ($item as $macroData) {
+                            if (is_array($macroData) && isset($macroData['macros'])) {
+                                $macros[$data->filePath] = $macroData['macros'];
+                            }
+                        }
+                    }
+                }
             } elseif ($data->collecterType === BlockContextCollector::class) {
-                $phpDocNode = $this->phpDocParser->parseTagValue(
-                    new TokenIterator($this->lexer->tokenize($data->data['context'])),
-                    '@var',
-                );
+                // PHPStan aggregates collector results per file
+                // Handle both single and double-nested structures for version compatibility
+                foreach ($data->data as $item) {
+                    // Check if this is BlockData directly or needs another level of iteration
+                    if (isset($item['context'])) {
+                        // Single-nested: $item is BlockData
+                        $blockDataList = [$item];
+                    } elseif (is_array($item)) {
+                        // Double-nested: $item is list<BlockData>
+                        $blockDataList = $item;
+                    } else {
+                        continue;
+                    }
 
-                if ( ! $phpDocNode instanceof VarTagValueNode) {
-                    throw new LogicException('Invalid @var tag.');
+                    foreach ($blockDataList as $blockData) {
+                        if ( ! is_array($blockData) || ! isset($blockData['context'])) {
+                            continue;
+                        }
+
+                        $phpDocNode = $this->phpDocParser->parseTagValue(
+                            new TokenIterator($this->lexer->tokenize($blockData['context'])),
+                            '@var',
+                        );
+
+                        if ( ! $phpDocNode instanceof VarTagValueNode) {
+                            throw new LogicException('Invalid @var tag.');
+                        }
+
+                        $context = $phpDocNode->type;
+
+                        if ( ! $context instanceof ArrayShapeNode) {
+                            $context = ArrayShapeNode::createSealed([]);
+                        }
+
+                        $sourceLocation = SourceLocation::decode($blockData['sourceLocation']);
+
+                        $contextBeforeBlockByFilename[$sourceLocation->last()->fileName][] = [
+                            'blockName' => $blockData['blockName'],
+                            'sourceLocation' => $sourceLocation,
+                            'context' => $context,
+                            'parent' => $blockData['parent'],
+                            'relatedBlockName' => $blockData['relatedBlockName'],
+                            'relatedParent' => $blockData['relatedParent'],
+                        ];
+                    }
                 }
-
-                $context = $phpDocNode->type;
-
-                if ( ! $context instanceof ArrayShapeNode) {
-                    $context = ArrayShapeNode::createSealed([]);
-                }
-
-                $sourceLocation = SourceLocation::decode($data->data['sourceLocation']);
-
-                $contextBeforeBlockByFilename[$sourceLocation->last()->fileName][] = [
-                    'blockName' => $data->data['blockName'],
-                    'sourceLocation' => $sourceLocation,
-                    'context' => $context,
-                    'parent' => $data->data['parent'],
-                    'relatedBlockName' => $data->data['relatedBlockName'],
-                    'relatedParent' => $data->data['relatedParent'],
-                ];
             }
         }
 

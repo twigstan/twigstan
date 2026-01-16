@@ -33,6 +33,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use ReflectionMethod;
 use Twig\Template;
 
 final readonly class GetAttributeCheck
@@ -246,7 +247,7 @@ final readonly class GetAttributeCheck
 
                 $methodName = $prefix . $propertyOrMethod;
                 // @phpstan-ignore phpstanApi.method
-                [, $methodReflection] = $this->methodCallCheck->check($scope, $methodName, new TypeExpr($objectType));
+                [, $methodReflection] = $this->callMethodCallCheck($scope, $methodName, new TypeExpr($objectType));
 
                 if ($methodReflection === null) {
                     continue;
@@ -255,12 +256,22 @@ final readonly class GetAttributeCheck
                 $declaringClass = $methodReflection->getDeclaringClass();
                 $messagesMethodName = sprintf($declaringClass->getDisplayName() . '::' . $methodReflection->getName() . '()');
 
+                // @phpstan-ignore method.notFound
+                $namedArgumentsVariants = method_exists($methodReflection, 'getNamedArgumentsVariants')
+                    ? $methodReflection->getNamedArgumentsVariants()
+                    : null;
+
                 $parametersAcceptor = ParametersAcceptorSelector::selectFromArgs(
                     $scope,
                     $args,
                     $methodReflection->getVariants(),
-                    $methodReflection->getNamedArgumentsVariants(),
+                    $namedArgumentsVariants,
                 );
+
+                // @phpstan-ignore method.notFound
+                $acceptsNamedArguments = method_exists($methodReflection, 'acceptsNamedArguments')
+                    ? $methodReflection->acceptsNamedArguments()
+                    : true;
 
                 return [
                     $parametersAcceptor->getReturnType(),
@@ -276,7 +287,7 @@ final readonly class GetAttributeCheck
                                 $args,
                             ),
                             'method',
-                            $methodReflection->acceptsNamedArguments(),
+                            $acceptsNamedArguments,
                             'Method ' . $messagesMethodName . ' invoked with %d parameter, %d required.',
                             'Method ' . $messagesMethodName . ' invoked with %d parameters, %d required.',
                             'Method ' . $messagesMethodName . ' invoked with %d parameter, at least %d required.',
@@ -424,5 +435,32 @@ final readonly class GetAttributeCheck
         }
 
         return $errorFormatted;
+    }
+
+    /**
+     * Calls MethodCallCheck::check() with version-appropriate parameters.
+     * PHPStan 2.1+ requires 4 parameters, earlier versions require 3.
+     *
+     * @return array{list<IdentifierRuleError>, null|\PHPStan\Reflection\MethodReflection}
+     */
+    private function callMethodCallCheck(Scope $scope, string $methodName, Expr $var): array
+    {
+        static $requiresFourParams = null;
+
+        if ($requiresFourParams === null) {
+            // @phpstan-ignore phpstanApi.classConstant
+            $reflection = new ReflectionMethod(MethodCallCheck::class, 'check');
+            $requiresFourParams = $reflection->getNumberOfRequiredParameters() >= 4;
+        }
+
+        if ($requiresFourParams) {
+            // PHPStan 2.1+: check(Scope, string, Expr, Identifier|null)
+            // @phpstan-ignore phpstanApi.method, arguments.count
+            return $this->methodCallCheck->check($scope, $methodName, $var, new Identifier($methodName));
+        }
+
+        // PHPStan 2.0.x: check(Scope, string, Expr)
+        // @phpstan-ignore phpstanApi.method, arguments.count
+        return $this->methodCallCheck->check($scope, $methodName, $var);
     }
 }

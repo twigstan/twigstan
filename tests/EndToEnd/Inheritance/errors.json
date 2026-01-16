@@ -1,10 +1,67 @@
 {
     "errors": [
         {
-            "message": "Variable 'title' does not exist.",
+            "message": "Variable 'subtitle' does not exist.",
             "identifier": "offsetAccess.notFound",
             "tip": null,
-            "twigSourceLocation": "layout.twig:4, case10.twig:1",
+            "twigSourceLocation": "case4.twig:5",
+            "renderPoints": [
+                "Case4Controller.php:13"
+            ]
+        },
+        {
+            "message": "Expected type true, actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "case4.twig:8",
+            "renderPoints": [
+                "Case4Controller.php:13"
+            ]
+        },
+        {
+            "message": "Expected type true, actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "case4.twig:14",
+            "renderPoints": [
+                "Case4Controller.php:13"
+            ]
+        },
+        {
+            "message": "Expected type true, actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "case4.twig:15",
+            "renderPoints": [
+                "Case4Controller.php:13"
+            ]
+        },
+        {
+            "message": "Variable 'subtitle' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "case5.twig:8",
+            "renderPoints": []
+        },
+        {
+            "message": "Expected type true, actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "case5.twig:11",
+            "renderPoints": []
+        },
+        {
+            "message": "Expected type true, actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "case5.twig:17",
+            "renderPoints": []
+        },
+        {
+            "message": "Expected type true, actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "case5.twig:18",
             "renderPoints": []
         },
         {

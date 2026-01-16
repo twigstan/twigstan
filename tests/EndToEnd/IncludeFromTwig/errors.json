@@ -1,4 +1,23 @@
 {
-    "errors": [],
+    "errors": [
+        {
+            "message": "Expected offset 'subtitle' certainty Maybe, actual: No",
+            "identifier": "phpstan.variable",
+            "tip": null,
+            "twigSourceLocation": "footer.twig:4",
+            "renderPoints": [
+                "Controller.php:21"
+            ]
+        },
+        {
+            "message": "Expected offset 'body' certainty Maybe, actual: No",
+            "identifier": "phpstan.variable",
+            "tip": null,
+            "twigSourceLocation": "footer.twig:5",
+            "renderPoints": [
+                "Controller.php:21"
+            ]
+        }
+    ],
     "fileSpecificErrors": []
 }

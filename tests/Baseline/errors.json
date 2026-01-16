@@ -1,8 +1,22 @@
 {
     "errors": [
         {
-            "message": "If condition is always false.",
-            "identifier": "if.alwaysFalse",
+            "message": "Casting to *NEVER* something that's already *NEVER*.",
+            "identifier": "cast.useless",
+            "tip": null,
+            "twigSourceLocation": "homepage.html.twig:3",
+            "renderPoints": []
+        },
+        {
+            "message": "Instanceof between *NEVER* and Twig\\Markup will always evaluate to false.",
+            "identifier": "instanceof.alwaysFalse",
+            "tip": null,
+            "twigSourceLocation": "homepage.html.twig:3",
+            "renderPoints": []
+        },
+        {
+            "message": "Left side of && is always false.",
+            "identifier": "booleanAnd.leftAlwaysFalse",
             "tip": null,
             "twigSourceLocation": "homepage.html.twig:3",
             "renderPoints": []

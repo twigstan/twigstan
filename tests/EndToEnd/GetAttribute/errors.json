@@ -67,6 +67,27 @@
             ]
         },
         {
+            "message": "Expected type DateTimeImmutable, actual: DateTimeImmutable|null",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "narrowing.twig:6",
+            "renderPoints": []
+        },
+        {
+            "message": "Expected type null, actual: DateTimeImmutable|null",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "narrowing.twig:9",
+            "renderPoints": []
+        },
+        {
+            "message": "Expected type *ERROR*, actual: string",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "narrowing.twig:10",
+            "renderPoints": []
+        },
+        {
             "message": "Neither the property \"doesNotExist\" nor one of the methods \"doesNotExist()\", \"getdoesNotExist()\", \"isdoesNotExist()\", \"hasdoesNotExist()\" or \"__call()\" exist and have public access in class \"TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\Account\".",
             "identifier": "getAttribute.notFound",
             "tip": null,

@@ -1,4 +1,50 @@
 {
-    "errors": [],
+    "errors": [
+        {
+            "message": "Expected type 'Welcome', actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "page.twig:4",
+            "renderPoints": [
+                "Controller.php:13"
+            ]
+        },
+        {
+            "message": "Expected type 'Welcome', actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "layout.twig:5, superLayout.twig:2, page.twig:1",
+            "renderPoints": [
+                "Controller.php:13"
+            ]
+        },
+        {
+            "message": "Expected type 'Welcome', actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "include.twig:1",
+            "renderPoints": [
+                "page.twig:5"
+            ]
+        },
+        {
+            "message": "Expected type 'Welcome', actual: *ERROR*",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "sub-include.twig:1",
+            "renderPoints": [
+                "include.twig:3"
+            ]
+        },
+        {
+            "message": "Variable 'title' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "sub-include.twig:3",
+            "renderPoints": [
+                "include.twig:3"
+            ]
+        }
+    ],
     "fileSpecificErrors": []
 }

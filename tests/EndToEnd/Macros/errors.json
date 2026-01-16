@@ -1,4 +1,33 @@
 {
-    "errors": [],
+    "errors": [
+        {
+            "message": "Call to an undefined method Twig\\Template::macro_greet().",
+            "identifier": "method.notFound",
+            "tip": null,
+            "twigSourceLocation": "blocks.twig:8",
+            "renderPoints": []
+        },
+        {
+            "message": "Call to an undefined method Twig\\Template::macro_greet().",
+            "identifier": "method.notFound",
+            "tip": null,
+            "twigSourceLocation": "blocks.twig:9",
+            "renderPoints": []
+        },
+        {
+            "message": "Call to an undefined method Twig\\Template::macro_greet().",
+            "identifier": "method.notFound",
+            "tip": null,
+            "twigSourceLocation": "flat.twig:7",
+            "renderPoints": []
+        },
+        {
+            "message": "Call to an undefined method Twig\\Template::macro_greet().",
+            "identifier": "method.notFound",
+            "tip": null,
+            "twigSourceLocation": "flat.twig:8",
+            "renderPoints": []
+        }
+    ],
     "fileSpecificErrors": []
 }

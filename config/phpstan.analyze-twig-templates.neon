@@ -1,6 +1,16 @@
 includes:
 	- phpstan.neon
 	- phpstan.extensions.neon
+
+parameters:
+	ignoreErrors:
+		# Twig's Template class is marked as @internal, but compiled templates must extend it
+		- identifier: class.extendsInternalClass
+		- identifier: property.internalClass
+		- identifier: method.internalClass
+		- identifier: method.internal
+		- identifier: staticMethod.internal
+		- identifier: return.internalClass
 services:
 	-
 		class: Twig\Environment
