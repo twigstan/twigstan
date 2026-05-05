@@ -125,10 +125,15 @@ final readonly class MetadataAnalyzer
         }
 
         if ($node instanceof ConditionalTernary) {
-            return [
-                ...$this->getStringsFromExpression($node->getNode('expr2')),
-                ...$this->getStringsFromExpression($node->getNode('expr3')),
-            ];
+            $strings = [];
+
+            foreach (['expr2', 'left', 'expr3', 'right'] as $childNodeName) {
+                if ($node->hasNode($childNodeName)) {
+                    $strings = [...$strings, ...$this->getStringsFromExpression($node->getNode($childNodeName))];
+                }
+            }
+
+            return $strings;
         }
 
         if ($node instanceof ConcatBinary) {
