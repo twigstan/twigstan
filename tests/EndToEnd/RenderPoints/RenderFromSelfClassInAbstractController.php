@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EndToEnd\RenderPoints\App\Controller;
+namespace TwigStan\EndToEnd\RenderPoints;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

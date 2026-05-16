@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EndToEnd\IncludeFromTwig;
+namespace TwigStan\EndToEnd\IncludeFromTwig;
 
 use Twig\Environment;
 

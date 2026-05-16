@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace EndToEnd\Bug152;
+namespace TwigStan\EndToEnd\Bug152;
 
 use Twig\Environment;
 

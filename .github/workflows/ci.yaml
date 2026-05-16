@@ -129,3 +129,28 @@ jobs:
 
             -   name: Analyze Composer dependencies
                 run: castor dependency-analyzer
+
+    structarmed:
+        runs-on: ${{ matrix.operating-system }}
+        strategy:
+            fail-fast: false
+            matrix:
+                operating-system: [ ubuntu-latest ]
+                php: [ '8.3', '8.4' ]
+        name: StructArmed with PHP ${{ matrix.php }} on ${{ matrix.operating-system }}
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v4
+
+            -   name: Set up PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '${{ matrix.php }}'
+                    coverage: none
+                    tools: castor
+
+            -   name: Install Composer packages
+                uses: ramsey/composer-install@v3
+
+            -   name: StructArmed analyze
+                run: castor structarmed-analyze
