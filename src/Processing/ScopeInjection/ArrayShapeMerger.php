@@ -6,6 +6,7 @@ namespace TwigStan\Processing\ScopeInjection;
 
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
 
 final readonly class ArrayShapeMerger
@@ -57,19 +58,7 @@ final readonly class ArrayShapeMerger
                 continue;
             }
 
-            if ((string) $leftItem->valueType === (string) $rightItem->valueType) {
-                $valueType = $leftItem->valueType;
-            } else {
-                if ($leftItem->valueType instanceof UnionTypeNode && $rightItem->valueType instanceof UnionTypeNode) {
-                    $valueType = new UnionTypeNode([...$leftItem->valueType->types, ...$rightItem->valueType->types]);
-                } elseif ($leftItem->valueType instanceof UnionTypeNode) {
-                    $valueType = new UnionTypeNode([...$leftItem->valueType->types, $rightItem->valueType]);
-                } elseif ($rightItem->valueType instanceof UnionTypeNode) {
-                    $valueType = new UnionTypeNode([$leftItem->valueType, ...$rightItem->valueType->types]);
-                } else {
-                    $valueType = new UnionTypeNode([$leftItem->valueType, $rightItem->valueType]);
-                }
-            }
+            $valueType = $this->union($leftItem->valueType, $rightItem->valueType);
 
             $items[] = new ArrayShapeItemNode(
                 $leftItem->keyName,
@@ -79,5 +68,20 @@ final readonly class ArrayShapeMerger
         }
 
         return ArrayShapeNode::createSealed($items);
+    }
+
+    /**
+     * Each type is added once, otherwise the types of contexts merged from many render points grow with every one of them.
+     */
+    private function union(TypeNode $left, TypeNode $right): TypeNode
+    {
+        $types = [];
+        foreach ([$left, $right] as $type) {
+            foreach ($type instanceof UnionTypeNode ? $type->types : [$type] as $member) {
+                $types[(string) $member] ??= $member;
+            }
+        }
+
+        return count($types) === 1 ? reset($types) : new UnionTypeNode(array_values($types));
     }
 }
