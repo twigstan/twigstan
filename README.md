@@ -114,6 +114,20 @@ This will make sure that TwigStan can collect the template context from the PHP 
 
 Use the `dump_type` tag to debug if types are properly resolved.
 
+### Templates without context
+
+By default, TwigStan only reports errors in templates that are rendered with a known context, and in macros that are called.
+Templates that TwigStan cannot find a render point for, such as templates rendered by a dynamic name, by vendor code or
+by the form renderer, would mostly report variables that do not exist.
+
+To report errors in all templates, use `analyzeTemplatesWithoutContext()`:
+```php
+return TwigStanConfig::configure(__DIR__)
+    // ...
+    ->analyzeTemplatesWithoutContext()
+    ->create();
+```
+
 ### Marking templates abstract
 
 When you have a template that is not rendered directly, but is used as a parent template, you can mark it as abstract.

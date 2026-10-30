@@ -19,4 +19,6 @@ return TwigStanConfig::configure(__DIR__)
     ->ignoreErrors(IgnoreError::path('*/_*.twig'))
     ->twigExtensions('twig', sprintf('twig%d', Environment::MAJOR_VERSION))
     ->editorUrl('phpstorm://open?file=%file%&line=%line%')
+    // The fixtures are mostly not rendered by PHP code.
+    ->analyzeTemplatesWithoutContext()
 ;
