@@ -88,6 +88,14 @@ final readonly class TemplateContext
     }
 
     /**
+     * Whether the template is rendered, or one of its macros is called.
+     */
+    public function hasTemplateOrMacros(string $template): bool
+    {
+        return $this->hasTemplate($template) || $this->getUniqueContextByMacro($template) !== [];
+    }
+
+    /**
      * Merges the context with the other context. When the other context contains
      * a template that is not in this context, it will be added to the changedTemplates list.
      *
