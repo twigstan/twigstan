@@ -12,4 +12,5 @@ require __DIR__ . '/vendor/autoload.php';
 $kernel = new Kernel('test', true);
 $kernel->boot();
 
-return $kernel->getContainer()->get('test.service_container')->get('twig');
+// Returning the kernel instead of the Twig environment lets TwigStan read the routes and their security.
+return $kernel;

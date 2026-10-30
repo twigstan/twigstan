@@ -1,0 +1,2 @@
+{# The route is public, but the controller requires a user. #}
+{% assert_type app.user 'Symfony\\Component\\Security\\Core\\User\\InMemoryUser' %}

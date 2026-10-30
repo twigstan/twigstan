@@ -1,0 +1,3 @@
+{# Every route requires a user, so app.user is not null, also in included templates. #}
+{% assert_type app.user 'Symfony\\Component\\Security\\Core\\User\\InMemoryUser' %}
+{% include '@EndToEnd/AppUser/menu.twig' %}

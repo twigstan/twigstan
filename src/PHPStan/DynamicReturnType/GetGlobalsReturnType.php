@@ -12,18 +12,22 @@ use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\FloatType;
+use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
+use Symfony\Bridge\Twig\AppVariable;
 use Twig\Environment;
 
 final readonly class GetGlobalsReturnType implements DynamicMethodReturnTypeExtension
 {
     public function __construct(
         private Environment $twig,
+        private ?string $appUserClass,
     ) {}
 
     public function getClass(): string
@@ -70,6 +74,11 @@ final readonly class GetGlobalsReturnType implements DynamicMethodReturnTypeExte
 
         if (is_string($value)) {
             return new StringType();
+        }
+
+        // The user is null when the route does not require one, or when the template is rendered outside a request.
+        if ($value instanceof AppVariable && $this->appUserClass !== null) {
+            return new GenericObjectType($value::class, [TypeCombinator::addNull(new ObjectType($this->appUserClass))]);
         }
 
         if (is_object($value)) {
