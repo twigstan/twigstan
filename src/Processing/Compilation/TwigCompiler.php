@@ -26,6 +26,7 @@ use TwigStan\Processing\Compilation\PhpVisitor\RefactorExtensionCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveLineNumberFromGetAttributeCallVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\RemoveParentCachingVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveStringCastFromYieldVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveUninitializedMacroNamespaceGuardVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\ReplaceGeneratorGuardVisitor;
@@ -75,6 +76,7 @@ final readonly class TwigCompiler
             new NameResolver(),
             new MakeFinalVisitor(),
             new ReplaceGeneratorGuardVisitor(),
+            new RemoveParentCachingVisitor(),
             new RemoveStringCastFromYieldVisitor(),
             new RemoveUninitializedMacroNamespaceGuardVisitor(),
             new AddExtraLineNumberCommentVisitor(),
