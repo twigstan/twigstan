@@ -20,11 +20,11 @@
     "not_used": [
         [
             "embed_layout.twig:3, embed_child.twig:1",
-            "array{}"
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: string}"
         ],
         [
             "embed_layout.twig:3",
-            "array{}"
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable}"
         ]
     ]
 }
