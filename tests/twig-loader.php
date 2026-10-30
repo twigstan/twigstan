@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Symfony\Bridge\Twig\AppVariable;
+use Symfony\Bridge\Twig\Extension\FormExtension;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -12,5 +13,6 @@ $loader->addPath(__DIR__ . '/EndToEnd', 'EndToEnd');
 
 $environment = new Environment($loader);
 $environment->addGlobal('app', new AppVariable());
+$environment->addExtension(new FormExtension());
 
 return $environment;

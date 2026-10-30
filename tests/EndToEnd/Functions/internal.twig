@@ -1,0 +1,3 @@
+{# Compiled templates call functions that are internal to their extension, such as this test of the form extension. #}
+{% types { form: 'Symfony\\Component\\Form\\FormView' } %}
+{% assert_type form is rootform 'bool' %}
