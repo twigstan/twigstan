@@ -175,6 +175,13 @@ final class AnalyzeCommand extends Command
         }
 
         if (count($result->errors) > 0) {
+            $agentInstructions = $this->getAgentInstructions($result);
+
+            if ($agentInstructions !== null) {
+                $errorOutput->write($agentInstructions);
+                $errorOutput->writeln('');
+            }
+
             $output->writeln(sprintf('<error>Found %d %s</error>', count($result->errors), count($result->errors) === 1 ? 'error' : 'errors'));
 
             return self::FAILURE;
@@ -183,6 +190,22 @@ final class AnalyzeCommand extends Command
         $output->writeln('No errors found');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Returns the instructions for AI agents that PHPStan printed after the errors in the templates.
+     */
+    private function getAgentInstructions(TwigStanAnalysisResult $result): ?string
+    {
+        foreach ($result->runs as $run) {
+            $agentInstructions = $run->phpstanAnalysisResults[PHPStanRunMode::AnalyzeTwigTemplates->value]->agentInstructions ?? null;
+
+            if ($agentInstructions !== null) {
+                return $agentInstructions;
+            }
+        }
+
+        return null;
     }
 
     /**

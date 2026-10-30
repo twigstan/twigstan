@@ -18,6 +18,9 @@ use TwigStan\PHPStan\Collector\TemplateContextCollector;
 
 final readonly class PHPStanRunner
 {
+    private const string AGENT_INSTRUCTIONS_START = 'Instructions for interpreting errors';
+    private const string AGENT_INSTRUCTIONS_END = "Do not widen parameter or return types just to make the error go away.\n";
+
     /**
      * @param list<class-string<TemplateContextCollector<Node>>> $twigContextCollectors
      */
@@ -129,19 +132,48 @@ final readonly class PHPStanRunner
 
         $output->writeln($process->getCommandLine(), OutputInterface::VERBOSITY_VERBOSE);
 
-        $exitCode = $process->run(function ($type, $buffer) use ($errorOutput, $output): void {
-            if ($type === Process::ERR) {
-                $errorOutput->write($buffer);
+        // PHPStan prints instructions for AI agents at the end of each run with errors. Those errors are
+        // in the compiled templates, so the instructions are kept for TwigStan to print once after its errors.
+        $agentInstructions = null;
+        $capturing = false;
+        $exitCode = $process->run(function ($type, $buffer) use ($errorOutput, $output, &$agentInstructions, &$capturing): void {
+            if ($type !== Process::ERR) {
+                $output->write($buffer);
 
                 return;
             }
 
-            $output->write($buffer);
+            if ( ! $capturing) {
+                $start = $agentInstructions === null ? strpos($buffer, self::AGENT_INSTRUCTIONS_START) : false;
+
+                if ($start === false) {
+                    $errorOutput->write($buffer);
+
+                    return;
+                }
+
+                $errorOutput->write(substr($buffer, 0, $start));
+                $buffer = substr($buffer, $start);
+                $agentInstructions = '';
+                $capturing = true;
+            }
+
+            $agentInstructions .= $buffer;
+            $end = strpos($agentInstructions, self::AGENT_INSTRUCTIONS_END);
+
+            if ($end === false) {
+                return;
+            }
+
+            $end += strlen(self::AGENT_INSTRUCTIONS_END);
+            $errorOutput->write(substr($agentInstructions, $end));
+            $agentInstructions = substr($agentInstructions, 0, $end);
+            $capturing = false;
         });
 
         return $this->analysisResultFromJsonReader->read(
             $analysisResultJsonFile,
             $exitCode,
-        );
+        )->withAgentInstructions($agentInstructions);
     }
 }
