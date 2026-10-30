@@ -27,7 +27,7 @@ final readonly class LoadTemplateReturnType implements DynamicMethodReturnTypeEx
 
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
-        return $methodReflection->getName() === 'loadTemplate';
+        return $methodReflection->getName() === 'load';
     }
 
     public function getTypeFromMethodCall(
@@ -35,7 +35,7 @@ final readonly class LoadTemplateReturnType implements DynamicMethodReturnTypeEx
         MethodCall $methodCall,
         Scope $scope,
     ): ?Type {
-        if (count($methodCall->args) !== 3) {
+        if (count($methodCall->args) !== 2) {
             return null;
         }
 

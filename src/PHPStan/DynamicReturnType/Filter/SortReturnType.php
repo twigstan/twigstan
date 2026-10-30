@@ -35,7 +35,8 @@ final readonly class SortReturnType implements DynamicStaticMethodReturnTypeExte
         $args = $methodCall->args;
 
         if (Environment::MAJOR_VERSION === 3) {
-            array_shift($args);
+            // Skip the $env and $isSandboxed arguments
+            $args = array_slice($args, 2);
         }
 
         if ( ! $args[0] instanceof Arg) {

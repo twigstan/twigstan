@@ -64,6 +64,7 @@ services:
 	- TwigStan\Processing\Compilation\TwigVisitor\RemoveProfilingNodeVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceIncludeNodeNodeVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\MarkNameExpressionAsAlwaysDefinedVisitor
+	- TwigStan\Processing\Compilation\TwigVisitor\RemoveTruthinessTestVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceTypesNodeVisitor
 	- TwigStan\Processing\Flattening\TwigFlattener
 	- TwigStan\Processing\ScopeInjection\TwigScopeInjector

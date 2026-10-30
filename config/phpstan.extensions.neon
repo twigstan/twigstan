@@ -21,10 +21,6 @@ services:
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
 	-
-		class: TwigStan\PHPStan\DynamicReturnType\GetTemplateForMacroReturnType
-		tags:
-			- phpstan.broker.dynamicMethodReturnTypeExtension
-	-
 		class: TwigStan\PHPStan\DynamicReturnType\GetParentReturnType
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension

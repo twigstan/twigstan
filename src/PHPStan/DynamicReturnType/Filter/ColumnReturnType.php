@@ -30,6 +30,7 @@ final readonly class ColumnReturnType implements DynamicStaticMethodReturnTypeEx
         StaticCall $methodCall,
         Scope $scope,
     ): Type {
-        return $scope->getType(new FuncCall(new Name('array_column'), $methodCall->args));
+        // Skip the $env and $isSandboxed arguments
+        return $scope->getType(new FuncCall(new Name('array_column'), array_slice($methodCall->args, 2)));
     }
 }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use TwigCsFixer\Rules\Function\IncludeFunctionRule;
+use TwigCsFixer\Rules\Literal\CompactHashRule;
 
 $ruleset = new TwigCsFixer\Ruleset\Ruleset();
 
@@ -10,6 +11,7 @@ $ruleset = new TwigCsFixer\Ruleset\Ruleset();
 $ruleset->addStandard(new TwigCsFixer\Standard\TwigCsFixer());
 
 $ruleset->removeRule(IncludeFunctionRule::class);
+$ruleset->removeRule(CompactHashRule::class);
 
 // And then add/remove/override some rules
 $ruleset->overrideRule(new TwigCsFixer\Rules\Punctuation\PunctuationSpacingRule(
