@@ -46,6 +46,10 @@ services:
 		class: TwigStan\PHPStan\TypeSpecifier\DefinedTestTypeSpecifyingExtension
 		tags:
 			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
+	-
+		class: TwigStan\PHPStan\TypeSpecifier\EmptyTestTypeSpecifyingExtension
+		tags:
+			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
 
 
 	# Filter
