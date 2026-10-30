@@ -15,6 +15,16 @@ final class MainMethodFinderVisitor extends NodeVisitorAbstract
      */
     public array $stmts = [];
 
+    /**
+     * @var list<Node\Stmt\Property>
+     */
+    public array $properties = [];
+
+    /**
+     * @var list<Node\Stmt>
+     */
+    public array $constructorStmts = [];
+
     private bool $inTemplateClass = false;
 
     public function enterNode(Node $node): ?int
@@ -30,11 +40,23 @@ final class MainMethodFinderVisitor extends NodeVisitorAbstract
             return null;
         }
 
+        if ($node instanceof Node\Stmt\Property) {
+            $this->properties[] = $node;
+
+            return null;
+        }
+
         if ( ! $node instanceof Node\Stmt\ClassMethod) {
             return null;
         }
 
         if ($node->stmts === null) {
+            return null;
+        }
+
+        if ($node->name->name === '__construct') {
+            $this->constructorStmts = array_values($node->stmts);
+
             return null;
         }
 
