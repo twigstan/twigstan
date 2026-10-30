@@ -24,6 +24,7 @@ use TwigStan\Error\ErrorToSourceFileMapper;
 use TwigStan\Error\ErrorTransformer;
 use TwigStan\Error\IgnoreByIdentifierWhenSourceLocationHasPrevious;
 use TwigStan\Error\IgnoreError;
+use TwigStan\Error\TemplateWithoutContextFilter;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
 use TwigStan\PHPStan\Analysis\Error;
@@ -61,6 +62,7 @@ final class AnalyzeCommand extends Command
         private ErrorCollapser $errorCollapser,
         private ErrorTransformer $errorTransformer,
         private ErrorToSourceFileMapper $errorToSourceFileMapper,
+        private TemplateWithoutContextFilter $templateWithoutContextFilter,
         private TemplateContextFactory $templateContextFactory,
         private MetadataRegistry $metadataRegistry,
         private string $environmentLoader,
@@ -521,7 +523,7 @@ final class AnalyzeCommand extends Command
                     return true;
                 }
 
-                $hasRenderPoint = $templateContext->hasTemplateOrMacros($error->twigFile);
+                $hasRenderPoint = $this->templateWithoutContextFilter->hasContext($error, $templateContext);
 
                 if ( ! $hasRenderPoint) {
                     $errorOutput->writeln(
