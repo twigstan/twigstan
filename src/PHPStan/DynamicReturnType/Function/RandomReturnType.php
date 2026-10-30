@@ -44,7 +44,7 @@ final readonly class RandomReturnType implements DynamicStaticMethodReturnTypeEx
 
         $max = new NullType();
 
-        if (isset($methodCall->args[2]) && $methodCall->args[1] instanceof Arg) {
+        if (isset($methodCall->args[2]) && $methodCall->args[2] instanceof Arg) {
             $max = $scope->getType($methodCall->args[2]->value);
         }
 

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace TwigStan\PHPStan;
 
+use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Scalar\String_;
-use PhpParser\Node\VariadicPlaceholder;
 use PHPStan\Analyser\CollectedDataEmitter;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
@@ -379,7 +379,7 @@ final readonly class GetAttributeCheck
     }
 
     /**
-     * @param array<Arg|VariadicPlaceholder> $args
+     * @param array<Node> $args
      *
      * @return array<string|int, Expr>
      */
