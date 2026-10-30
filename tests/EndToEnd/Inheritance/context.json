@@ -16,5 +16,15 @@
             "case6.twig:29",
             "array{app: Symfony\\Bridge\\Twig\\AppVariable, subtitle: 'Hello'}"
         ]
+    ],
+    "not_used": [
+        [
+            "embed_layout.twig:3, embed_child.twig:1",
+            "array{}"
+        ],
+        [
+            "embed_layout.twig:3",
+            "array{}"
+        ]
     ]
 }
