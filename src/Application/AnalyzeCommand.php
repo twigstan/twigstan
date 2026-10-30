@@ -174,6 +174,23 @@ final class AnalyzeCommand extends Command
             $errorOutput->writeln('');
         }
 
+        // Errors of PHPStan itself, such as crashes, make the result incomplete.
+        $notFileSpecificErrors = $result->fileSpecificErrors;
+        foreach ($result->runs as $run) {
+            foreach ($run->phpstanAnalysisResults[PHPStanRunMode::AnalyzeTwigTemplates->value]->notFileSpecificErrors ?? [] as $error) {
+                $errorOutput->writeln(sprintf('<error>Error</error> %s', $error));
+                $notFileSpecificErrors[] = $error;
+            }
+        }
+
+        if ($notFileSpecificErrors !== []) {
+            $output->writeln(sprintf(
+                '<error>Found %d %s that PHPStan could not attribute to a file, the result is incomplete</error>',
+                count($notFileSpecificErrors),
+                count($notFileSpecificErrors) === 1 ? 'error' : 'errors',
+            ));
+        }
+
         if (count($result->errors) > 0) {
             $agentInstructions = $this->getAgentInstructions($result);
 
@@ -184,6 +201,10 @@ final class AnalyzeCommand extends Command
 
             $output->writeln(sprintf('<error>Found %d %s</error>', count($result->errors), count($result->errors) === 1 ? 'error' : 'errors'));
 
+            return self::FAILURE;
+        }
+
+        if ($notFileSpecificErrors !== []) {
             return self::FAILURE;
         }
 
