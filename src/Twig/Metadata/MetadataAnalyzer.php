@@ -12,7 +12,6 @@ use Twig\Node\Expression\Binary\ConcatBinary;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\ParentExpression;
 use Twig\Node\Expression\Ternary\ConditionalTernary;
-use Twig\Node\Expression\Variable\ContextVariable;
 use Twig\Node\ImportNode;
 use Twig\Node\Node;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
@@ -123,10 +122,6 @@ final readonly class MetadataAnalyzer
             return [$node->getAttribute('value')];
         }
 
-        if ($node instanceof ContextVariable) {
-            return [];
-        }
-
         if ($node instanceof ArrayExpression) {
             $strings = [];
             foreach ($node as $element) {
@@ -159,6 +154,7 @@ final readonly class MetadataAnalyzer
             }
         }
 
-        throw new RuntimeException(sprintf('Parent node "%s" is not a constant expression.', $node::class));
+        // The parent is only known at runtime, such as a variable or a method call.
+        return [];
     }
 }
