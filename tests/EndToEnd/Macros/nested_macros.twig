@@ -3,4 +3,5 @@
     {% import '@EndToEnd/Macros/nested_inner.twig' as layout %}
     {{ layout.separator() }}
     {{ first_name }}
+    {{ block('footer', '@EndToEnd/Macros/nested_blocks.twig') }}
 {% endmacro %}

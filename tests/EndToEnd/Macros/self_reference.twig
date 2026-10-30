@@ -1,0 +1,4 @@
+{# The template renders its own block through its name, so it depends on itself. #}
+{% block greeting %}Hello{% endblock %}
+
+{{ block('greeting', '@EndToEnd/Macros/self_reference.twig') }}
