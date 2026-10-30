@@ -53,16 +53,27 @@ final class TwigFileCanonicalizer
         $name = str_replace('\\', '/', $name);
 
         if (Path::isAbsolute($name)) {
+            // Paths can be symlinked, such as Composer path repositories in vendor.
+            $realName = realpath($name);
+            $names = array_unique([$name, ...($realName !== false ? [$realName] : [])]);
+
             foreach ($this->loader->getNamespaces() as $namespace) {
                 foreach ($this->loader->getPaths($namespace) as $path) {
-                    $path = rtrim($path, DIRECTORY_SEPARATOR);
+                    $realPath = realpath($path);
+                    $paths = array_unique([rtrim($path, DIRECTORY_SEPARATOR), ...($realPath !== false ? [$realPath] : [])]);
 
-                    if (str_starts_with($name, $path)) {
-                        $twigPath = sprintf('@%s/%s', $namespace, ltrim(substr($name, strlen($path)), DIRECTORY_SEPARATOR));
+                    foreach ($names as $fileName) {
+                        foreach ($paths as $directory) {
+                            if ( ! str_starts_with($fileName, $directory . DIRECTORY_SEPARATOR)) {
+                                continue;
+                            }
 
-                        // The name can load another file, such as an override of a bundle template in the application.
-                        if ($this->loader->exists($twigPath) && $this->loader->getSourceContext($twigPath)->getPath() === $name) {
-                            return $twigPath;
+                            $twigPath = sprintf('@%s/%s', $namespace, substr($fileName, strlen($directory) + 1));
+
+                            // The name can load another file, such as an override of a bundle template in the application.
+                            if ($this->loader->exists($twigPath) && realpath($this->loader->getSourceContext($twigPath)->getPath()) === $realName) {
+                                return $twigPath;
+                            }
                         }
                     }
                 }
