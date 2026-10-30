@@ -13,6 +13,7 @@ use TwigStan\PHP\StrictPhpParser;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Flattening\PhpVisitor\BlockMethodFindingVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\InjectBlockMethodsFromParentVisitor;
+use TwigStan\Processing\Flattening\PhpVisitor\InjectPropertiesFromParentVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\InlineParentTemplateVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\MainMethodFinderVisitor;
 use TwigStan\Twig\Metadata\MetadataRegistry;
@@ -100,6 +101,10 @@ final class TwigFlattener
                     $traverser = new NodeTraverser();
                     $traverser->addVisitor(new InlineParentTemplateVisitor($mainMethodFinderVisitor->stmts));
                     $traverser->addVisitor(new InjectBlockMethodsFromParentVisitor($blockMethods));
+                    $phpAst = $traverser->traverse($phpAst);
+
+                    $traverser = new NodeTraverser();
+                    $traverser->addVisitor(new InjectPropertiesFromParentVisitor($mainMethodFinderVisitor->properties, $mainMethodFinderVisitor->constructorStmts));
                     $phpAst = $traverser->traverse($phpAst);
 
                     $phpSource = $this->prettyPrinter->prettyPrintFile($phpAst);
