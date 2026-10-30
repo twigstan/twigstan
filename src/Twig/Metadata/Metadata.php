@@ -12,6 +12,7 @@ final readonly class Metadata
      * @param list<string> $blocks
      * @param list<string> $parentBlocks
      * @param list<string> $dependencies
+     * @param list<array{name: string, line: int, message: string}> $loaderErrors The parents and dependencies that Twig cannot load
      */
     public function __construct(
         public string $name,
@@ -24,6 +25,7 @@ final readonly class Metadata
         public array $parentBlocks,
         public array $dependencies,
         public bool $isAbstract,
+        public array $loaderErrors = [],
     ) {}
 
     public function hasParents(): bool
