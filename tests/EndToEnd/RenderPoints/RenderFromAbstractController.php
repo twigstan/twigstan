@@ -28,7 +28,7 @@ final class RenderFromAbstractController extends AbstractController
         ]));
     }
 
-    public function formAction(): Response
+    public function formAction(bool $withOptionalForm): Response
     {
         $form1 = $this->createFormBuilder()
             ->add('name', TextType::class, [
@@ -38,9 +38,12 @@ final class RenderFromAbstractController extends AbstractController
 
         $form2 = $this->createForm(RegisterForm::class, new RegisterFormDto());
 
+        $form3 = $withOptionalForm ? $this->createForm(RegisterForm::class, new RegisterFormDto()) : null;
+
         return $this->render('EndToEnd/RenderPoints/form.html.twig', [
             'form1' => $form1,
             'form2' => $form2,
+            'form3' => $form3,
         ]);
     }
 }
