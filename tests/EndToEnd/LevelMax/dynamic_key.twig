@@ -1,0 +1,13 @@
+{% types {
+    totals: 'array<string, int>',
+    context: '\\TwigStan\\Fixtures\\Context',
+    shape: 'array{a: int, b: string}',
+    period: 'string',
+    letter: "'a'|'c'",
+} %}
+
+{% assert_type totals[period] 'int' %}
+{% assert_type attribute(totals, period) 'int' %}
+{% assert_type context[period] 'string|null' %}
+{% assert_type attribute(context, period) 'string|null' %}
+{% set value = shape[letter] %}

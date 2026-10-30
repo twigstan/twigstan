@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\PHPStan;
 
+use ArrayAccess;
 use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
@@ -31,6 +32,7 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
@@ -73,18 +75,6 @@ final readonly class GetAttributeCheck
 
         $propertyOrMethodType = $scope->getType($arguments['item']);
 
-        if ($propertyOrMethodType instanceof ConstantIntegerType) {
-            $propertyOrMethod = (string) $propertyOrMethodType->getValue();
-        } else {
-            $constantStringTypes = $propertyOrMethodType->getConstantStrings();
-
-            if (count($constantStringTypes) !== 1) {
-                return [new MixedType(), []];
-            }
-
-            $propertyOrMethod = $constantStringTypes[0]->getValue();
-        }
-
         $type = Template::ANY_CALL;
 
         if ($arguments['type'] !== null) {
@@ -95,6 +85,18 @@ final readonly class GetAttributeCheck
             }
 
             $type = (string) $typeStrings[0]->getValue();
+        }
+
+        if ($propertyOrMethodType instanceof ConstantIntegerType) {
+            $propertyOrMethod = (string) $propertyOrMethodType->getValue();
+        } else {
+            $constantStringTypes = $propertyOrMethodType->getConstantStrings();
+
+            if (count($constantStringTypes) !== 1) {
+                return $this->checkDynamicOffset($type, $objectType, $propertyOrMethodType, $scope);
+            }
+
+            $propertyOrMethod = $constantStringTypes[0]->getValue();
         }
 
         if ($objectType instanceof UnionType) {
@@ -166,6 +168,37 @@ final readonly class GetAttributeCheck
             $scope,
             $arguments['args'],
         );
+    }
+
+    /**
+     * The item is not known, for example `{{ totals[period] }}`, so only an offset of an array or ArrayAccess can be typed.
+     *
+     * @return array{Type, list<IdentifierRuleError>}
+     */
+    private function checkDynamicOffset(
+        string $callType,
+        Type $objectType,
+        Type $offsetType,
+        Scope $scope,
+    ): array {
+        // vendor/twig/twig/src/Extension/CoreExtension.php: getAttribute() only reads an offset of an array or ArrayAccess.
+        if (
+            $callType === Template::METHOD_CALL
+            || ( ! $objectType->isArray()->yes() && ! (new ObjectType(ArrayAccess::class))->isSuperTypeOf($objectType)->yes())
+        ) {
+            return [new MixedType(), []];
+        }
+
+        return [
+            $objectType->getOffsetValueType($offsetType),
+            // @phpstan-ignore phpstanApi.method
+            $this->prefixErrorIdentifier($this->nonexistentOffsetInArrayDimFetchCheck->check(
+                $scope,
+                new TypeExpr($objectType),
+                sprintf('Access to offset %s on an unknown class %%s.', $offsetType->describe(VerbosityLevel::value())),
+                $offsetType,
+            )),
+        ];
     }
 
     /**
