@@ -29,6 +29,9 @@ final class TwigFileCanonicalizerTest extends TestCase
         $this->loader->addPath(__DIR__ . '/TwigFileNormalizerFixtures/bundle', 'Bundle');
         $this->loader->addPath(__DIR__ . '/TwigFileNormalizerFixtures/bundle', '!Bundle');
 
+        // Composer symlinks path repositories into vendor
+        $this->loader->addPath(__DIR__ . '/TwigFileNormalizerFixtures/linked', 'Linked');
+
         $this->canonicalizer = new TwigFileCanonicalizer(new Environment($this->loader));
     }
 
@@ -67,5 +70,9 @@ final class TwigFileCanonicalizerTest extends TestCase
         yield [__DIR__ . '/TwigFileNormalizerFixtures/templates/bundles/Bundle/layout.html.twig', '@__main__/bundles/Bundle/layout.html.twig'];
         yield ['@!Bundle/layout.html.twig', '@!Bundle/layout.html.twig'];
         yield [__DIR__ . '/TwigFileNormalizerFixtures/bundle/layout.html.twig', '@!Bundle/layout.html.twig'];
+
+        // A template in a symlinked directory is found by its real path
+        yield [__DIR__ . '/TwigFileNormalizerFixtures/shared/layout.html.twig', '@Linked/layout.html.twig'];
+        yield [__DIR__ . '/TwigFileNormalizerFixtures/linked/layout.html.twig', '@Linked/layout.html.twig'];
     }
 }
