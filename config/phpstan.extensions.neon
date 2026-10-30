@@ -34,6 +34,14 @@ services:
 		class: TwigStan\PHPStan\DynamicReturnType\GetCharsetReturnType
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetTwigCallableReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\DynamicReturnType\GetCallableReturnType
+		tags:
+			- phpstan.broker.dynamicMethodReturnTypeExtension
 
 
 	# Filter
