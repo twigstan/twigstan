@@ -1,0 +1,20 @@
+{% import '@EndToEnd/LevelMax/macros.twig' as format %}
+
+{% macro minutes(seconds) %}{{ (seconds / 60) | round }} min{% endmacro %}
+
+{% macro when(date, pattern = 'c') %}{% if date %}{{ date | date(pattern) }}{% else %}never{% endif %}{% endmacro %}
+
+{% types {
+    duration: 'int',
+    lastAt: '\\DateTimeImmutable|null',
+    price: 'float',
+} %}
+
+{{ _self.minutes(duration) }}
+{{ format.price(price) }}
+
+{% block body %}
+    {{ _self.minutes(seconds: duration * 2) }}
+    {{ _self.when(lastAt) }}
+    {{ _self.when(lastAt, 'Y-m-d') }}
+{% endblock %}

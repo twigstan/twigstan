@@ -16,10 +16,6 @@ services:
 		tags:
 			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
 	-
-		class: TwigStan\PHPStan\DynamicReturnType\CallMacroReturnType
-		tags:
-			- phpstan.broker.dynamicStaticMethodReturnTypeExtension
-	-
 		class: TwigStan\PHPStan\DynamicReturnType\LoadTemplateReturnType
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
