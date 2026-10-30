@@ -33,14 +33,15 @@ final class LevelMaxTest extends AbstractEndToEndTestCase
             ->create()
             ->getByType(AnalyzeCommand::class);
 
-        $agent = getenv('AI_AGENT');
-        putenv('AI_AGENT=1');
+        // PHPStan runs in a process that receives $_ENV, and detects agents by their environment variables.
+        $env = $_ENV;
+        $_ENV['AI_AGENT'] = '1';
 
         try {
             $tester = new CommandTester($command);
             $tester->execute(['paths' => ['tests/EndToEnd/LevelMax']], ['capture_stderr_separately' => true]);
         } finally {
-            putenv($agent === false ? 'AI_AGENT' : 'AI_AGENT=' . $agent);
+            $_ENV = $env;
         }
 
         $errorOutput = $tester->getErrorOutput();
