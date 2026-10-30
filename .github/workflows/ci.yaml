@@ -15,7 +15,7 @@ jobs:
             fail-fast: false
             matrix:
                 operating-system: [ ubuntu-latest ]
-                php: [ '8.3', '8.4' ]
+                php: [ '8.3', '8.4', '8.5' ]
                 twig: [ 3 ]
         name: Tests with PHP ${{ matrix.php }}, Twig ${{ matrix.twig }} on ${{ matrix.operating-system }}
         steps:
@@ -45,7 +45,7 @@ jobs:
             fail-fast: false
             matrix:
                 operating-system: [ ubuntu-latest ]
-                php: [ '8.3', '8.4' ]
+                php: [ '8.3', '8.4', '8.5' ]
         name: PHP CS Fixer with ${{ matrix.php }} on ${{ matrix.operating-system }}
         steps:
             -   name: Checkout code
@@ -97,9 +97,6 @@ jobs:
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
 
-            -   name: Install Composer packages
-                uses: ramsey/composer-install@v3
-
             -   name: Run PHPStan
                 run: castor phpstan --no-local
 
@@ -109,7 +106,7 @@ jobs:
             fail-fast: false
             matrix:
                 operating-system: [ ubuntu-latest ]
-                php: [ '8.3', '8.4' ]
+                php: [ '8.3', '8.4', '8.5' ]
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v4
