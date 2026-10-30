@@ -29,6 +29,13 @@
             "renderPoints": []
         },
         {
+            "message": "Parameter #1 $string of static method Twig\\Extension\\CoreExtension::trim() expects bool|float|int|string|Stringable|null, array<int, int> given.",
+            "identifier": "argument.type",
+            "tip": null,
+            "twigSourceLocation": "scalar_filters.twig:11",
+            "renderPoints": []
+        },
+        {
             "message": "Generator expects value type bool|float|int|string|Stringable|null, mixed given.",
             "identifier": "generator.valueType",
             "tip": null,

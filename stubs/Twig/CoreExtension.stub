@@ -65,4 +65,46 @@ final class CoreExtension
      * @return array<TKey, TValue>
      */
     public static function sort($env, $isSandboxed, $array, $arrow = null): array {}
+
+    // Twig passes the string to PHP's string functions without strict types, so scalars are converted to strings.
+
+    /**
+     * @param scalar|\Stringable|null $string
+     */
+    public static function trim($string, $characterMask = null, $side = 'both'): string|\Stringable {}
+
+    /**
+     * @param scalar|\Stringable|null $string
+     */
+    public static function convertEncoding($string, $to, $from): string {}
+
+    /**
+     * @param scalar|\Stringable|null $string
+     */
+    public static function nl2br($string): string {}
+
+    /**
+     * @param scalar|\Stringable|null $string
+     */
+    public static function striptags($string, $allowable_tags = null): string {}
+
+    /**
+     * @param scalar|\Stringable|null $string
+     */
+    public static function upper(string $charset, $string): string {}
+
+    /**
+     * @param scalar|\Stringable|null $string
+     */
+    public static function lower(string $charset, $string): string {}
+
+    /**
+     * @param scalar|\Stringable|null $string
+     */
+    public static function titleCase(string $charset, $string): string {}
+
+    /**
+     * @param scalar|\Stringable|null $string
+     */
+    public static function capitalize(string $charset, $string): string {}
 }
