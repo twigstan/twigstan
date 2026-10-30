@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace TwigStan\PHPStan;
 
+use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Scalar\String_;
-use PhpParser\Node\VariadicPlaceholder;
+use PHPStan\Analyser\CollectedDataEmitter;
+use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Reflection\ParametersAcceptorSelector;
@@ -210,8 +212,8 @@ final readonly class GetAttributeCheck
 
             // object property
             // vendor/twig/twig/src/Extension/CoreExtension.php:1728
-            if ($objectType->hasProperty($propertyOrMethod)->yes()) {
-                $property = $objectType->getProperty($propertyOrMethod, $scope);
+            if ($objectType->hasInstanceProperty($propertyOrMethod)->yes()) {
+                $property = $objectType->getInstanceProperty($propertyOrMethod, $scope);
 
                 if ($property->isPublic()) {
                     return [$property->getReadableType(), []];
@@ -246,7 +248,7 @@ final readonly class GetAttributeCheck
 
                 $methodName = $prefix . $propertyOrMethod;
                 // @phpstan-ignore phpstanApi.method
-                [, $methodReflection] = $this->methodCallCheck->check($scope, $methodName, new TypeExpr($objectType));
+                [, $methodReflection] = $this->methodCallCheck->check($scope, $methodName, new TypeExpr($objectType), new Identifier($methodName));
 
                 if ($methodReflection === null) {
                     continue;
@@ -261,6 +263,11 @@ final readonly class GetAttributeCheck
                     $methodReflection->getVariants(),
                     $methodReflection->getNamedArgumentsVariants(),
                 );
+
+                // The scope passed to rules and extensions always implements these interfaces.
+                if ( ! $scope instanceof NodeCallbackInvoker || ! $scope instanceof CollectedDataEmitter) {
+                    return [$parametersAcceptor->getReturnType(), []];
+                }
 
                 return [
                     $parametersAcceptor->getReturnType(),
@@ -292,6 +299,10 @@ final readonly class GetAttributeCheck
                             'Return type of call to method ' . $messagesMethodName . ' contains unresolvable type.',
                             '%s of method ' . $messagesMethodName . ' contains unresolvable type.',
                             'Method ' . $messagesMethodName . ' invoked with %s, but it\'s not allowed because of @no-named-arguments.',
+                            'Constant %s is not allowed for %s of method ' . $messagesMethodName . '.',
+                            'Constants %s cannot be combined for %s of method ' . $messagesMethodName . '.',
+                            'Combining constants with | is not allowed for %s of method ' . $messagesMethodName . '.',
+                            null,
                         )),
                     ],
                 ];
@@ -368,7 +379,7 @@ final readonly class GetAttributeCheck
     }
 
     /**
-     * @param array<Arg|VariadicPlaceholder> $args
+     * @param array<Node> $args
      *
      * @return array<string|int, Expr>
      */

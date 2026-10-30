@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig\TokenParser;
 
-use Twig\Environment;
 use Twig\Node\Nodes;
 use Twig\Node\PrintNode;
 use Twig\Node\TextNode;
@@ -24,8 +23,7 @@ final class PrintAssertTypeTokenParser extends AbstractTokenParser
     {
         $stream = $this->parser->getStream();
 
-        // @phpstan-ignore method.notFound
-        $name = Environment::VERSION_ID <= 32000 ? $this->parser->getExpressionParser()->parseExpression() : $this->parser->parseExpression();
+        $name = $this->parser->parseExpression();
 
         $expectedType = $stream->expect(Token::STRING_TYPE);
 

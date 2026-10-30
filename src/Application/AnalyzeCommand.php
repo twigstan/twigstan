@@ -387,6 +387,17 @@ final class AnalyzeCommand extends Command
             IgnoreError::identifier('method.missingOverride'),
             IgnoreError::identifier('return.unusedType'),
 
+            // Compiled Twig templates extend and use Twig internals.
+            IgnoreError::message('#internal (static )?(class|method) Twig\\\#'),
+
+            // Compiled Twig templates assign $macros and $context, whether they are read or not.
+            IgnoreError::messageAndIdentifier('#Variable \$macros is never read\.#', 'variable.unused'),
+            IgnoreError::messageAndIdentifier('#Value assigned to (variable )?\$(context|macros)\b#', 'assign.unused'),
+            IgnoreError::messageAndIdentifier("#Foreach key \\\$context\\['_key'\\] is never read before being overwritten\\.#", 'foreach.keyOverwritten'),
+
+            // The loop variable always has these keys, but Twig checks them because the loop can be manipulated.
+            IgnoreError::messageAndIdentifier("#Offset 'revindex0?' on .* in isset\\(\\) always exists and is not nullable\\.#", 'isset.offset'),
+
             // It's not possible to unset variable in Twig templates.
             IgnoreError::identifier('unset.offset'),
             IgnoreError::identifier('unset.variable'),

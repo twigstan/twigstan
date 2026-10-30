@@ -126,12 +126,6 @@ final readonly class ContainerFactory
 
         $class = $configurator->loadContainer();
 
-        $container = new $class();
-
-        if ( ! $container instanceof Container) {
-            throw new RuntimeException('Container is not an instance of Nette\DI\Container.');
-        }
-
-        return $container;
+        return new $class();
     }
 }

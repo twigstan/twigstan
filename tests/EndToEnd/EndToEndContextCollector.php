@@ -29,7 +29,7 @@ final readonly class EndToEndContextCollector implements TemplateContextCollecto
             return null;
         }
 
-        if ( ! $classReflection->isSubclassOf(AbstractRenderingTestCase::class)) {
+        if ( ! $classReflection->is(AbstractRenderingTestCase::class)) {
             return null;
         }
 

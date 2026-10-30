@@ -39,13 +39,18 @@ final readonly class AnalysisResultFromJsonReader
             $result['fileSpecificErrors'],
         ));
 
+        $collectedData = [];
+        foreach ($result['collectedData'] as $json) {
+            // PHPStan groups the data that a collector collected in a file.
+            foreach ($json['data'] as $data) {
+                $collectedData[] = CollectedData::decode([...$json, 'data' => $data]);
+            }
+        }
+
         return new PHPStanAnalysisResult(
             $exitCode,
             $errors,
-            array_values(array_map(
-                CollectedData::decode(...),
-                $result['collectedData'],
-            )),
+            $collectedData,
             $result['notFileSpecificErrors'],
         );
     }

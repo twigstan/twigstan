@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Fixtures;
 
 use ArrayAccess;
+use LogicException;
 
 /**
  * @implements ArrayAccess<string, string|null>
@@ -28,6 +29,10 @@ final class Context implements ArrayAccess
 
     public function offsetSet(mixed $offset, mixed $value): void
     {
+        if ($offset === null) {
+            throw new LogicException('Appending to the context is not supported.');
+        }
+
         $this->data[$offset] = $value;
     }
 

@@ -22,6 +22,15 @@
                 "RenderFromTwig.php:15",
                 "RenderFromTwig.php:23"
             ]
+        },
+        {
+            "message": "Generator expects value type bool|float|int|string|Stringable|null, Symfony\\Component\\Form\\FormView given.",
+            "identifier": "generator.valueType",
+            "tip": null,
+            "twigSourceLocation": "form.html.twig:6",
+            "renderPoints": [
+                "RenderFromAbstractController.php:41"
+            ]
         }
     ],
     "fileSpecificErrors": []

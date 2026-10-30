@@ -8,7 +8,7 @@ final readonly class Metadata
 {
     /**
      * @param list<string> $parents
-     * @param list<array{name: string, targets: array<string, string>}> $traits
+     * @param list<array{name: string, targets: array<int|string, string>}> $traits
      * @param list<string> $blocks
      * @param list<string> $parentBlocks
      * @param list<string> $macros

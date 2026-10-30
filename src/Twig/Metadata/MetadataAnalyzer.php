@@ -51,11 +51,23 @@ final readonly class MetadataAnalyzer
         foreach ($template->getNode('traits') as $trait) {
             $targets = [];
             foreach ($trait->getNode('targets') as $blockName => $target) {
-                $targets[$blockName] = $target->getAttribute('value');
+                $alias = $target->getAttribute('value');
+
+                if ( ! is_string($alias)) {
+                    throw new RuntimeException(sprintf('Expected the alias of block "%s" to be a string.', $blockName));
+                }
+
+                $targets[$blockName] = $alias;
+            }
+
+            $name = $trait->getNode('template')->getAttribute('value');
+
+            if ( ! is_string($name)) {
+                throw new RuntimeException('Expected the name of the used template to be a string.');
             }
 
             $traits[] = [
-                'name' => $trait->getNode('template')->getAttribute('value'),
+                'name' => $name,
                 'targets' => $targets,
             ];
         }

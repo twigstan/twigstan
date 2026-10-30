@@ -11,8 +11,11 @@ use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeCombinator;
 use Twig\Extension\CoreExtension;
 
 final readonly class FirstReturnType implements DynamicStaticMethodReturnTypeExtension
@@ -50,6 +53,15 @@ final readonly class FirstReturnType implements DynamicStaticMethodReturnTypeExt
             ]));
         }
 
-        return $argType->getFirstIterableValueType();
+        $constantArrays = $argType->getConstantArrays();
+
+        if ($constantArrays === []) {
+            return $argType->getIterableValueType();
+        }
+
+        return TypeCombinator::union(...array_map(
+            fn(ConstantArrayType $constantArray) => $constantArray->getValueTypes()[0] ?? new ConstantBooleanType(false),
+            $constantArrays,
+        ));
     }
 }

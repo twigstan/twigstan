@@ -24,7 +24,7 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
      */
     public function leaveNode(Node $node): ?array
     {
-        // Find: $this->parent = $this->loadTemplate("@EndToEnd/Inheritance/_layout.twig", "@__main__/EndToEnd/Inheritance/case5.twig", 1);
+        // Find: $this->parent = $this->load("@EndToEnd/Inheritance/_layout.twig", 1);
 
         if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
@@ -72,11 +72,11 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
             return null;
         }
 
-        if ($assign->expr->name->name !== 'loadTemplate') {
+        if ($assign->expr->name->name !== 'load') {
             return null;
         }
 
-        if (count($assign->expr->args) !== 3) {
+        if (count($assign->expr->args) !== 2) {
             return null;
         }
 

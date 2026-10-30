@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan;
 
 use JsonException;
+use LogicException;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -206,7 +207,8 @@ final readonly class ErrorHelper
             foreach ($renderPoints as [$sourceLocation, $context]) {
                 $result[Path::makeRelative($template, $directory)][] = [
                     $sourceLocation->toString($directory),
-                    $context,
+                    // Depending on the PHPStan version, class names are printed fully qualified.
+                    preg_replace('#(?<![\w\\\])\\\(?=[a-z_])#i', '', $context) ?? throw new LogicException(preg_last_error_msg()),
                 ];
             }
         }
