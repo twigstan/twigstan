@@ -521,7 +521,7 @@ final class AnalyzeCommand extends Command
                     return true;
                 }
 
-                $hasRenderPoint = $templateContext->hasTemplate($error->twigFile);
+                $hasRenderPoint = $templateContext->hasTemplateOrMacros($error->twigFile);
 
                 if ( ! $hasRenderPoint) {
                     $errorOutput->writeln(

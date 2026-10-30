@@ -1,0 +1,12 @@
+{
+    "errors": [
+        {
+            "message": "Offset 'cents' does not exist on 5.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "macros.twig:2",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}
