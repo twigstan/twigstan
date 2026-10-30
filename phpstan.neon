@@ -13,6 +13,8 @@ parameters:
 	editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
 	bootstrapFiles:
 		- stubs/functions.php
+	stubFiles:
+		- stubs/Symfony/AppVariable.stub
 	ignoreErrors:
 		# TwigStan analyzes compiled templates, so it relies on Twig internals by design.
 		-

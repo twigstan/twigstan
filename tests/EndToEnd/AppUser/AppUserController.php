@@ -42,6 +42,12 @@ final class AppUserController extends AbstractController
         return $this->render('@EndToEnd/AppUser/shared.twig');
     }
 
+    #[Route('/public/navigation')]
+    public function navigation(): Response
+    {
+        return $this->render('@EndToEnd/AppUser/navigation.twig');
+    }
+
     #[Route('/reports')]
     public function reports(): Response
     {

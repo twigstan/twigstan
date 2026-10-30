@@ -55,9 +55,14 @@ $config->ignoreErrorsOnPackagesAndPaths(
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );
 
-$config->ignoreErrorsOnPackageAndPath(
-    'symfony/twig-bridge',
-    __DIR__ . '/src/PHPStan/DynamicReturnType/GetGlobalsReturnType.php',
+$config->ignoreErrorsOnPackagesAndPaths(
+    [
+        'symfony/twig-bridge',
+    ],
+    [
+        __DIR__ . '/src/PHPStan/Collector/ContextFromTwigIncludeCallCollector.php',
+        __DIR__ . '/src/PHPStan/DynamicReturnType/GetGlobalsReturnType.php',
+    ],
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );
 
