@@ -803,6 +803,7 @@ final class AnalyzeCommand extends Command
             $debugMode,
             $xdebugMode,
             PHPStanRunMode::CollectTwigBlockContexts,
+            run: $run,
         );
 
         $result = new TwigStanAnalysisResult();
@@ -841,6 +842,7 @@ final class AnalyzeCommand extends Command
             $debugMode,
             $xdebugMode,
             PHPStanRunMode::AnalyzeTwigTemplates,
+            run: $run,
         );
 
         $newTemplateContext = $this->templateContextFactory->create($analysisResult2);
