@@ -403,9 +403,6 @@ final class ConfigBuilder
         return $this;
     }
 
-    /**
-     * @param class-string<TemplateContextCollector<Node>> ...$classNames
-     */
     public function twigContextCollector(string ...$classNames): self
     {
         foreach ($classNames as $className) {

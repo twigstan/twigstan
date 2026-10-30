@@ -35,7 +35,7 @@ final readonly class TemplateContext
     public function getUniqueContextByTemplate(string $template): array
     {
         $uniqueContext = [];
-        foreach ($this->context[$template] ?? [] as [$sourceLocation, $context]) {
+        foreach ($this->context[$template] ?? [] as [, $context]) {
             $uniqueContext[] = $context;
         }
 

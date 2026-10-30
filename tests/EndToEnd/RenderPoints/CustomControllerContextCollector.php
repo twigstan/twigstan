@@ -67,7 +67,8 @@ final readonly class CustomControllerContextCollector implements TemplateContext
 
         if (isset($args[1])) {
             $context = $scope->getType($args[1]->value)->traverse(function ($type) {
-                if ( ! (new ObjectType(FormInterface::class))->isSuperTypeOf($type)->yes()) {
+                // The never type, used for the extra items of a sealed array shape, is a subtype of FormInterface too.
+                if ( ! $type->isObject()->yes() || ! (new ObjectType(FormInterface::class))->isSuperTypeOf($type)->yes()) {
                     return $type;
                 }
 

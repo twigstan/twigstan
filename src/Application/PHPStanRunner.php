@@ -7,6 +7,7 @@ namespace TwigStan\Application;
 use Nette\Neon\Neon;
 use PhpParser\Node;
 use ReflectionClass;
+use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
@@ -52,9 +53,13 @@ final readonly class PHPStanRunner
 
         if ($mode === PHPStanRunMode::CollectPhpRenderPoints) {
             foreach ($this->twigContextCollectors as $className) {
-                $reflection = new ReflectionClass($className);
+                $fileName = (new ReflectionClass($className))->getFileName();
 
-                $services[$reflection->getFileName()] = [
+                if ($fileName === false) {
+                    throw new RuntimeException(sprintf('Twig context collector %s must be a user-defined class.', $className));
+                }
+
+                $services[$fileName] = [
                     'class' => $className,
                     'tags' => ['phpstan.collector'],
                 ];

@@ -13,6 +13,14 @@ parameters:
 	editorUrl: 'phpstorm://open?file=%%file%%&line=%%line%%'
 	bootstrapFiles:
 		- stubs/functions.php
+	ignoreErrors:
+		# TwigStan analyzes compiled templates, so it relies on Twig internals by design.
+		-
+			identifier: classConstant.internalClass
+			message: '#internal class Twig\\#'
+		-
+			identifier: method.internal
+			message: '#internal method Twig\\#'
 	dynamicConstantNames:
 		- Twig\Environment::MAJOR_VERSION
 		- Twig\Environment::VERSION_ID

@@ -29,5 +29,5 @@
     {{ name }}
 {% else %}
     {% assert_variable_exists name maybe %}
-    {% assert_type name 'string|null' %}
+    {% assert_type name 'null' %}
 {% endif %}
