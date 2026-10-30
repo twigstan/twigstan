@@ -24,6 +24,11 @@ final class TwigFileCanonicalizerTest extends TestCase
         $this->loader->addPath(__DIR__ . '/TwigFileNormalizerFixtures/templates/mail2', 'Mail');
         $this->loader->addPath(__DIR__ . '/TwigFileNormalizerFixtures/templates/mail', 'Mail');
 
+        // Symfony registers a bundle's templates after the overrides in the application, and as !Bundle without them
+        $this->loader->addPath(__DIR__ . '/TwigFileNormalizerFixtures/templates/bundles/Bundle', 'Bundle');
+        $this->loader->addPath(__DIR__ . '/TwigFileNormalizerFixtures/bundle', 'Bundle');
+        $this->loader->addPath(__DIR__ . '/TwigFileNormalizerFixtures/bundle', '!Bundle');
+
         $this->canonicalizer = new TwigFileCanonicalizer(new Environment($this->loader));
     }
 
@@ -56,5 +61,11 @@ final class TwigFileCanonicalizerTest extends TestCase
         yield ['@Mail/other.html.twig', '@__main__/mail2/other.html.twig'];
         yield [__DIR__ . '/TwigFileNormalizerFixtures/templates/mail/layout.html.twig', '@__main__/mail/layout.html.twig'];
         yield [__DIR__ . '/TwigFileNormalizerFixtures/templates/mail2/other.html.twig', '@__main__/mail2/other.html.twig'];
+
+        // A template that is overridden is only loaded by the !Bundle namespace
+        yield ['@Bundle/layout.html.twig', '@__main__/bundles/Bundle/layout.html.twig'];
+        yield [__DIR__ . '/TwigFileNormalizerFixtures/templates/bundles/Bundle/layout.html.twig', '@__main__/bundles/Bundle/layout.html.twig'];
+        yield ['@!Bundle/layout.html.twig', '@!Bundle/layout.html.twig'];
+        yield [__DIR__ . '/TwigFileNormalizerFixtures/bundle/layout.html.twig', '@!Bundle/layout.html.twig'];
     }
 }

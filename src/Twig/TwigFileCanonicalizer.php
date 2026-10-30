@@ -60,7 +60,8 @@ final class TwigFileCanonicalizer
                     if (str_starts_with($name, $path)) {
                         $twigPath = sprintf('@%s/%s', $namespace, ltrim(substr($name, strlen($path)), DIRECTORY_SEPARATOR));
 
-                        if ($this->loader->exists($twigPath)) {
+                        // The name can load another file, such as an override of a bundle template in the application.
+                        if ($this->loader->exists($twigPath) && $this->loader->getSourceContext($twigPath)->getPath() === $name) {
                             return $twigPath;
                         }
                     }
