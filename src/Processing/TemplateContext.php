@@ -30,6 +30,38 @@ final readonly class TemplateContext
     }
 
     /**
+     * The arguments that macros are called with are stored as the context of this key.
+     */
+    public static function macroKey(string $template, string $macro): string
+    {
+        return sprintf('%s::%s', $template, $macro);
+    }
+
+    /**
+     * Returns the template, for keys of templates and macros.
+     */
+    public static function templateFromKey(string $key): string
+    {
+        return explode('::', $key, 2)[0];
+    }
+
+    /**
+     * @return array<string, list<string>> The unique contexts of each macro of the template
+     */
+    public function getUniqueContextByMacro(string $template): array
+    {
+        $prefix = self::macroKey($template, '');
+        $contexts = [];
+        foreach (array_keys($this->context) as $key) {
+            if (str_starts_with($key, $prefix)) {
+                $contexts[substr($key, strlen($prefix))] = $this->getUniqueContextByTemplate($key);
+            }
+        }
+
+        return $contexts;
+    }
+
+    /**
      * @return list<string>
      */
     public function getUniqueContextByTemplate(string $template): array
@@ -70,6 +102,21 @@ final readonly class TemplateContext
         $changed = [];
         $mergedContext = $this->context;
         foreach ($other->context as $template => $renderPoints) {
+            // Macro arguments are collected again on every run, so only arguments with new types change the template.
+            if (str_contains($template, '::')) {
+                $before = $this->getUniqueContextByTemplate($template);
+
+                foreach ($renderPoints as $hash => $renderPoint) {
+                    $mergedContext[$template][$hash] = $renderPoint;
+                }
+
+                if ($before !== (new self($mergedContext))->getUniqueContextByTemplate($template)) {
+                    $changed[] = self::templateFromKey($template);
+                }
+
+                continue;
+            }
+
             if ( ! isset($mergedContext[$template])) {
                 foreach ($renderPoints as $hash => [$sourceLocation, $context]) {
                     if (isset($mergedContext[$sourceLocation->fileName][$hash])) {
@@ -77,7 +124,7 @@ final readonly class TemplateContext
                     }
 
                     $mergedContext[$template][$hash] = [$sourceLocation, $context];
-                    $changed[] = $template;
+                    $changed[] = self::templateFromKey($template);
                 }
 
                 continue;
@@ -104,7 +151,7 @@ final readonly class TemplateContext
             $uniqueContext = array_values(array_unique($uniqueContext));
 
             if ($flatContext !== $uniqueContext) {
-                $changed[] = $template;
+                $changed[] = self::templateFromKey($template);
             }
         }
 

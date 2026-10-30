@@ -23,23 +23,10 @@ final readonly class TemplateContextToArrayShape
     {
         $newContext = null;
         foreach ($templateContext->getUniqueContextByTemplate($template) as $context) {
-            $contextShape = ArrayShapeNode::createSealed([]);
+            $contextShape = $this->parse($context);
 
-            if ($context !== 'array{}') {
-                $phpDocNode = $this->phpDocParser->parseTagValue(
-                    new TokenIterator($this->lexer->tokenize($context)),
-                    '@var',
-                );
-
-                if ( ! $phpDocNode instanceof VarTagValueNode) {
-                    continue;
-                }
-
-                $contextShape = $phpDocNode->type;
-
-                if ( ! $contextShape instanceof ArrayShapeNode) {
-                    $contextShape = ArrayShapeNode::createSealed([]);
-                }
+            if ($contextShape === null) {
+                continue;
             }
 
             if ($newContext === null) {
@@ -55,5 +42,40 @@ final readonly class TemplateContextToArrayShape
         }
 
         return $newContext ?? ArrayShapeNode::createSealed([]);
+    }
+
+    /**
+     * @return array<string, list<ArrayShapeNode>> The arguments of each call to each macro of the template
+     */
+    public function getByMacro(TemplateContext $templateContext, string $template): array
+    {
+        $macros = [];
+        foreach ($templateContext->getUniqueContextByMacro($template) as $macro => $contexts) {
+            $macros[$macro] = array_values(array_filter(array_map($this->parse(...), $contexts)));
+        }
+
+        return $macros;
+    }
+
+    private function parse(string $context): ?ArrayShapeNode
+    {
+        if ($context === 'array{}') {
+            return ArrayShapeNode::createSealed([]);
+        }
+
+        $phpDocNode = $this->phpDocParser->parseTagValue(
+            new TokenIterator($this->lexer->tokenize($context)),
+            '@var',
+        );
+
+        if ( ! $phpDocNode instanceof VarTagValueNode) {
+            return null;
+        }
+
+        if ( ! $phpDocNode->type instanceof ArrayShapeNode) {
+            return ArrayShapeNode::createSealed([]);
+        }
+
+        return $phpDocNode->type;
     }
 }

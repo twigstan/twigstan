@@ -18,10 +18,12 @@ use TwigStan\PHP\StrictPhpParser;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 use TwigStan\Processing\Compilation\PhpVisitor\AddExtraLineNumberCommentVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AddGetExtensionMethodVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\AddMacroArgumentTypesVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AddTypeCommentsToTemplateVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AppendFilePathToLineCommentVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\MakeFinalVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\MarkMacroCallArgumentsVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorExtensionCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RemoveImportsVisitor;
@@ -79,6 +81,8 @@ final readonly class TwigCompiler
             new RemoveParentCachingVisitor(),
             new RemoveStringCastFromYieldVisitor(),
             new RemoveUninitializedMacroNamespaceGuardVisitor(),
+            new MarkMacroCallArgumentsVisitor($twigNode->getSourceContext()->getName()),
+            new AddMacroArgumentTypesVisitor($this->templateContextToArrayShape->getByMacro($templateContext, $twigFilePath)),
             new AddExtraLineNumberCommentVisitor(),
             new AppendFilePathToLineCommentVisitor($twigFilePath),
             new RemoveImportsVisitor(),

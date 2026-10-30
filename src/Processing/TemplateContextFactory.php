@@ -25,6 +25,11 @@ final readonly class TemplateContextFactory
             if (is_a($data->collecterType, TemplateContextCollector::class, true)) {
                 foreach ($data->data as $renderData) {
                     $template = $this->twigFileCanonicalizer->absolute($renderData['template']);
+
+                    if (isset($renderData['macro'])) {
+                        $template = TemplateContext::macroKey($template, $renderData['macro']);
+                    }
+
                     $sourceLocation = SourceLocation::decode($renderData['sourceLocation']);
 
                     $templateContext[$template][$sourceLocation->getHash()] = [$sourceLocation, $renderData['context']];
