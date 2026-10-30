@@ -9,6 +9,7 @@ use Twig\Environment;
 use Twig\Node\BodyNode;
 use Twig\Node\Expression\ArrayExpression;
 use Twig\Node\Expression\Binary\ConcatBinary;
+use Twig\Node\Expression\BlockReferenceExpression;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\ParentExpression;
 use Twig\Node\Expression\Ternary\ConditionalTernary;
@@ -96,6 +97,17 @@ final readonly class MetadataAnalyzer
                 $dependencies = [...$dependencies, ...array_map(
                     $this->twigFileCanonicalizer->absolute(...),
                     $this->getStringsFromExpression($importNode->getNode('expr')),
+                )];
+            }
+
+            foreach ($this->nodeFinder->findInstanceOf($node, BlockReferenceExpression::class) as $blockReference) {
+                if ( ! $blockReference->hasNode('template')) {
+                    continue;
+                }
+
+                $dependencies = [...$dependencies, ...array_map(
+                    $this->twigFileCanonicalizer->absolute(...),
+                    $this->getStringsFromExpression($blockReference->getNode('template')),
                 )];
             }
         }

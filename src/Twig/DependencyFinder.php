@@ -30,37 +30,33 @@ final readonly class DependencyFinder
     }
 
     /**
+     * @param array<string, true> $visited Templates can depend on each other, or on themselves.
+     *
      * @return list<string>
      */
-    private function findDependantsForFile(string $twigFileName): array
+    private function findDependantsForFile(string $twigFileName, array &$visited = []): array
     {
+        $visited[$twigFileName] = true;
+
         $dependants = [];
 
         $metadata = $this->metadataRegistry->getMetadata($twigFileName);
 
-        if ($metadata->hasResolvableParents()) {
-            foreach ($metadata->parents as $parentTwigFileName) {
-                if (in_array($parentTwigFileName, $dependants, true)) {
-                    continue;
-                }
+        $dependencies = $metadata->dependencies;
 
-                array_push(
-                    $dependants,
-                    $parentTwigFileName,
-                    ...$this->findDependantsForFile($parentTwigFileName),
-                );
-            }
+        if ($metadata->hasResolvableParents()) {
+            $dependencies = [...$metadata->parents, ...$dependencies];
         }
 
-        foreach ($metadata->dependencies as $dependency) {
-            if (in_array($dependency, $dependants, true)) {
+        foreach ($dependencies as $dependency) {
+            if (isset($visited[$dependency])) {
                 continue;
             }
 
             array_push(
                 $dependants,
                 $dependency,
-                ...$this->findDependantsForFile($dependency),
+                ...$this->findDependantsForFile($dependency, $visited),
             );
         }
 
