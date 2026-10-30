@@ -53,8 +53,8 @@
     ],
     "form.html.twig": [
         [
-            "RenderFromAbstractController.php:41",
-            "array{form1: Symfony\\Component\\Form\\FormView, form2: Symfony\\Component\\Form\\FormView}"
+            "RenderFromAbstractController.php:43",
+            "array{form1: Symfony\\Component\\Form\\FormView, form2: Symfony\\Component\\Form\\FormView, form3: Symfony\\Component\\Form\\FormView|null}"
         ]
     ],
     "App\/Controller\/RenderFromSelfClassInAbstractController.html.twig": [

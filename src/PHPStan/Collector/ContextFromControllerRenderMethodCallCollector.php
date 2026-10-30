@@ -9,6 +9,9 @@ use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
+use PHPStan\Type\TypeTraverser;
+use PHPStan\Type\UnionType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
@@ -66,14 +69,19 @@ final readonly class ContextFromControllerRenderMethodCallCollector implements T
         }
 
         if (isset($args[1])) {
-            $context = $scope->getType($args[1]->value)->traverse(function ($type) {
+            $context = $scope->getType($args[1]->value)->traverse(fn(Type $type) => TypeTraverser::map($type, function (Type $type, callable $traverse): Type {
+                // Optional forms are rendered as views too.
+                if ($type instanceof UnionType) {
+                    return $traverse($type);
+                }
+
                 // The never type, used for the extra items of a sealed array shape, is a subtype of FormInterface too.
                 if ( ! $type->isObject()->yes() || ! (new ObjectType(FormInterface::class))->isSuperTypeOf($type)->yes()) {
                     return $type;
                 }
 
                 return new ObjectType(FormView::class);
-            });
+            }));
         } else {
             $context = new ConstantArrayType([], []);
         }
