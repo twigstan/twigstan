@@ -1,3 +1,6 @@
+parameters:
+	stubFiles:
+		- ../stubs/Twig/CoreExtension.stub
 services:
 	-
 		class: TwigStan\PHPStan\GetAttributeCheck

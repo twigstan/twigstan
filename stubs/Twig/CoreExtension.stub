@@ -1,0 +1,68 @@
+<?php
+
+namespace Twig\Extension;
+
+/**
+ * Types the arguments of arrow functions, such as `users|filter(user => user.admin)`.
+ * The return types of these filters are refined by TwigStan\PHPStan\DynamicReturnType\Filter.
+ */
+final class CoreExtension
+{
+    /**
+     * @template TKey
+     * @template TValue
+     *
+     * @param iterable<TKey, TValue> $array
+     * @param \Closure(TValue, TKey): mixed $arrow
+     *
+     * @return iterable<TKey, TValue>
+     */
+    public static function filter($env, $isSandboxed, $array, $arrow) {}
+
+    /**
+     * @template TKey
+     * @template TValue
+     * @template TResult
+     *
+     * @param iterable<TKey, TValue> $array
+     * @param \Closure(TValue, TKey): TResult $arrow
+     *
+     * @return array<TKey, TResult>
+     */
+    public static function map($env, $isSandboxed, $array, $arrow) {}
+
+    /**
+     * @template TKey
+     * @template TValue
+     *
+     * @param iterable<TKey, TValue> $array
+     * @param \Closure(TValue, TKey): mixed $arrow
+     *
+     * @return TValue|null
+     */
+    public static function find($env, $isSandboxed, $array, $arrow) {}
+
+    /**
+     * @template TKey
+     * @template TValue
+     * @template TCarry
+     *
+     * @param iterable<TKey, TValue> $array
+     * @param \Closure(TCarry, TValue, TKey): TCarry $arrow
+     * @param TCarry|null $initial
+     *
+     * @return TCarry
+     */
+    public static function reduce($env, $isSandboxed, $array, $arrow, $initial = null) {}
+
+    /**
+     * @template TKey
+     * @template TValue
+     *
+     * @param iterable<TKey, TValue> $array
+     * @param (\Closure(TValue, TValue): int)|null $arrow
+     *
+     * @return array<TKey, TValue>
+     */
+    public static function sort($env, $isSandboxed, $array, $arrow = null): array {}
+}
