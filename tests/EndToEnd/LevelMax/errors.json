@@ -22,13 +22,6 @@
             "renderPoints": []
         },
         {
-            "message": "Method __TwigTemplate_ffdd49944dad2abf33e190e46c8932d8::doGetParent() should return bool|string|Twig\\Template|Twig\\TemplateWrapper but returns mixed.",
-            "identifier": "return.type",
-            "tip": null,
-            "twigSourceLocation": "child.twig:1",
-            "renderPoints": []
-        },
-        {
             "message": "Parameter #1 ...$arrays of function array_merge expects array, mixed given.",
             "identifier": "argument.type",
             "tip": null,
