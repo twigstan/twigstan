@@ -20,6 +20,34 @@
             "tip": null,
             "twigSourceLocation": "dynamic_key.twig:13",
             "renderPoints": []
+        },
+        {
+            "message": "Generator expects value type bool|float|int|string|Stringable|null, mixed given.",
+            "identifier": "generator.valueType",
+            "tip": null,
+            "twigSourceLocation": "unknown_argument.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Parameter #3 $array of static method Twig\\Extension\\CoreExtension::sort() expects iterable, mixed given.",
+            "identifier": "argument.type",
+            "tip": null,
+            "twigSourceLocation": "unknown_argument.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Variable 'missing' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "unknown_argument.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Generator expects value type bool|float|int|string|Stringable|null, mixed given.",
+            "identifier": "generator.valueType",
+            "tip": null,
+            "twigSourceLocation": "unknown_argument.twig:4",
+            "renderPoints": []
         }
     ],
     "fileSpecificErrors": []

@@ -11,7 +11,7 @@ final class EscaperRuntime
      * Strings and Stringable objects are escaped, Markup is returned as is when auto-escaping,
      * and other values are returned as is by the built-in strategies.
      *
-     * @template TValue
+     * @template TValue = mixed
      *
      * @param TValue $string
      *

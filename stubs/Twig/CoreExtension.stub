@@ -9,8 +9,8 @@ namespace Twig\Extension;
 final class CoreExtension
 {
     /**
-     * @template TKey
-     * @template TValue
+     * @template TKey = mixed
+     * @template TValue = mixed
      *
      * @param iterable<TKey, TValue> $array
      * @param \Closure(TValue, TKey): mixed $arrow
@@ -20,9 +20,9 @@ final class CoreExtension
     public static function filter($env, $isSandboxed, $array, $arrow) {}
 
     /**
-     * @template TKey
-     * @template TValue
-     * @template TResult
+     * @template TKey = mixed
+     * @template TValue = mixed
+     * @template TResult = mixed
      *
      * @param iterable<TKey, TValue> $array
      * @param \Closure(TValue, TKey): TResult $arrow
@@ -32,8 +32,8 @@ final class CoreExtension
     public static function map($env, $isSandboxed, $array, $arrow) {}
 
     /**
-     * @template TKey
-     * @template TValue
+     * @template TKey = mixed
+     * @template TValue = mixed
      *
      * @param iterable<TKey, TValue> $array
      * @param \Closure(TValue, TKey): mixed $arrow
@@ -43,9 +43,9 @@ final class CoreExtension
     public static function find($env, $isSandboxed, $array, $arrow) {}
 
     /**
-     * @template TKey
-     * @template TValue
-     * @template TCarry
+     * @template TKey = mixed
+     * @template TValue = mixed
+     * @template TCarry = mixed
      *
      * @param iterable<TKey, TValue> $array
      * @param \Closure(TCarry, TValue, TKey): TCarry $arrow
@@ -56,8 +56,8 @@ final class CoreExtension
     public static function reduce($env, $isSandboxed, $array, $arrow, $initial = null) {}
 
     /**
-     * @template TKey
-     * @template TValue
+     * @template TKey = mixed
+     * @template TValue = mixed
      *
      * @param iterable<TKey, TValue> $array
      * @param (\Closure(TValue, TValue): int)|null $arrow
