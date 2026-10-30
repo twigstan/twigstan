@@ -15,6 +15,13 @@
             "renderPoints": []
         },
         {
+            "message": "The attribute \"timestamp\" may not be valid for all possible types of the union \"DateTimeImmutable|null\".",
+            "identifier": "getAttribute.maybeNotFound",
+            "tip": "Cannot get \"timestamp\" on null.",
+            "twigSourceLocation": "default.twig:9",
+            "renderPoints": []
+        },
+        {
             "message": "Offset 'a'|'c' might not exist on array{a: int, b: string}.",
             "identifier": "getAttribute.offsetAccess.notFound",
             "tip": null,
