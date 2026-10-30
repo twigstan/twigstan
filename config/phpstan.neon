@@ -9,6 +9,7 @@ parametersSchema:
 		analysisResultJsonFile: string()
 		mode: string()
 		debugMode: bool()
+		appUserClass: schema(string(), nullable())
 	])
 services:
 	errorFormatter.analysisResultToJson:

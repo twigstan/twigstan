@@ -24,6 +24,7 @@ final class ConfigBuilder
     private null | false | string $phpstanMemoryLimit = null;
     private ?string $twigEnvironmentLoader = null;
     private ?string $editorUrl = null;
+    private ?string $appUserClass = null;
 
     /**
      * @var list<class-string<TemplateContextCollector<Node>>>
@@ -146,6 +147,7 @@ final class ConfigBuilder
             $this->baselineErrors,
             $this->twigContextCollectors,
             $this->editorUrl,
+            $this->appUserClass,
         );
     }
 
@@ -220,6 +222,20 @@ final class ConfigBuilder
     public function onlyAnalyzeTemplatesWithContext(): self
     {
         $this->onlyAnalyzeTemplatesWithContext = true;
+
+        return $this;
+    }
+
+    /**
+     * The class of the users of the application, which is the type of app.user.
+     * It is not null in templates rendered by controllers whose routes require a user.
+     * That requires the Twig environment loader to return the booted Symfony kernel.
+     *
+     * @param class-string $appUserClass
+     */
+    public function appUserClass(string $appUserClass): self
+    {
+        $this->appUserClass = $appUserClass;
 
         return $this;
     }

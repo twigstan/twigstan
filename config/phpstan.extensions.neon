@@ -26,6 +26,8 @@ services:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
 	-
 		class: TwigStan\PHPStan\DynamicReturnType\GetGlobalsReturnType
+		arguments:
+			appUserClass: %twigstan.appUserClass%
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
 	-

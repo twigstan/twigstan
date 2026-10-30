@@ -35,6 +35,7 @@ use TwigStan\Processing\Flattening\TwigFlattener;
 use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
 use TwigStan\Processing\TemplateContext;
 use TwigStan\Processing\TemplateContextFactory;
+use TwigStan\Symfony\AppUserContext;
 use TwigStan\Twig\DependencyFinder;
 use TwigStan\Twig\DependencySorter;
 use TwigStan\Twig\Metadata\MetadataRegistry;
@@ -63,6 +64,7 @@ final class AnalyzeCommand extends Command
         private ErrorTransformer $errorTransformer,
         private ErrorToSourceFileMapper $errorToSourceFileMapper,
         private TemplateWithoutContextFilter $templateWithoutContextFilter,
+        private AppUserContext $appUserContext,
         private TemplateContextFactory $templateContextFactory,
         private MetadataRegistry $metadataRegistry,
         private string $environmentLoader,
@@ -317,7 +319,7 @@ final class AnalyzeCommand extends Command
             return $result;
         }
 
-        $templateContext = $this->templateContextFactory->create($analysisResult);
+        $templateContext = $this->appUserContext->apply($this->templateContextFactory->create($analysisResult));
 
         $run = $this->executeRun(
             $output,

@@ -33,6 +33,7 @@ final readonly class PHPStanRunner
         private string $currentWorkingDirectory,
         private string $tempDirectory,
         private array $twigContextCollectors,
+        private ?string $appUserClass,
     ) {}
 
     /**
@@ -83,8 +84,13 @@ final readonly class PHPStanRunner
                 'analysisResultJsonFile' => $analysisResultJsonFile,
                 'mode' => $mode->value,
                 'debugMode' => $debugMode,
+                'appUserClass' => $this->appUserClass,
             ],
         ];
+
+        if ($this->appUserClass !== null) {
+            $parameters['stubFiles'] = [Path::join(dirname(__DIR__, 2), 'stubs', 'Symfony', 'AppVariable.stub')];
+        }
 
         if ($mode === PHPStanRunMode::CollectPhpRenderPoints || $mode === PHPStanRunMode::CollectTwigBlockContexts) {
             $parameters['level'] = null;

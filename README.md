@@ -128,6 +128,26 @@ return TwigStanConfig::configure(__DIR__)
     ->create();
 ```
 
+### Typing `app.user`
+
+In Symfony applications, `app.user` is `null` unless the request is authenticated. TwigStan can tell when a template can
+only be rendered with a user, and then types `app.user` as not null.
+
+For this, the Twig environment loader must return the booted kernel, as the default Symfony loader does, and the
+configuration must name the user class:
+```php
+return TwigStanConfig::configure(__DIR__)
+    // ...
+    ->appUserClass(App\Entity\User::class)
+    ->create();
+```
+
+`app.user` is then not null in templates rendered by controllers that require a user, and in the templates they
+include. A controller requires a user when an `#[IsGranted]` attribute on the method or class asks for a `ROLE_*` or
+`IS_AUTHENTICATED*` attribute, or when the `access_control` rules for all of its routes do. Attributes decided by
+custom voters do not count, because a voter may grant access without a user. Elsewhere, `app.user` is
+`App\Entity\User|null`.
+
 ### Marking templates abstract
 
 When you have a template that is not rendered directly, but is used as a parent template, you can mark it as abstract.
