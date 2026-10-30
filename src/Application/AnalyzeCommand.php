@@ -756,6 +756,8 @@ final class AnalyzeCommand extends Command
             $output->writeln(sprintf('Run %d', $run));
         }
 
+        [$twigFileNames, $loaderErrors] = $this->withoutUnloadableTemplates($twigFileNames);
+
         $twigFileNamesToAnalyze = $twigFileNames;
 
         $output->writeln(sprintf('Finding dependencies for %d templates...', count($twigFileNamesToAnalyze)));
@@ -840,7 +842,7 @@ final class AnalyzeCommand extends Command
 
         $newTemplateContext = $this->templateContextFactory->create($analysisResult2);
 
-        $errors = $this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors);
+        $errors = [...$loaderErrors, ...$this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors)];
 
         return new TwigStanRun(
             $run,
@@ -855,5 +857,56 @@ final class AnalyzeCommand extends Command
                 PHPStanRunMode::AnalyzeTwigTemplates->value => $analysisResult2,
             ],
         );
+    }
+
+    /**
+     * Leaves out templates that extend or import templates that Twig cannot load, directly or through other templates.
+     * Twig fails to render them, so this is reported as an error in the template that references the unloadable template.
+     *
+     * @param list<string> $twigFileNames
+     *
+     * @return array{list<string>, list<Error>}
+     */
+    private function withoutUnloadableTemplates(array $twigFileNames): array
+    {
+        $errors = [];
+        $unloadable = [];
+        $isUnloadable = function (string $twigFileName, array $visiting = []) use (&$isUnloadable, &$errors, &$unloadable): bool {
+            if (isset($unloadable[$twigFileName])) {
+                return $unloadable[$twigFileName];
+            }
+
+            // Templates can depend on each other
+            if (isset($visiting[$twigFileName])) {
+                return false;
+            }
+
+            $metadata = $this->metadataRegistry->getMetadata($twigFileName);
+
+            foreach ($metadata->loaderErrors as $loaderError) {
+                $errors[$twigFileName . ':' . $loaderError['line'] . ':' . $loaderError['name']] = new Error(
+                    $loaderError['message'],
+                    twigFile: $metadata->filePath,
+                    sourceLocation: new SourceLocation($metadata->filePath, $loaderError['line']),
+                    identifier: 'twig.loaderError',
+                );
+            }
+
+            $result = $metadata->loaderErrors !== [];
+            foreach ([...$metadata->parents, ...$metadata->dependencies] as $dependency) {
+                // Names that are only known at runtime
+                if (str_starts_with($dependency, '$')) {
+                    continue;
+                }
+
+                $result = $isUnloadable($dependency, [...$visiting, $twigFileName => true]) || $result;
+            }
+
+            return $unloadable[$twigFileName] = $result;
+        };
+
+        $loadable = array_values(array_filter($twigFileNames, fn(string $twigFileName) => ! $isUnloadable($twigFileName)));
+
+        return [$loadable, array_values($errors)];
     }
 }

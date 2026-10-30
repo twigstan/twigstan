@@ -6,6 +6,7 @@ namespace TwigStan\Twig\Metadata;
 
 use RuntimeException;
 use Twig\Environment;
+use Twig\Error\LoaderError;
 use Twig\Node\BodyNode;
 use Twig\Node\Expression\ArrayExpression;
 use Twig\Node\Expression\Binary\ConcatBinary;
@@ -17,7 +18,6 @@ use Twig\Node\ImportNode;
 use Twig\Node\Node;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
 use TwigStan\Twig\Node\NodeFinder;
-use TwigStan\Twig\TwigFileCanonicalizer;
 
 final readonly class MetadataAnalyzer
 {
@@ -25,7 +25,6 @@ final readonly class MetadataAnalyzer
         private Environment $twig,
         private TwigNodeParser $twigNodeParser,
         private NodeFinder $nodeFinder,
-        private TwigFileCanonicalizer $twigFileCanonicalizer,
     ) {}
 
     public function getMetadata(string $template): Metadata
@@ -38,13 +37,11 @@ final readonly class MetadataAnalyzer
 
         $parentLineNumber = null;
         $parents = [];
+        $loaderErrors = [];
 
         if ($template->hasNode('parent')) {
             $parentLineNumber = $template->getNode('parent')->getTemplateLine();
-            $parents = array_map(
-                $this->twigFileCanonicalizer->absolute(...),
-                $this->getStringsFromExpression($template->getNode('parent')),
-            );
+            $parents = $this->resolve($this->getStringsFromExpression($template->getNode('parent')), $parentLineNumber, $loaderErrors);
         }
 
         $traits = [];
@@ -94,10 +91,7 @@ final readonly class MetadataAnalyzer
         $dependencies = [];
         foreach ([$template->getNode('body'), ...$template->getNode('blocks'), ...$template->getNode('macros')] as $node) {
             foreach ($this->nodeFinder->findInstanceOf($node, ImportNode::class) as $importNode) {
-                $dependencies = [...$dependencies, ...array_map(
-                    $this->twigFileCanonicalizer->absolute(...),
-                    $this->getStringsFromExpression($importNode->getNode('expr')),
-                )];
+                $dependencies = [...$dependencies, ...$this->resolve($this->getStringsFromExpression($importNode->getNode('expr')), $importNode->getTemplateLine(), $loaderErrors)];
             }
 
             foreach ($this->nodeFinder->findInstanceOf($node, BlockReferenceExpression::class) as $blockReference) {
@@ -105,10 +99,7 @@ final readonly class MetadataAnalyzer
                     continue;
                 }
 
-                $dependencies = [...$dependencies, ...array_map(
-                    $this->twigFileCanonicalizer->absolute(...),
-                    $this->getStringsFromExpression($blockReference->getNode('template')),
-                )];
+                $dependencies = [...$dependencies, ...$this->resolve($this->getStringsFromExpression($blockReference->getNode('template')), $blockReference->getTemplateLine(), $loaderErrors)];
             }
         }
 
@@ -123,7 +114,38 @@ final readonly class MetadataAnalyzer
             $parentBlocks,
             array_values(array_unique($dependencies)),
             str_contains($template->getSourceContext()->getCode(), '@twigstan-abstract'),
+            $loaderErrors,
         );
+    }
+
+    /**
+     * Returns the paths of the templates, leaving out the templates that Twig cannot load, which are added to $loaderErrors.
+     *
+     * @param list<string> $names
+     * @param list<array{name: string, line: int, message: string}> $loaderErrors
+     *
+     * @return list<string>
+     */
+    private function resolve(array $names, int $line, array &$loaderErrors): array
+    {
+        $paths = [];
+        foreach ($names as $name) {
+            // Names that are only known at runtime
+            if (str_contains($name, '$')) {
+                $paths[] = $name;
+
+                continue;
+            }
+
+            try {
+                $paths[] = $this->twig->getLoader()->getSourceContext($name)->getPath();
+            } catch (LoaderError $error) {
+                // The directories that Twig looked into are left out, they are long and depend on the machine.
+                $loaderErrors[] = ['name' => $name, 'line' => $line, 'message' => (string) preg_replace('# \(looked into: .*\)#s', '', $error->getRawMessage())];
+            }
+        }
+
+        return $paths;
     }
 
     /**

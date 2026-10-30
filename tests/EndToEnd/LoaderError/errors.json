@@ -1,0 +1,26 @@
+{
+    "errors": [
+        {
+            "message": "Unable to find template \"@EndToEnd\/LoaderError\/missing_macros.twig\".",
+            "identifier": "twig.loaderError",
+            "tip": null,
+            "twigSourceLocation": "missing_import.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Unable to find template \"@EndToEnd\/LoaderError\/missing.twig\".",
+            "identifier": "twig.loaderError",
+            "tip": null,
+            "twigSourceLocation": "missing_parent.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Looks like you try to load a template outside configured directories (..\/outside.twig).",
+            "identifier": "twig.loaderError",
+            "tip": null,
+            "twigSourceLocation": "outside_parent.twig:1",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}
