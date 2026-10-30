@@ -9,7 +9,7 @@
     "require": {
         "php": "^8.3",
         "composer-runtime-api": "^2.2",
-        "nette/bootstrap": "^3.2",
+        "nette/bootstrap": "^3.3",
         "nette/di": "^3.2.2",
         "nette/neon": "^3.4",
         "nikic/php-parser": "^5.1.0",

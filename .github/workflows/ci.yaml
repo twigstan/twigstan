@@ -28,7 +28,6 @@ jobs:
                 with:
                     php-version: '${{ matrix.php }}'
                     coverage: none
-                    tools: castor
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
@@ -61,7 +60,14 @@ jobs:
                 with:
                     php-version: '${{ matrix.php }}'
                     coverage: none
-                    tools: castor
+
+            -   name: Install Castor
+                # The static binary bundles its own PHP, because Castor requires a newer PHP than TwigStan
+                run: |
+                    mkdir -p "$HOME/bin"
+                    curl -fsSL https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64 -o "$HOME/bin/castor"
+                    chmod +x "$HOME/bin/castor"
+                    echo "$HOME/bin" >> "$GITHUB_PATH"
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
@@ -95,7 +101,14 @@ jobs:
                 with:
                     php-version: '${{ matrix.php }}'
                     coverage: none
-                    tools: castor
+
+            -   name: Install Castor
+                # The static binary bundles its own PHP, because Castor requires a newer PHP than TwigStan
+                run: |
+                    mkdir -p "$HOME/bin"
+                    curl -fsSL https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64 -o "$HOME/bin/castor"
+                    chmod +x "$HOME/bin/castor"
+                    echo "$HOME/bin" >> "$GITHUB_PATH"
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
@@ -119,7 +132,14 @@ jobs:
                 with:
                     php-version: '${{ matrix.php }}'
                     coverage: none
-                    tools: castor
+
+            -   name: Install Castor
+                # The static binary bundles its own PHP, because Castor requires a newer PHP than TwigStan
+                run: |
+                    mkdir -p "$HOME/bin"
+                    curl -fsSL https://github.com/jolicode/castor/releases/latest/download/castor.linux-amd64 -o "$HOME/bin/castor"
+                    chmod +x "$HOME/bin/castor"
+                    echo "$HOME/bin" >> "$GITHUB_PATH"
 
             -   name: Install Composer packages
                 uses: ramsey/composer-install@v3
