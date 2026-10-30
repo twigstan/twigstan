@@ -1,4 +1,12 @@
 {
-    "errors": [],
+    "errors": [
+        {
+            "message": "Variable 'person' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "undefined_argument.twig:3",
+            "renderPoints": []
+        }
+    ],
     "fileSpecificErrors": []
 }
