@@ -1,0 +1,7 @@
+{% extends '@EndToEnd/Inheritance/branch_layout.twig' %}
+
+{% types {
+    flag: 'bool',
+} %}
+
+{% block content %}{{ flag ? 'on' : 'off' }}{% endblock %}

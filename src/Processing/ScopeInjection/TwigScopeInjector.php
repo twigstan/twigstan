@@ -11,6 +11,7 @@ use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitor\NameResolver;
 use PHPStan\PhpDocParser\Ast\PhpDoc\VarTagValueNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
@@ -79,6 +80,22 @@ final class TwigScopeInjector
                 }
 
                 $context = $phpDocNode->type;
+
+                // Variables set in some branches before the block make the context a union of array shapes.
+                if ($context instanceof UnionTypeNode) {
+                    $merged = null;
+                    foreach ($context->types as $type) {
+                        if ( ! $type instanceof ArrayShapeNode) {
+                            $merged = null;
+
+                            break;
+                        }
+
+                        $merged = $merged === null ? $type : $this->arrayShapeMerger->merge($merged, $type);
+                    }
+
+                    $context = $merged ?? $context;
+                }
 
                 if ( ! $context instanceof ArrayShapeNode) {
                     $context = ArrayShapeNode::createSealed([]);
