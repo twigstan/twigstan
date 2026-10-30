@@ -6,6 +6,7 @@ namespace TwigStan\Processing\Flattening\PhpVisitor;
 
 use LogicException;
 use PhpParser\Node;
+use PhpParser\NodeFinder;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
@@ -21,6 +22,24 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
     ) {}
 
     private bool $inlined = false;
+
+    /**
+     * @var array<string, true> The macros that the child template imports, by alias and template
+     */
+    private array $imports = [];
+
+    public function enterNode(Node $node): null
+    {
+        if ($node instanceof Node\Stmt\Expression) {
+            $import = $this->getImport($node);
+
+            if ($import !== null) {
+                $this->imports[$import] = true;
+            }
+        }
+
+        return null;
+    }
 
     /**
      * @return null|array<Node>|int
@@ -100,7 +119,48 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
 
         $this->inlined = true;
 
-        return $traverser->traverse($this->stmts);
+        // Both templates have their own macros at runtime, but the flattened template has only one.
+        $stmts = array_values(array_filter(
+            $this->stmts,
+            fn(Node\Stmt $stmt) => ! $stmt instanceof Node\Stmt\Expression || ! isset($this->imports[$this->getImport($stmt) ?? '']),
+        ));
+
+        return $traverser->traverse($stmts);
+    }
+
+    /**
+     * Find: $macros["forms"] = $this->macros["forms"] = $this->load("forms.twig", 1)->unwrap()->getMacroNamespace();
+     *
+     * @return null|string The alias and the template of the import
+     */
+    private function getImport(Node\Stmt\Expression $node): ?string
+    {
+        if ( ! $node->expr instanceof Node\Expr\Assign || ! $node->expr->var instanceof Node\Expr\ArrayDimFetch) {
+            return null;
+        }
+
+        $alias = $node->expr->var->dim;
+
+        if ( ! $node->expr->var->var instanceof Node\Expr\Variable || $node->expr->var->var->name !== 'macros' || ! $alias instanceof Node\Scalar\String_) {
+            return null;
+        }
+
+        $load = (new NodeFinder())->findFirst(
+            $node->expr->expr,
+            fn(Node $node) => $node instanceof Node\Expr\MethodCall && $node->name instanceof Node\Identifier && $node->name->name === 'load',
+        );
+
+        if ( ! $load instanceof Node\Expr\MethodCall) {
+            return null;
+        }
+
+        $template = $load->getArgs()[0]->value ?? null;
+
+        if ( ! $template instanceof Node\Scalar\String_) {
+            return null;
+        }
+
+        return $alias->value . '|' . $template->value;
     }
 
     /**
