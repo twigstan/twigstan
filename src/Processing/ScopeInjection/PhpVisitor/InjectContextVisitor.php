@@ -9,6 +9,7 @@ use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Printer\Printer;
+use TwigStan\PHPStan\Collector\BlockContextCollector;
 use TwigStan\Processing\ScopeInjection\ArrayShapeMerger;
 use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
 
@@ -25,8 +26,19 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         private readonly ArrayShapeMerger $arrayShapeMerger,
     ) {}
 
+    /**
+     * The index of the embedded template whose class is visited, such as 123 in __TwigTemplate_abc___123.
+     */
+    private ?int $embedIndex = null;
+
     public function enterNode(Node $node): ?Node
     {
+        if ($node instanceof Node\Stmt\Class_) {
+            $this->embedIndex = preg_match('/___(\d+)$/', $node->name->name ?? '', $match) === 1 ? (int) $match[1] : null;
+
+            return null;
+        }
+
         // Search for the following pattern:
         //     // line 7
         //    /**
@@ -46,10 +58,9 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         }
 
         if (preg_match('/^(?<parent>parent_)?block_(?<blockName>\w+)$/', $node->name->name, $match) === 1) {
-            $contextBeforeBlock = $this->getContextBeforeBlock(
-                $match['blockName'],
-                $match['parent'] !== '',
-            );
+            $contextBeforeBlock = $this->embedIndex !== null
+                ? $this->getContextBeforeBlock(BlockContextCollector::embedKey($this->embedIndex), false)
+                : $this->getContextBeforeBlock($match['blockName'], $match['parent'] !== '');
 
             $context = $contextBeforeBlock;
         } else {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Processing\Compilation\TwigVisitor;
 
 use Twig\Environment;
+use Twig\Node\EmbedNode;
 use Twig\Node\IncludeNode;
 use Twig\Node\Node;
 use Twig\NodeVisitor\NodeVisitorInterface;
@@ -18,6 +19,10 @@ final readonly class ReplaceIncludeNodeNodeVisitor implements NodeVisitorInterfa
 
     public function leaveNode(Node $node, Environment $env): Node
     {
+        if ($node instanceof EmbedNode) {
+            return EmbedContextNode::create($node);
+        }
+
         if ( ! $node instanceof IncludeNode) {
             return $node;
         }

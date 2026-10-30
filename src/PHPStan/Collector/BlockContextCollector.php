@@ -9,6 +9,7 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Type\Type;
 use TwigStan\Twig\CommentHelper;
 use TwigStan\Twig\SourceLocation;
 
@@ -36,6 +37,17 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
 
         if ( ! $node->expr instanceof Node\Expr\YieldFrom) {
             return null;
+        }
+
+        // Find: yield from \twigstan_embed(123, $context);
+        if ($node->expr->expr instanceof Node\Expr\FuncCall && $node->expr->expr->name instanceof Node\Name && $node->expr->expr->name->toString() === 'twigstan_embed') {
+            $args = $node->expr->expr->getArgs();
+
+            if (count($args) !== 2 || ! $args[0]->value instanceof Node\Scalar\Int_) {
+                return null;
+            }
+
+            return $this->createContextData($node, $scope, self::embedKey($args[0]->value->value), $scope->getType($args[1]->value), false);
         }
 
         if ( ! $node->expr->expr instanceof Node\Expr\MethodCall) {
@@ -81,6 +93,22 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             $context = $scope->getType($node->expr->expr->args[1]->value);
         }
 
+        return $this->createContextData($node, $scope, $blockName, $context, $node->expr->expr->name->name === 'yieldParentBlock');
+    }
+
+    /**
+     * The blocks of an embedded template are rendered with the context where it is embedded.
+     */
+    public static function embedKey(int $index): string
+    {
+        return sprintf('@embed:%d', $index);
+    }
+
+    /**
+     * @return ContextData
+     */
+    private function createContextData(Node\Stmt\Expression $node, Scope $scope, ?string $blockName, Type $context, bool $parent): array
+    {
         $sourceLocation = null;
         foreach ($node->getComments() as $comment) {
             $sourceLocation = CommentHelper::getSourceLocationFromComment($comment->getText());
@@ -104,7 +132,7 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             'blockName' => $blockName,
             'sourceLocation' => $sourceLocation,
             'context' => (new Printer())->print($context->toPhpDocNode()),
-            'parent' => $node->expr->expr->name->name === 'yieldParentBlock',
+            'parent' => $parent,
             'relatedBlockName' => $match['blockName'] ?? null,
             'relatedParent' => ($match['parent'] ?? '') !== '',
         ];
