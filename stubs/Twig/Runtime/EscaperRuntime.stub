@@ -1,0 +1,21 @@
+<?php
+
+namespace Twig\Runtime;
+
+/**
+ * Types the result of escaping, such as `name|e('js')`.
+ */
+final class EscaperRuntime
+{
+    /**
+     * Strings and Stringable objects are escaped, Markup is returned as is when auto-escaping,
+     * and other values are returned as is by the built-in strategies.
+     *
+     * @template TValue
+     *
+     * @param TValue $string
+     *
+     * @return (TValue is string ? string : (TValue is \Stringable ? string|\Stringable : TValue|string))
+     */
+    public function escape($string, string $strategy = 'html', ?string $charset = null, bool $autoescape = false) {}
+}

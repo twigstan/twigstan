@@ -1,0 +1,6 @@
+{% types {
+    name: 'string',
+} %}
+
+<script>const name = '{{ name | e('js') }}';</script>
+<a title="{{ name | e('html_attr') }}">{{ name }}</a>
