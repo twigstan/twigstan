@@ -13,34 +13,6 @@
             "tip": null,
             "twigSourceLocation": "bug.twig:1",
             "renderPoints": []
-        },
-        {
-            "message": "Cannot call method unwrap() on mixed.",
-            "identifier": "method.nonObject",
-            "tip": null,
-            "twigSourceLocation": "child.twig:1",
-            "renderPoints": []
-        },
-        {
-            "message": "Cannot call method yield() on mixed.",
-            "identifier": "method.nonObject",
-            "tip": null,
-            "twigSourceLocation": "child.twig:1",
-            "renderPoints": []
-        },
-        {
-            "message": "Generator expects value type bool|float|int|string|Stringable|null, mixed given.",
-            "identifier": "generator.valueType",
-            "tip": null,
-            "twigSourceLocation": "child.twig:1",
-            "renderPoints": []
-        },
-        {
-            "message": "Parameter #1 ...$arrays of function array_merge expects array, mixed given.",
-            "identifier": "argument.type",
-            "tip": null,
-            "twigSourceLocation": "child.twig:1",
-            "renderPoints": []
         }
     ],
     "fileSpecificErrors": []
