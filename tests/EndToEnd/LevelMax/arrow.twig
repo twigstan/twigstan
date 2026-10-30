@@ -1,0 +1,12 @@
+{% types {
+    users: 'array<string, \\TwigStan\\Fixtures\\User>',
+    prices: 'list<int>',
+} %}
+
+{% set admins = users | filter((user, key) => user.admin and key != '') %}
+{% set names = users | map((user, key) => key ~ user.name) %}
+{% set ruud = users | find(user => user.firstName == 'Ruud') %}
+{% set sorted = users | sort((a, b) => a.lastName <=> b.lastName) %}
+{% set total = prices | reduce((carry, price) => carry + price * 2, 0) %}
+
+{{ names | join(', ') }}
