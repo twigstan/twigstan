@@ -306,6 +306,34 @@ final class ArrayShapeMergerTest extends TestCase
             ]),
             false,
         ];
+
+        yield [
+            // left: array{firstName: 'Jane'|'John'}
+            ArrayShapeNode::createSealed([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
+                    false,
+                    new UnionTypeNode([new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)), new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED))]),
+                ),
+            ]),
+            // right: array{firstName: 'John'}
+            ArrayShapeNode::createSealed([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
+                    false,
+                    new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED)),
+                ),
+            ]),
+            // result: array{firstName: 'Jane'|'John'}, without repeating 'John' for every merged context
+            ArrayShapeNode::createSealed([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
+                    false,
+                    new UnionTypeNode([new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)), new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED))]),
+                ),
+            ]),
+            false,
+        ];
     }
 
     /**
