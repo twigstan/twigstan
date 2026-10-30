@@ -521,7 +521,8 @@ final class AnalyzeCommand extends Command
         if ($this->onlyAnalyzeTemplatesWithContext) {
             // Filter out errors for templates that don't have a render point.
             $errors = array_values(array_filter($errors, function ($error) use ($templateContext, $errorOutput) {
-                if ($error->twigFile === null) {
+                // Templates that Twig cannot load are broken, whatever context they are rendered with.
+                if ($error->twigFile === null || $error->identifier === 'twig.loaderError') {
                     return true;
                 }
 
