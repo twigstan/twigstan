@@ -23,6 +23,7 @@ final readonly class PHPStanRunner
 
     /**
      * @param list<class-string<TemplateContextCollector<Node>>> $twigContextCollectors
+     * @param list<string> $phpExtensions
      */
     public function __construct(
         private Filesystem $filesystem,
@@ -34,11 +35,13 @@ final readonly class PHPStanRunner
         private string $tempDirectory,
         private array $twigContextCollectors,
         private ?string $appUserClass,
+        private array $phpExtensions,
     ) {}
 
     /**
      * @param list<string> $filesToAnalyze
      * @param list<string> $directoriesToAnalyze
+     * @param list<string> $excludePaths fnmatch patterns
      */
     public function run(
         OutputInterface $output,
@@ -49,6 +52,7 @@ final readonly class PHPStanRunner
         bool $debugMode,
         bool $xdebugMode,
         PHPStanRunMode $mode,
+        array $excludePaths = [],
     ): PHPStanAnalysisResult {
         $configFile = Path::join($this->tempDirectory, sprintf('phpstan.%s.neon', $mode->value));
         $analysisResultJsonFile = Path::join($this->tempDirectory, 'phpstan', sprintf('%s.result.json', $mode->value));
@@ -78,7 +82,8 @@ final readonly class PHPStanRunner
                 ...$directoriesToAnalyze,
                 ...array_keys($services),
             ],
-            'scanDirectories' => $directoriesToAnalyze,
+            // The PHP paths are analysed, the directories of compiled templates are also scanned for the classes of other templates.
+            'scanDirectories' => $mode === PHPStanRunMode::CollectPhpRenderPoints ? [] : $directoriesToAnalyze,
             'twigstan' => [
                 'twigEnvironmentLoader' => $environmentLoader,
                 'analysisResultJsonFile' => $analysisResultJsonFile,
@@ -87,6 +92,15 @@ final readonly class PHPStanRunner
                 'appUserClass' => $this->appUserClass,
             ],
         ];
+
+        if ($mode === PHPStanRunMode::CollectPhpRenderPoints) {
+            $parameters['fileExtensions'] = $this->phpExtensions;
+        }
+
+        if ($excludePaths !== []) {
+            // (?) makes paths without wildcards optional, as in TwigStan.
+            $parameters['excludePaths'] = ['analyse' => array_map(fn(string $path) => sprintf('%s (?)', $path), $excludePaths)];
+        }
 
         if ($this->appUserClass !== null) {
             $parameters['stubFiles'] = [Path::join(dirname(__DIR__, 2), 'stubs', 'Symfony', 'AppVariable.stub')];

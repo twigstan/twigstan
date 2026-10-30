@@ -44,6 +44,7 @@ services:
 		tempDirectory: %tempDir%
 		twigContextCollectors: %twigContextCollectors%
 		appUserClass: %appUserClass%
+		phpExtensions: %phpExtensions%
 	)
 	- TwigStan\PHP\PrettyPrinter
 	- TwigStan\PHP\StrictPhpParser
