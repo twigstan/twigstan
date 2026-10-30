@@ -138,8 +138,8 @@ final readonly class MetadataAnalyzer
 
         if ($node instanceof ConditionalTernary) {
             return [
-                ...$this->getStringsFromExpression($node->getNode('expr2')),
-                ...$this->getStringsFromExpression($node->getNode('expr3')),
+                ...$this->getStringsFromExpression($node->getNode('left')),
+                ...$this->getStringsFromExpression($node->getNode('right')),
             ];
         }
 
