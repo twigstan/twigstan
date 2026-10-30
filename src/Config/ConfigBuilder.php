@@ -18,7 +18,7 @@ final class ConfigBuilder
     private ?string $tempDirectory = null;
     private ?string $baselineFile = null;
     private bool $reportUnmatchedIgnoredErrors = true;
-    private bool $onlyAnalyzeTemplatesWithContext = false;
+    private bool $onlyAnalyzeTemplatesWithContext = true;
     private ?string $phpstanBinPath = null;
     private ?string $phpstanConfigurationFile = null;
     private null | false | string $phpstanMemoryLimit = null;
@@ -213,9 +213,24 @@ final class ConfigBuilder
         return $this;
     }
 
+    /**
+     * Only reports errors in templates that are rendered with a known context, or whose macros are called.
+     * This is the default.
+     */
     public function onlyAnalyzeTemplatesWithContext(): self
     {
         $this->onlyAnalyzeTemplatesWithContext = true;
+
+        return $this;
+    }
+
+    /**
+     * Also reports errors in templates that are not rendered with a known context,
+     * such as templates rendered by dynamic names, vendor code or the form renderer.
+     */
+    public function analyzeTemplatesWithoutContext(): self
+    {
+        $this->onlyAnalyzeTemplatesWithContext = false;
 
         return $this;
     }
