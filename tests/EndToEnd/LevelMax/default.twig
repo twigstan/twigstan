@@ -1,0 +1,9 @@
+{% types { date: '\\DateTimeImmutable|null' } %}
+{# The default filter and the defined test do not fail on null. #}
+{{ date.timestamp | default('') }}
+{{ date.timezone.name | default('') }}
+{% if date.timestamp is defined %}
+    {% assert_type date.timestamp 'int' %}
+{% endif %}
+{# Without the default filter, date can be null. #}
+{{ date.timestamp }}

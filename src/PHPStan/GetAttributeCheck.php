@@ -73,6 +73,33 @@ final readonly class GetAttributeCheck
             return [new MixedType(), []];
         }
 
+        // vendor/twig/twig/src/Extension/CoreExtension.php: getAttribute() returns false or null for null, instead of failing,
+        // in the defined test and when the strict check is ignored, such as in `a.b|default`.
+        if (
+            ! $objectType->isNull()->no()
+            && ! $objectType->isNull()->yes()
+            && ($this->isTrue($arguments['isDefinedTest'], $scope) || $this->isTrue($arguments['ignoreStrictCheck'], $scope))
+        ) {
+            [$type, $errors] = $this->checkObjectType($arguments, TypeCombinator::removeNull($objectType), $scope);
+
+            return [TypeCombinator::addNull($type), $errors];
+        }
+
+        return $this->checkObjectType($arguments, $objectType, $scope);
+    }
+
+    private function isTrue(?Expr $expr, Scope $scope): bool
+    {
+        return $expr !== null && $scope->getType($expr)->isTrue()->yes();
+    }
+
+    /**
+     * @param array{object: Expr, item: Expr, args: list<Arg>, type: null|Expr, isDefinedTest: null|Expr, ignoreStrictCheck: null|Expr} $arguments
+     *
+     * @return array{Type, list<IdentifierRuleError>}
+     */
+    private function checkObjectType(array $arguments, Type $objectType, Scope $scope): array
+    {
         $propertyOrMethodType = $scope->getType($arguments['item']);
 
         $type = Template::ANY_CALL;
@@ -369,7 +396,7 @@ final readonly class GetAttributeCheck
     }
 
     /**
-     * @return null|array{object: Expr, item: Expr, args: list<Arg>, type: null|Expr}
+     * @return null|array{object: Expr, item: Expr, args: list<Arg>, type: null|Expr, isDefinedTest: null|Expr, ignoreStrictCheck: null|Expr}
      */
     public function getNormalizedArguments(StaticCall $methodCall): ?array
     {
@@ -408,6 +435,8 @@ final readonly class GetAttributeCheck
             'item' => $args[3],
             'args' => $passedArgs,
             'type' => $type,
+            'isDefinedTest' => $args['isDefinedTest'] ?? $args[6] ?? null,
+            'ignoreStrictCheck' => $args['ignoreStrictCheck'] ?? $args[7] ?? null,
         ];
     }
 

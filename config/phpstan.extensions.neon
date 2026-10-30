@@ -42,6 +42,10 @@ services:
 		class: TwigStan\PHPStan\DynamicReturnType\GetCallableReturnType
 		tags:
 			- phpstan.broker.dynamicMethodReturnTypeExtension
+	-
+		class: TwigStan\PHPStan\TypeSpecifier\DefinedTestTypeSpecifyingExtension
+		tags:
+			- phpstan.typeSpecifier.staticMethodTypeSpecifyingExtension
 
 
 	# Filter
