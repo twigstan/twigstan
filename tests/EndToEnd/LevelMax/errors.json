@@ -1,22 +1,8 @@
 {
     "errors": [
         {
-            "message": "Cannot access offset class-string<TExtension of Twig\\Extension\\ExtensionInterface> on mixed.",
-            "identifier": "offsetAccess.nonOffsetAccessible",
-            "tip": null,
-            "twigSourceLocation": "bug.twig:1",
-            "renderPoints": []
-        },
-        {
             "message": "Generator expects value type bool|float|int|string|Stringable|null, mixed given.",
             "identifier": "generator.valueType",
-            "tip": null,
-            "twigSourceLocation": "bug.twig:1",
-            "renderPoints": []
-        },
-        {
-            "message": "Method __TwigTemplate_a9707bb057bd5b03986530b052f34c82::getExtension() should return TExtension of Twig\\Extension\\ExtensionInterface but returns mixed.",
-            "identifier": "return.type",
             "tip": null,
             "twigSourceLocation": "bug.twig:1",
             "renderPoints": []
@@ -54,20 +40,6 @@
             "identifier": "argument.type",
             "tip": null,
             "twigSourceLocation": "child.twig:1",
-            "renderPoints": []
-        },
-        {
-            "message": "Cannot access offset class-string<TExtension of Twig\\Extension\\ExtensionInterface> on mixed.",
-            "identifier": "offsetAccess.nonOffsetAccessible",
-            "tip": null,
-            "twigSourceLocation": "child.twig:3",
-            "renderPoints": []
-        },
-        {
-            "message": "Method __TwigTemplate_ffdd49944dad2abf33e190e46c8932d8::getExtension() should return TExtension of Twig\\Extension\\ExtensionInterface but returns mixed.",
-            "identifier": "return.type",
-            "tip": null,
-            "twigSourceLocation": "child.twig:3",
             "renderPoints": []
         }
     ],
