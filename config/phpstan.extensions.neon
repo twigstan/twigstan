@@ -1,6 +1,7 @@
 parameters:
 	stubFiles:
 		- ../stubs/Twig/CoreExtension.stub
+		- ../stubs/Twig/Runtime/EscaperRuntime.stub
 services:
 	-
 		class: TwigStan\PHPStan\GetAttributeCheck
