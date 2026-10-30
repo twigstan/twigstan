@@ -7,11 +7,9 @@ function twigstan_type_hint(array &$context, string $name, string $type, bool $o
 /**
  * Marks the arguments of a call to a macro, so their types can be collected.
  *
- * @template TArguments of array
+ * @param array<mixed> $arguments
  *
- * @param TArguments $arguments
- *
- * @return TArguments
+ * @return array<mixed>
  */
 function twigstan_macro_arguments(string $template, string $macro, array $arguments): array
 {
