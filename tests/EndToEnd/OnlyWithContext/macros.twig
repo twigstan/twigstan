@@ -1,2 +1,5 @@
 {# Macros are not rendered, but they are called with arguments of known types. #}
 {% macro price(amount) %}{{ amount.cents }}{% endmacro %}
+
+{# Blocks are rendered with the context of the template that renders them, which is unknown here. #}
+{% block row %}{{ row_title }}{% endblock %}

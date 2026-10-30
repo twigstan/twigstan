@@ -57,6 +57,7 @@ services:
 	)
 	- TwigStan\Error\ErrorToSourceFileMapper
 	- TwigStan\Error\ErrorTransformer
+	- TwigStan\Error\TemplateWithoutContextFilter
 	- TwigStan\Processing\Compilation\ModifiedCompiler
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
 	- TwigStan\Processing\Compilation\TwigCompiler
