@@ -1,0 +1,6 @@
+{# The macro imports other macros, which are needed again when the macro is analyzed with the types of its arguments. #}
+{% macro signature(first_name) %}
+    {% import '@EndToEnd/Macros/nested_inner.twig' as layout %}
+    {{ layout.separator() }}
+    {{ first_name }}
+{% endmacro %}

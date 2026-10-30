@@ -1,0 +1,4 @@
+{% macro card(name) %}
+    {% import '@EndToEnd/Macros/nested_macros.twig' as signatures %}
+    {{ signatures.signature(name) }}
+{% endmacro %}
