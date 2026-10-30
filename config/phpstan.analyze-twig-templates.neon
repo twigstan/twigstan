@@ -1,6 +1,10 @@
 includes:
 	- phpstan.neon
 	- phpstan.extensions.neon
+parameters:
+	featureToggles:
+		# Compiled templates are in the global namespace and call whatever their extensions compile to, including internal code.
+		internalTag: false
 services:
 	-
 		class: Twig\Environment
