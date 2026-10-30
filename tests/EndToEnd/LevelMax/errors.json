@@ -13,6 +13,13 @@
             "tip": null,
             "twigSourceLocation": "bug.twig:1",
             "renderPoints": []
+        },
+        {
+            "message": "Offset 'a'|'c' might not exist on array{a: int, b: string}.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "dynamic_key.twig:13",
+            "renderPoints": []
         }
     ],
     "fileSpecificErrors": []
