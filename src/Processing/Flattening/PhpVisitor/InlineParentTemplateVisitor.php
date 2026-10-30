@@ -7,6 +7,7 @@ namespace TwigStan\Processing\Flattening\PhpVisitor;
 use LogicException;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
+use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
 use TwigStan\Twig\CommentHelper;
 
@@ -19,15 +20,23 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         private array $stmts,
     ) {}
 
+    private bool $inlined = false;
+
     /**
-     * @return null|array<Node>
+     * @return null|array<Node>|int
      */
-    public function leaveNode(Node $node): ?array
+    public function leaveNode(Node $node): null | array | int
     {
         // Find: $this->parent = $this->load("@EndToEnd/Inheritance/_layout.twig", 1);
+        // Replace with the statements of the parent template.
 
         if ( ! $node instanceof Node\Stmt\Expression) {
             return null;
+        }
+
+        // The parent template is inlined, so it must not be rendered again.
+        if ($this->inlined && $this->isParentYield($node)) {
+            return NodeVisitor::REMOVE_NODE;
         }
 
         if ( ! $node->expr instanceof Node\Expr\Assign) {
@@ -89,9 +98,38 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         $traverser = new NodeTraverser();
         $traverser->addVisitor(new AppendSourceLocationVisitor($sourceLocation));
 
-        return [
-            $node,
-            ...$traverser->traverse($this->stmts),
-        ];
+        $this->inlined = true;
+
+        return $traverser->traverse($this->stmts);
+    }
+
+    /**
+     * Find: yield from $this->parent->unwrap()->yield($context, array_merge($this->blocks, $blocks));
+     */
+    private function isParentYield(Node\Stmt\Expression $node): bool
+    {
+        if ( ! $node->expr instanceof Node\Expr\YieldFrom) {
+            return false;
+        }
+
+        $yield = $node->expr->expr;
+
+        if ( ! $yield instanceof Node\Expr\MethodCall || ! $yield->name instanceof Node\Identifier || $yield->name->name !== 'yield') {
+            return false;
+        }
+
+        $unwrap = $yield->var;
+
+        if ( ! $unwrap instanceof Node\Expr\MethodCall || ! $unwrap->name instanceof Node\Identifier || $unwrap->name->name !== 'unwrap') {
+            return false;
+        }
+
+        $parent = $unwrap->var;
+
+        return $parent instanceof Node\Expr\PropertyFetch
+            && $parent->var instanceof Node\Expr\Variable
+            && $parent->var->name === 'this'
+            && $parent->name instanceof Node\Identifier
+            && $parent->name->name === 'parent';
     }
 }
