@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\Processing\Flattening\PhpVisitor;
 
 use PhpParser\Node;
+use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
 
 final class MainMethodFinderVisitor extends NodeVisitorAbstract
@@ -14,8 +15,21 @@ final class MainMethodFinderVisitor extends NodeVisitorAbstract
      */
     public array $stmts = [];
 
-    public function enterNode(Node $node): null
+    private bool $inTemplateClass = false;
+
+    public function enterNode(Node $node): ?int
     {
+        // Embedded templates, such as {% embed %}, are compiled to more classes after the class of the template.
+        if ($node instanceof Node\Stmt\Class_) {
+            if ($this->inTemplateClass) {
+                return NodeVisitor::STOP_TRAVERSAL;
+            }
+
+            $this->inTemplateClass = true;
+
+            return null;
+        }
+
         if ( ! $node instanceof Node\Stmt\ClassMethod) {
             return null;
         }
