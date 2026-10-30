@@ -54,7 +54,8 @@ final class SimpleIncludeNode extends IncludeNode
 
         $compiler
             ->raw(', ')
-            ->raw($this->getAttribute('only') === true ? 'true' : 'false')
+            // `only` means without context.
+            ->raw($this->getAttribute('only') === true ? 'false' : 'true')
             ->raw(', ')
             ->raw($this->getAttribute('ignore_missing') === true ? 'true' : 'false')
             ->raw(");\n");

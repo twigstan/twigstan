@@ -2,27 +2,27 @@
     "_footer.twig": [
         [
             "include_block.twig:3",
-            "array{}"
-        ],
-        [
-            "include_block.twig:4",
             "array{app: Symfony\\Bridge\\Twig\\AppVariable, something_in_the_context: true}"
         ],
         [
-            "include_block.twig:5",
-            "array{title: 'Hello, World!'}"
+            "include_block.twig:4",
+            "array{}"
         ],
         [
-            "include_block.twig:6",
+            "include_block.twig:5",
             "array{app: Symfony\\Bridge\\Twig\\AppVariable, something_in_the_context: true, title: 'Hello, World!'}"
         ],
         [
+            "include_block.twig:6",
+            "array{title: 'Hello, World!'}"
+        ],
+        [
             "include_block.twig:17",
-            "array{}"
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, something_in_the_context: true, template: '@EndToEnd\/Include\/_footer.twig'}"
         ],
         [
             "include_block.twig:23",
-            "array{}"
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, something_in_the_context: true, template: '@EndToEnd\/Include\/_footer.twig', is_mobile: bool}"
         ],
         [
             "include_function.twig:3",
@@ -52,19 +52,19 @@
     "@EndToEnd\/Include\/maybe-exists.twig": [
         [
             "include_block.twig:8",
-            "array{}"
-        ],
-        [
-            "include_block.twig:9",
             "array{app: Symfony\\Bridge\\Twig\\AppVariable, something_in_the_context: true}"
         ],
         [
+            "include_block.twig:9",
+            "array{}"
+        ],
+        [
             "include_block.twig:10",
-            "array{title: 'Hello, World!'}"
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, something_in_the_context: true, title: 'Hello, World!'}"
         ],
         [
             "include_block.twig:11",
-            "array{app: Symfony\\Bridge\\Twig\\AppVariable, something_in_the_context: true, title: 'Hello, World!'}"
+            "array{title: 'Hello, World!'}"
         ],
         [
             "include_function.twig:8",
@@ -86,7 +86,7 @@
     "@EndToEnd\/Include\/isMobile.twig": [
         [
             "include_block.twig:23",
-            "array{}"
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, something_in_the_context: true, template: '@EndToEnd\/Include\/_footer.twig', is_mobile: bool}"
         ],
         [
             "include_function.twig:22",
