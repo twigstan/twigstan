@@ -24,6 +24,22 @@ final class FilesFinder
     ) {}
 
     /**
+     * @return list<string>
+     */
+    public function getPaths(): array
+    {
+        return $this->paths;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function getExclusions(): array
+    {
+        return $this->exclusions;
+    }
+
+    /**
      * @return array<string, SplFileInfo>
      */
     public function find(): array

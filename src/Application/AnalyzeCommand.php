@@ -292,15 +292,17 @@ final class AnalyzeCommand extends Command
 
         $output->writeln('Collecting scopes from render points...');
 
+        // PHPStan only uses its result cache when it analyses directories, so the configured paths are passed instead of the files in them.
         $analysisResult = $this->phpStanRunner->run(
             $output,
             $errorOutput,
             $this->environmentLoader,
-            $phpFileNames,
-            [],
+            $paths !== [] ? $phpFileNames : [],
+            $paths !== [] ? [] : $this->phpFilesFinder->getPaths(),
             $debugMode,
             $xdebugMode,
             PHPStanRunMode::CollectPhpRenderPoints,
+            $paths !== [] ? [] : $this->phpFilesFinder->getExclusions(),
         );
 
         $result = new TwigStanAnalysisResult();
