@@ -45,17 +45,15 @@ final readonly class SliceReturnType implements DynamicStaticMethodReturnTypeExt
 
         $argType = $scope->getType($methodCall->args[1]->value);
 
+        // slice($charset, $item, $start, $length = null, $preserveKeys = false)
         if ($argType->isString()->yes()) {
-            return $scope->getType(new FuncCall(
-                new Name('mb_substr'),
-                [
-                    $methodCall->args[1],
-                    $methodCall->args[2],
-                    $methodCall->args[3],
-                ],
-            ));
+            return $scope->getType(new FuncCall(new Name('mb_substr'), array_slice($methodCall->args, 1, 3)));
         }
 
-        return $scope->getType(new FuncCall(new Name('array_slice'), array_slice($methodCall->args, 1)));
+        if ($argType->isIterable()->yes()) {
+            return $scope->getType(new FuncCall(new Name('array_slice'), array_slice($methodCall->args, 1)));
+        }
+
+        return null;
     }
 }

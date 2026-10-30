@@ -1,5 +1,6 @@
 {% types {
     array: 'array<string>',
+    value: 'mixed',
 } %}
 
 https://twig.symfony.com/doc/3.x/filters/reverse.html
@@ -25,6 +26,8 @@ https://twig.symfony.com/doc/3.x/filters/slice.html
 {% assert_type ['a', 'b'] | slice(1, 2) "array{'b'}" %}
 {% assert_type array | slice(1, 2) 'array<string>' %}
 {% assert_type 'Hello' | slice(0, 2) "'He'" %}
+{% assert_type 'Hello' | slice(1) "'ello'" %}
+{% assert_type value | slice(0, 2) 'mixed' %}
 
 https://twig.symfony.com/doc/3.x/filters/first.html
 \Twig\Extension\CoreExtension::first
