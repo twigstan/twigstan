@@ -29,12 +29,17 @@ abstract class AbstractEndToEndTestCase extends TestCase
     {
         $container = ContainerFactory::fromFile(
             dirname(__DIR__, 2),
-            __DIR__ . '/../twigstan.php',
+            $this->getConfigurationFile(),
         )->create();
         $this->command = $container->getByType(AnalyzeCommand::class);
 
         $this->output = new BufferedOutput();
         $this->errorOutput = new BufferedOutput();
+    }
+
+    protected function getConfigurationFile(): string
+    {
+        return __DIR__ . '/../twigstan.php';
     }
 
     protected function onNotSuccessfulTest(Throwable $t): never

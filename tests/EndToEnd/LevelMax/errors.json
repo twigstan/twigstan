@@ -1,0 +1,54 @@
+{
+    "errors": [
+        {
+            "message": "Cannot call method unwrap() on mixed.",
+            "identifier": "method.nonObject",
+            "tip": null,
+            "twigSourceLocation": "child.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Cannot call method yield() on mixed.",
+            "identifier": "method.nonObject",
+            "tip": null,
+            "twigSourceLocation": "child.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Generator expects value type bool|float|int|string|Stringable|null, mixed given.",
+            "identifier": "generator.valueType",
+            "tip": null,
+            "twigSourceLocation": "child.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Method __TwigTemplate_ffdd49944dad2abf33e190e46c8932d8::doGetParent() should return bool|string|Twig\\Template|Twig\\TemplateWrapper but returns mixed.",
+            "identifier": "return.type",
+            "tip": null,
+            "twigSourceLocation": "child.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Parameter #1 ...$arrays of function array_merge expects array, mixed given.",
+            "identifier": "argument.type",
+            "tip": null,
+            "twigSourceLocation": "child.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Cannot access offset class-string<TExtension of Twig\\Extension\\ExtensionInterface> on mixed.",
+            "identifier": "offsetAccess.nonOffsetAccessible",
+            "tip": null,
+            "twigSourceLocation": "child.twig:3",
+            "renderPoints": []
+        },
+        {
+            "message": "Method __TwigTemplate_ffdd49944dad2abf33e190e46c8932d8::getExtension() should return TExtension of Twig\\Extension\\ExtensionInterface but returns mixed.",
+            "identifier": "return.type",
+            "tip": null,
+            "twigSourceLocation": "child.twig:3",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}
