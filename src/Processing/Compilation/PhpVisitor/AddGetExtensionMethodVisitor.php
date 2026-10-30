@@ -28,13 +28,15 @@ final class AddGetExtensionMethodVisitor extends NodeVisitorAbstract
                     new Node\Param(new Node\Expr\Variable('class'), type: new Node\Identifier('string')),
                 ],
                 'stmts' => [
+                    // Twig\Template::$extensions is untyped, while Environment::getExtension() is generic.
                     new Stmt\Return_(
-                        new Node\Expr\ArrayDimFetch(
+                        new Node\Expr\MethodCall(
                             new Node\Expr\PropertyFetch(
                                 new Node\Expr\Variable('this'),
-                                new Node\Identifier('extensions'),
+                                new Node\Identifier('env'),
                             ),
-                            new Node\Expr\Variable('class'),
+                            new Node\Identifier('getExtension'),
+                            [new Node\Arg(new Node\Expr\Variable('class'))],
                         ),
                     ),
                 ],
