@@ -20,6 +20,13 @@
             "tip": null,
             "twigSourceLocation": "layout.twig:13, case7.twig:1",
             "renderPoints": []
+        },
+        {
+            "message": "Variable 'subtitle' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "layout.twig:13, conditional_inheritance.twig:1",
+            "renderPoints": []
         }
     ],
     "fileSpecificErrors": []
