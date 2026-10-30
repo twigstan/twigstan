@@ -1,0 +1,7 @@
+{# @twigstan-abstract #}
+{% if flag %}
+    {% set icon = 'check' %}
+{% else %}
+    {% set warning = 'Not enabled' %}
+{% endif %}
+<main>{% block content %}{% endblock %}</main>
