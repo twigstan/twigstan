@@ -11,7 +11,7 @@ final readonly class Metadata
      * @param list<array{name: string, targets: array<int|string, string>}> $traits
      * @param list<string> $blocks
      * @param list<string> $parentBlocks
-     * @param list<string> $macros
+     * @param list<string> $dependencies
      */
     public function __construct(
         public string $name,
@@ -22,7 +22,7 @@ final readonly class Metadata
         public array $traits,
         public array $blocks,
         public array $parentBlocks,
-        public array $macros,
+        public array $dependencies,
         public bool $isAbstract,
     ) {}
 

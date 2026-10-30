@@ -89,10 +89,11 @@ final readonly class MetadataAnalyzer
             }
         }
 
-        $macros = [];
-        foreach ([$template->getNode('body'), ...$template->getNode('blocks')] as $node) {
+        // Templates whose compiled classes are loaded, so they are needed to analyze this template.
+        $dependencies = [];
+        foreach ([$template->getNode('body'), ...$template->getNode('blocks'), ...$template->getNode('macros')] as $node) {
             foreach ($this->nodeFinder->findInstanceOf($node, ImportNode::class) as $importNode) {
-                $macros = [...$macros, ...array_map(
+                $dependencies = [...$dependencies, ...array_map(
                     $this->twigFileCanonicalizer->absolute(...),
                     $this->getStringsFromExpression($importNode->getNode('expr')),
                 )];
@@ -108,7 +109,7 @@ final readonly class MetadataAnalyzer
             $traits,
             $blocks,
             $parentBlocks,
-            array_values(array_unique($macros)),
+            array_values(array_unique($dependencies)),
             str_contains($template->getSourceContext()->getCode(), '@twigstan-abstract'),
         );
     }

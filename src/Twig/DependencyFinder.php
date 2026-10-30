@@ -52,15 +52,15 @@ final readonly class DependencyFinder
             }
         }
 
-        foreach ($metadata->macros as $macro) {
-            if (in_array($macro, $dependants, true)) {
+        foreach ($metadata->dependencies as $dependency) {
+            if (in_array($dependency, $dependants, true)) {
                 continue;
             }
 
             array_push(
                 $dependants,
-                $macro,
-                ...$this->findDependantsForFile($macro),
+                $dependency,
+                ...$this->findDependantsForFile($dependency),
             );
         }
 

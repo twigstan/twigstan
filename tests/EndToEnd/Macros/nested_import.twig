@@ -1,0 +1,4 @@
+{# The argument types reach the inner macros one run after the other, and their imports are needed again in each run. #}
+{% import '@EndToEnd/Macros/nested_outer.twig' as cards %}
+
+{{ cards.card('Jane') }}
