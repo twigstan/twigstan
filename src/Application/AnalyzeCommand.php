@@ -332,7 +332,7 @@ final class AnalyzeCommand extends Command
         $result = $result->withRun($run);
 
         $changedTemplates = [];
-        $templateContext = $templateContext->merge($run->contextAfter, $changedTemplates);
+        $templateContext = $templateContext->merge($this->getContextAfter($run, $templateContext), $changedTemplates);
 
         $result = $result->withContext($templateContext);
 
@@ -376,7 +376,7 @@ final class AnalyzeCommand extends Command
             $errors = [...$errors, ...$run->errors];
 
             $changedTemplates = [];
-            $templateContext = $templateContext->merge($run->contextAfter, $changedTemplates);
+            $templateContext = $templateContext->merge($this->getContextAfter($run, $templateContext), $changedTemplates);
 
             $result = $result->withContext($templateContext);
 
@@ -720,6 +720,15 @@ final class AnalyzeCommand extends Command
         $progressBar->clear();
 
         return $compilationResults;
+    }
+
+    private function getContextAfter(TwigStanRun $run, TemplateContext $templateContext): TemplateContext
+    {
+        if ( ! $this->onlyAnalyzeTemplatesWithContext) {
+            return $run->contextAfter;
+        }
+
+        return $run->contextAfter->withoutIncludesFromTemplatesWithoutContext($templateContext);
     }
 
     /**

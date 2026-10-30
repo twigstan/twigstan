@@ -96,6 +96,32 @@ final readonly class TemplateContext
     }
 
     /**
+     * Removes the contexts of templates that are included by templates without context,
+     * because the variables of those templates are unknown, not missing.
+     */
+    public function withoutIncludesFromTemplatesWithoutContext(self $known): self
+    {
+        $context = [];
+        foreach ($this->context as $template => $renderPoints) {
+            foreach ($renderPoints as $hash => [$sourceLocation, $templateContext]) {
+                // The last location is the template that was analyzed, the others are inlined parents.
+                $includingTemplate = $sourceLocation->fileName;
+                foreach ($sourceLocation as $location) {
+                    $includingTemplate = $location->fileName;
+                }
+
+                if ( ! str_contains($template, '::') && ! $known->hasTemplateOrMacros($includingTemplate)) {
+                    continue;
+                }
+
+                $context[$template][$hash] = [$sourceLocation, $templateContext];
+            }
+        }
+
+        return new self($context);
+    }
+
+    /**
      * Merges the context with the other context. When the other context contains
      * a template that is not in this context, it will be added to the changedTemplates list.
      *
