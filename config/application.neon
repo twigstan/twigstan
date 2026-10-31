@@ -43,6 +43,8 @@ services:
 		currentWorkingDirectory: %currentWorkingDirectory%
 		tempDirectory: %tempDir%
 		twigContextCollectors: %twigContextCollectors%
+		appUserClass: %appUserClass%
+		phpExtensions: %phpExtensions%
 	)
 	- TwigStan\PHP\PrettyPrinter
 	- TwigStan\PHP\StrictPhpParser
@@ -57,6 +59,8 @@ services:
 	)
 	- TwigStan\Error\ErrorToSourceFileMapper
 	- TwigStan\Error\ErrorTransformer
+	- TwigStan\Error\TemplateWithoutContextFilter
+	- TwigStan\Symfony\AppUserContext(appUserClass: %appUserClass%)
 	- TwigStan\Processing\Compilation\ModifiedCompiler
 	- TwigStan\Processing\Compilation\Parser\TwigNodeParser
 	- TwigStan\Processing\Compilation\TwigCompiler
@@ -79,6 +83,7 @@ services:
 	- TwigStan\Twig\TokenParser\PrintAssertTypeTokenParser
 	- TwigStan\Twig\TokenParser\DumpTypeTokenParser
 	- TwigStan\Twig\TwigFactory(environmentLoader: %twigEnvironmentLoader%)
+	- TwigStan\Twig\EnvironmentFingerprint(environmentLoader: %twigEnvironmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer
 	- TwigStan\Processing\TemplateContextFactory
 	- TwigStan\Processing\TemplateContextToArrayShape

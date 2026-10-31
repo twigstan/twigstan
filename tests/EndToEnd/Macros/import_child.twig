@@ -1,0 +1,5 @@
+{# The child imports the same macros as its parent, under the same name. #}
+{% extends '@EndToEnd/Macros/import_layout.twig' %}
+{% import '@EndToEnd/Macros/macros.twig' as greeter %}
+
+{% block content %}{{ greeter.greet('Jane', 'Doe') }}{% endblock %}

@@ -45,6 +45,11 @@ final class TwigScopeInjector
      */
     private array $cachedParentContext = [];
 
+    /**
+     * @var array<string, true>
+     */
+    private array $parentContextsInProgress = [];
+
     public function __construct(
         private readonly PrettyPrinter $prettyPrinter,
         private readonly Filesystem $filesystem,
@@ -70,47 +75,18 @@ final class TwigScopeInjector
             if ($data->collecterType === MacroCollector::class) {
                 $macros[$data->filePath] = $data->data['macros'];
             } elseif ($data->collecterType === BlockContextCollector::class) {
-                $phpDocNode = $this->phpDocParser->parseTagValue(
-                    new TokenIterator($this->lexer->tokenize($data->data['context'])),
-                    '@var',
-                );
+                foreach ($data->data as $blockContext) {
+                    $sourceLocation = SourceLocation::decode($blockContext['sourceLocation']);
 
-                if ( ! $phpDocNode instanceof VarTagValueNode) {
-                    throw new LogicException('Invalid @var tag.');
+                    $contextBeforeBlockByFilename[$sourceLocation->last()->fileName][] = [
+                        'blockName' => $blockContext['blockName'],
+                        'sourceLocation' => $sourceLocation,
+                        'context' => $this->parseContext($blockContext['context']),
+                        'parent' => $blockContext['parent'],
+                        'relatedBlockName' => $blockContext['relatedBlockName'],
+                        'relatedParent' => $blockContext['relatedParent'],
+                    ];
                 }
-
-                $context = $phpDocNode->type;
-
-                // Variables set in some branches before the block make the context a union of array shapes.
-                if ($context instanceof UnionTypeNode) {
-                    $merged = null;
-                    foreach ($context->types as $type) {
-                        if ( ! $type instanceof ArrayShapeNode) {
-                            $merged = null;
-
-                            break;
-                        }
-
-                        $merged = $merged === null ? $type : $this->arrayShapeMerger->merge($merged, $type);
-                    }
-
-                    $context = $merged ?? $context;
-                }
-
-                if ( ! $context instanceof ArrayShapeNode) {
-                    $context = ArrayShapeNode::createSealed([]);
-                }
-
-                $sourceLocation = SourceLocation::decode($data->data['sourceLocation']);
-
-                $contextBeforeBlockByFilename[$sourceLocation->last()->fileName][] = [
-                    'blockName' => $data->data['blockName'],
-                    'sourceLocation' => $sourceLocation,
-                    'context' => $context,
-                    'parent' => $data->data['parent'],
-                    'relatedBlockName' => $data->data['relatedBlockName'],
-                    'relatedParent' => $data->data['relatedParent'],
-                ];
             }
         }
 
@@ -118,7 +94,8 @@ final class TwigScopeInjector
         $this->cachedParentContext = [];
         foreach ($contextBeforeBlockByFilename as $contexts) {
             foreach ($contexts as $context) {
-                $contextBeforeBlock[] = $this->getRecursiveContext($context, $contextBeforeBlockByFilename);
+                // Nothing is in progress yet, so the context is always resolved here.
+                $contextBeforeBlock[] = $this->getRecursiveContext($context, $contextBeforeBlockByFilename) ?? $context;
             }
         }
 
@@ -163,13 +140,49 @@ final class TwigScopeInjector
         return $results;
     }
 
+    private function parseContext(string $context): ArrayShapeNode
+    {
+        $phpDocNode = $this->phpDocParser->parseTagValue(
+            new TokenIterator($this->lexer->tokenize($context)),
+            '@var',
+        );
+
+        if ( ! $phpDocNode instanceof VarTagValueNode) {
+            throw new LogicException('Invalid @var tag.');
+        }
+
+        $type = $phpDocNode->type;
+
+        // Variables set in some branches before the block make the context a union of array shapes.
+        if ($type instanceof UnionTypeNode) {
+            $merged = null;
+            foreach ($type->types as $member) {
+                if ( ! $member instanceof ArrayShapeNode) {
+                    $merged = null;
+
+                    break;
+                }
+
+                $merged = $merged === null ? $member : $this->arrayShapeMerger->merge($merged, $member);
+            }
+
+            $type = $merged ?? $type;
+        }
+
+        if ( ! $type instanceof ArrayShapeNode) {
+            return ArrayShapeNode::createSealed([]);
+        }
+
+        return $type;
+    }
+
     /**
      * @param ContextData $context
      * @param array<array<ContextData>> $contextBeforeBlockByFilename
      *
-     * @return ContextData
+     * @return null|ContextData null when the context is reached again through a cycle of blocks
      */
-    private function getRecursiveContext(array $context, array $contextBeforeBlockByFilename): array
+    private function getRecursiveContext(array $context, array $contextBeforeBlockByFilename): ?array
     {
         $relatedBlockName = $context['relatedBlockName'];
         $relatedParent = $context['relatedParent'];
@@ -178,18 +191,20 @@ final class TwigScopeInjector
             return $context;
         }
 
-        // Avoid infinite loop when a block use `parent()` call.
-        if ($relatedBlockName === $context['blockName']) {
-            return $context;
-        }
-
         $file = $context['sourceLocation']->last()->fileName;
 
         $cacheKey = sprintf('%s#%s#%d', $file, $relatedBlockName, (int) $relatedParent);
 
+        // Blocks that render each other, such as knp_menu's list -> children -> item -> list, form a cycle.
+        // The context that comes back around the cycle adds nothing, so that path is skipped.
+        if (array_key_exists($cacheKey, $this->parentContextsInProgress)) {
+            return null;
+        }
+
         if (array_key_exists($cacheKey, $this->cachedParentContext)) {
             $parentContext = $this->cachedParentContext[$cacheKey];
         } else {
+            $this->parentContextsInProgress[$cacheKey] = true;
             $parentContext = null;
             foreach ($contextBeforeBlockByFilename[$file] as $fileContext) {
                 if ($relatedBlockName !== $fileContext['blockName'] || $relatedParent !== $fileContext['parent']) {
@@ -198,6 +213,10 @@ final class TwigScopeInjector
 
                 $fileContext = $this->getRecursiveContext($fileContext, $contextBeforeBlockByFilename);
 
+                if ($fileContext === null) {
+                    continue;
+                }
+
                 if ($parentContext === null) {
                     $parentContext = $fileContext['context'];
                 } else {
@@ -205,6 +224,7 @@ final class TwigScopeInjector
                 }
             }
 
+            unset($this->parentContextsInProgress[$cacheKey]);
             $this->cachedParentContext[$cacheKey] = $parentContext;
         }
 

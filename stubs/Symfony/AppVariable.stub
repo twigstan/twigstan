@@ -1,0 +1,25 @@
+<?php
+
+namespace Symfony\Component\Security\Core\User;
+
+/**
+ * Declared so that PHPStan's stub validator, which only sees stub files, knows the interface.
+ */
+interface UserInterface {}
+
+namespace Symfony\Bridge\Twig;
+
+use Symfony\Component\Security\Core\User\UserInterface;
+
+/**
+ * Lets TwigStan type app.user by the security of the routes that render a template.
+ *
+ * @template TUser of UserInterface|null = UserInterface|null
+ */
+class AppVariable
+{
+    /**
+     * @return TUser
+     */
+    public function getUser(): ?UserInterface {}
+}

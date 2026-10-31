@@ -72,6 +72,7 @@ final readonly class ContainerFactory
             'phpExtensions' => $this->configuration->phpExtensions,
             'twigContextCollectors' => $this->configuration->twigContextCollectors,
             'editorUrl' => $this->configuration->editorUrl,
+            'appUserClass' => $this->configuration->appUserClass,
             'baselineErrors' => array_map(
                 fn(BaselineError $error) => new Statement(
                     BaselineError::class,

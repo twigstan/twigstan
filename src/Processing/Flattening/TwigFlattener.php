@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Processing\Flattening;
 
+use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
@@ -13,8 +14,11 @@ use TwigStan\PHP\StrictPhpParser;
 use TwigStan\Processing\Compilation\CompilationResultCollection;
 use TwigStan\Processing\Flattening\PhpVisitor\BlockMethodFindingVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\InjectBlockMethodsFromParentVisitor;
+use TwigStan\Processing\Flattening\PhpVisitor\InjectPropertiesFromParentVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\InlineParentTemplateVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\MainMethodFinderVisitor;
+use TwigStan\Processing\Flattening\PhpVisitor\RemoveEmbedsVisitor;
+use TwigStan\Processing\Flattening\PhpVisitor\RenameBlocksVisitor;
 use TwigStan\Twig\Metadata\MetadataRegistry;
 use TwigStan\Twig\SourceLocation;
 
@@ -47,7 +51,22 @@ final class TwigFlattener
             $metadata = $this->metadataRegistry->getMetadata($compilationResult->twigFilePath);
 
             if ($metadata->hasResolvableParents()) {
-                foreach ($metadata->parents as $parent) {
+                // A dynamic parent, such as `{% extends boxed ? 'boxed.twig' : 'wide.twig' %}`, can be any of them.
+                $parents = array_values(array_unique(array_filter(
+                    $metadata->parents,
+                    fn($parent) => ! str_contains($parent, '$'),
+                )));
+
+                $sourceLocation = new SourceLocation(
+                    $metadata->filePath,
+                    $metadata->parentLineNumber ?? 0,
+                );
+
+                $parentStmts = [];
+                $parentBlocks = [];
+                $parentBlockMethods = [];
+                $mainMethodFinderVisitors = [];
+                foreach ($parents as $parent) {
                     $blocksNeededFromParent = array_diff(
                         $this->getRecursiveBlocks($parent),
                         $metadata->blocks,
@@ -81,41 +100,83 @@ final class TwigFlattener
                     $traverser->addVisitor($blockMethodFinderVisitor);
                     $traverser->traverse($phpAst);
 
-                    $sourceLocation = new SourceLocation(
-                        $metadata->filePath,
-                        $metadata->parentLineNumber ?? 0,
-                    );
+                    $parentStmts[] = $mainMethodFinderVisitor->stmts;
+                    $mainMethodFinderVisitors[] = $mainMethodFinderVisitor;
 
-                    $blockMethods = [];
+                    $blocks = [];
                     foreach ($blocksNeededFromParent as $alias => $block) {
                         if ( ! isset($blockMethodFinderVisitor->blocks[$block])) {
                             continue;
                         }
 
-                        $blockMethods[$alias] = [$blockMethodFinderVisitor->blocks[$block], $sourceLocation];
+                        $blocks[$alias] = $blockMethodFinderVisitor->blocks[$block];
                     }
 
-                    // Inline the parent statements into the child template
-                    $phpAst = $this->phpParser->parseFile($compilationResult->phpFile);
-                    $traverser = new NodeTraverser();
-                    $traverser->addVisitor(new InlineParentTemplateVisitor($mainMethodFinderVisitor->stmts));
-                    $traverser->addVisitor(new InjectBlockMethodsFromParentVisitor($blockMethods));
-                    $phpAst = $traverser->traverse($phpAst);
-
-                    $phpSource = $this->prettyPrinter->prettyPrintFile($phpAst);
-
-                    $phpFile = Path::join($targetDirectory, basename($compilationResult->phpFile));
-
-                    $this->filesystem->dumpFile(
-                        $phpFile,
-                        $phpSource,
-                    );
-
-                    $results = $results->with(new FlatteningResult(
-                        $compilationResult->twigFilePath,
-                        $phpFile,
-                    ));
+                    $parentBlocks[] = $blocks;
                 }
+
+                // A block that more parents define, and the child does not override, is rendered only by its own parent,
+                // with the context of that parent. So each parent after the first gets its own copy, such as block_header__parent1.
+                $blockCounts = array_count_values(array_merge(...array_map(array_keys(...), $parentBlocks)));
+                foreach ($parentBlocks as $index => $blocks) {
+                    $names = [];
+                    foreach (array_keys($blocks) as $alias) {
+                        if ($index > 0 && str_starts_with($alias, 'block_') && $blockCounts[$alias] > 1) {
+                            $names[substr($alias, 6)] = sprintf('%s__parent%d', substr($alias, 6), $index);
+                        }
+                    }
+
+                    // The parent's statements are changed in place.
+                    $traverser = new NodeTraverser();
+                    $traverser->addVisitor(new RenameBlocksVisitor($names));
+                    $traverser->addVisitor(new RemoveEmbedsVisitor());
+                    $traverser->traverse($parentStmts[$index]);
+
+                    foreach ($blocks as $alias => $method) {
+                        $traverser->traverse($method->stmts ?? []);
+
+                        $name = substr($alias, 6);
+                        $parentBlockMethods[str_starts_with($alias, 'block_') && isset($names[$name]) ? 'block_' . $names[$name] : $alias][] = $method;
+                    }
+                }
+
+                // A block of the parents that the child calls with parent() is declared once, with the body of each parent as an alternative.
+                $blockMethods = [];
+                foreach ($parentBlockMethods as $alias => $methods) {
+                    $method = $methods[0];
+                    $method->stmts = InlineParentTemplateVisitor::alternatives(array_map(
+                        fn(Node\Stmt\ClassMethod $method) => $method->stmts ?? [],
+                        $methods,
+                    ));
+                    $blockMethods[$alias] = [$method, $sourceLocation];
+                }
+
+                // Inline the parent statements into the child template
+                $phpAst = $this->phpParser->parseFile($compilationResult->phpFile);
+                $traverser = new NodeTraverser();
+                $traverser->addVisitor(new InlineParentTemplateVisitor(InlineParentTemplateVisitor::alternatives($parentStmts)));
+                $traverser->addVisitor(new InjectBlockMethodsFromParentVisitor($blockMethods));
+                $phpAst = $traverser->traverse($phpAst);
+
+                foreach ($mainMethodFinderVisitors as $mainMethodFinderVisitor) {
+                    $traverser = new NodeTraverser();
+                    $traverser->addVisitor(new InjectPropertiesFromParentVisitor($mainMethodFinderVisitor->properties, $mainMethodFinderVisitor->constructorStmts));
+                    $phpAst = $traverser->traverse($phpAst);
+                }
+
+                $phpSource = $this->prettyPrinter->prettyPrintFile($phpAst);
+
+                $phpFile = Path::join($targetDirectory, basename($compilationResult->phpFile));
+
+                $this->filesystem->dumpFile(
+                    $phpFile,
+                    $phpSource,
+                );
+
+                $results = $results->with(new FlatteningResult(
+                    $compilationResult->twigFilePath,
+                    $phpFile,
+                ));
 
                 continue;
             }
@@ -147,14 +208,16 @@ final class TwigFlattener
         if ( ! isset($this->cachedBlocks[$parent])) {
             $parentMetadata = $this->metadataRegistry->getMetadata($parent);
 
-            if ([] === $parentMetadata->parents) {
-                $this->cachedBlocks[$parent] = $parentMetadata->blocks;
-            } else {
-                $this->cachedBlocks[$parent] = array_values(array_unique(array_merge(
-                    $parentMetadata->blocks,
-                    $this->getRecursiveBlocks($parentMetadata->parents[0]),
-                )));
+            $blocks = $parentMetadata->blocks;
+            foreach ($parentMetadata->parents as $grandParent) {
+                if (str_contains($grandParent, '$')) {
+                    continue;
+                }
+
+                $blocks = [...$blocks, ...$this->getRecursiveBlocks($grandParent)];
             }
+
+            $this->cachedBlocks[$parent] = array_values(array_unique($blocks));
         }
 
         return $this->cachedBlocks[$parent];

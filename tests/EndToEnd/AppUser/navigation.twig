@@ -1,0 +1,5 @@
+{# The route is public, but the badge is only included for users. #}
+{% assert_type app.user 'Symfony\\Component\\Security\\Core\\User\\InMemoryUser|null' %}
+{% if app.user %}
+    {% include '@EndToEnd/AppUser/badge.twig' %}
+{% endif %}

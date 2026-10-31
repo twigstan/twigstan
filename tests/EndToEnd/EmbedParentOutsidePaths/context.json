@@ -1,0 +1,8 @@
+{
+    "page.twig": [
+        [
+            "RenderPage.php:13",
+            "array{name: 'Ruud'}"
+        ]
+    ]
+}

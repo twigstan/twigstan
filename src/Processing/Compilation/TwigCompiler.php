@@ -22,7 +22,9 @@ use TwigStan\Processing\Compilation\PhpVisitor\AddMacroArgumentTypesVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AddTypeCommentsToTemplateVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\AppendFilePathToLineCommentVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\IgnoreArgumentTemplateTypeOnEnsureTraversableVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\IntegerTemplateIndexVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\MakeFinalVisitor;
+use TwigStan\Processing\Compilation\PhpVisitor\MarkEmbeddedComponentContextVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\MarkMacroCallArgumentsVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorExtensionCallVisitor;
 use TwigStan\Processing\Compilation\PhpVisitor\RefactorLoopClosureVisitor;
@@ -79,6 +81,8 @@ final readonly class TwigCompiler
             new MakeFinalVisitor(),
             new ReplaceGeneratorGuardVisitor(),
             new RemoveParentCachingVisitor(),
+            new IntegerTemplateIndexVisitor(),
+            new MarkEmbeddedComponentContextVisitor(),
             new RemoveStringCastFromYieldVisitor(),
             new RemoveUninitializedMacroNamespaceGuardVisitor(),
             new MarkMacroCallArgumentsVisitor($twigNode->getSourceContext()->getName()),

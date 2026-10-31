@@ -1,0 +1,19 @@
+{
+    "errors": [
+        {
+            "message": "Offset 'cents' does not exist on 5.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "macros.twig:2",
+            "renderPoints": []
+        },
+        {
+            "message": "Looks like you try to load a template outside configured directories (..\/outside.twig).",
+            "identifier": "twig.loaderError",
+            "tip": null,
+            "twigSourceLocation": "broken.twig:2",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}

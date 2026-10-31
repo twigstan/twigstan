@@ -9,6 +9,8 @@ parametersSchema:
 		analysisResultJsonFile: string()
 		mode: string()
 		debugMode: bool()
+		appUserClass: schema(string(), nullable())
+		environmentFingerprint: schema(string(), nullable())
 	])
 services:
 	errorFormatter.analysisResultToJson:

@@ -15,6 +15,7 @@ use Symfony\Component\Process\Process;
 use TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader;
 use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
+use TwigStan\Twig\EnvironmentFingerprint;
 
 final readonly class PHPStanRunner
 {
@@ -23,6 +24,7 @@ final readonly class PHPStanRunner
 
     /**
      * @param list<class-string<TemplateContextCollector<Node>>> $twigContextCollectors
+     * @param list<string> $phpExtensions
      */
     public function __construct(
         private Filesystem $filesystem,
@@ -33,11 +35,16 @@ final readonly class PHPStanRunner
         private string $currentWorkingDirectory,
         private string $tempDirectory,
         private array $twigContextCollectors,
+        private ?string $appUserClass,
+        private array $phpExtensions,
+        private EnvironmentFingerprint $environmentFingerprint,
     ) {}
 
     /**
      * @param list<string> $filesToAnalyze
      * @param list<string> $directoriesToAnalyze
+     * @param list<string> $excludePaths fnmatch patterns
+     * @param positive-int $run
      */
     public function run(
         OutputInterface $output,
@@ -48,6 +55,8 @@ final readonly class PHPStanRunner
         bool $debugMode,
         bool $xdebugMode,
         PHPStanRunMode $mode,
+        array $excludePaths = [],
+        int $run = 1,
     ): PHPStanAnalysisResult {
         $configFile = Path::join($this->tempDirectory, sprintf('phpstan.%s.neon', $mode->value));
         $analysisResultJsonFile = Path::join($this->tempDirectory, 'phpstan', sprintf('%s.result.json', $mode->value));
@@ -71,20 +80,38 @@ final readonly class PHPStanRunner
 
         $parameters = [
             'tmpDir' => Path::join($this->tempDirectory, 'phpstan'),
-            'resultCachePath' => Path::join($this->tempDirectory, 'phpstan', sprintf('%s.resultCache.php', $mode->value)),
+            // Each run analyses other templates, so each has its own result cache.
+            'resultCachePath' => Path::join($this->tempDirectory, 'phpstan', $mode === PHPStanRunMode::CollectPhpRenderPoints ? sprintf('%s.resultCache.php', $mode->value) : sprintf('%s.%d.resultCache.php', $mode->value, $run)),
             'paths!' => [
                 ...$filesToAnalyze,
                 ...$directoriesToAnalyze,
                 ...array_keys($services),
             ],
-            'scanDirectories' => $directoriesToAnalyze,
+            // The PHP paths are analysed, the directories of compiled templates are also scanned for the classes of other templates.
+            'scanDirectories' => $mode === PHPStanRunMode::CollectPhpRenderPoints ? [] : $directoriesToAnalyze,
             'twigstan' => [
                 'twigEnvironmentLoader' => $environmentLoader,
                 'analysisResultJsonFile' => $analysisResultJsonFile,
                 'mode' => $mode->value,
                 'debugMode' => $debugMode,
+                'appUserClass' => $this->appUserClass,
+                // The render points do not depend on the Twig environment, so their result cache is kept when it changes.
+                'environmentFingerprint' => $mode === PHPStanRunMode::CollectPhpRenderPoints ? null : $this->environmentFingerprint->get(),
             ],
         ];
+
+        if ($mode === PHPStanRunMode::CollectPhpRenderPoints) {
+            $parameters['fileExtensions'] = $this->phpExtensions;
+        }
+
+        if ($excludePaths !== []) {
+            // (?) makes paths without wildcards optional, as in TwigStan.
+            $parameters['excludePaths'] = ['analyse' => array_map(fn(string $path) => sprintf('%s (?)', $path), $excludePaths)];
+        }
+
+        if ($this->appUserClass !== null) {
+            $parameters['stubFiles'] = [Path::join(dirname(__DIR__, 2), 'stubs', 'Symfony', 'AppVariable.stub')];
+        }
 
         if ($mode === PHPStanRunMode::CollectPhpRenderPoints || $mode === PHPStanRunMode::CollectTwigBlockContexts) {
             $parameters['level'] = null;

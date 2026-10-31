@@ -1,0 +1,12 @@
+{% types {
+    labels: 'list<string>',
+    depth: 'int',
+} %}
+
+{# Blocks that render each other, like knp_menu's list -> children -> item -> list #}
+{% set label = 'root' %}
+{% block list %}<ul>{{ block('children') }}</ul>{% endblock %}
+
+{% block children %}{% for label in labels %}{{ block('item') }}{% endfor %}{% endblock %}
+
+{% block item %}<li>{{ label }}{% if depth > 0 %}{{ block('list') }}{% endif %}</li>{% endblock %}

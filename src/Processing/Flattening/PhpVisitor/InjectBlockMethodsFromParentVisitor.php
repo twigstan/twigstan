@@ -18,9 +18,21 @@ final class InjectBlockMethodsFromParentVisitor extends NodeVisitorAbstract
         private array $blocks,
     ) {}
 
+    private int $classes = 0;
+
+    public function enterNode(Node $node): null
+    {
+        if ($node instanceof Node\Stmt\Class_) {
+            $this->classes++;
+        }
+
+        return null;
+    }
+
     public function leaveNode(Node $node): ?Node\Stmt\Class_
     {
-        if ( ! $node instanceof Node\Stmt\Class_) {
+        // Embedded templates are compiled to more classes after the class of the template, and they have blocks of their own.
+        if ( ! $node instanceof Node\Stmt\Class_ || $this->classes !== 1) {
             return null;
         }
 

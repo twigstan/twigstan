@@ -6,6 +6,9 @@ namespace TwigStan\Processing\ScopeInjection;
 
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
 
 final readonly class ArrayShapeMerger
@@ -41,7 +44,7 @@ final readonly class ArrayShapeMerger
                 $items[] = new ArrayShapeItemNode(
                     $rightItem->keyName,
                     $append ? $rightItem->optional : true,
-                    $rightItem->valueType,
+                    $this->withUnsealedValueType($rightItem->valueType, $left),
                 );
 
                 continue;
@@ -51,25 +54,13 @@ final readonly class ArrayShapeMerger
                 $items[] = new ArrayShapeItemNode(
                     $leftItem->keyName,
                     $append ? $leftItem->optional : true,
-                    $leftItem->valueType,
+                    $this->withUnsealedValueType($leftItem->valueType, $right),
                 );
 
                 continue;
             }
 
-            if ((string) $leftItem->valueType === (string) $rightItem->valueType) {
-                $valueType = $leftItem->valueType;
-            } else {
-                if ($leftItem->valueType instanceof UnionTypeNode && $rightItem->valueType instanceof UnionTypeNode) {
-                    $valueType = new UnionTypeNode([...$leftItem->valueType->types, ...$rightItem->valueType->types]);
-                } elseif ($leftItem->valueType instanceof UnionTypeNode) {
-                    $valueType = new UnionTypeNode([...$leftItem->valueType->types, $rightItem->valueType]);
-                } elseif ($rightItem->valueType instanceof UnionTypeNode) {
-                    $valueType = new UnionTypeNode([$leftItem->valueType, ...$rightItem->valueType->types]);
-                } else {
-                    $valueType = new UnionTypeNode([$leftItem->valueType, $rightItem->valueType]);
-                }
-            }
+            $valueType = $this->union($leftItem->valueType, $rightItem->valueType);
 
             $items[] = new ArrayShapeItemNode(
                 $leftItem->keyName,
@@ -78,6 +69,50 @@ final readonly class ArrayShapeMerger
             );
         }
 
-        return ArrayShapeNode::createSealed($items);
+        if ($left->sealed && $right->sealed) {
+            return ArrayShapeNode::createSealed($items);
+        }
+
+        // A context without a shape, such as array<string, mixed>, can hold more keys than it lists.
+        $unsealedTypes = array_values(array_filter([$left->unsealedType, $right->unsealedType]));
+        $unsealedType = $unsealedTypes[0] ?? null;
+
+        if (count($unsealedTypes) === 2) {
+            $unsealedType = new ArrayShapeUnsealedTypeNode(
+                $this->union($unsealedTypes[0]->valueType, $unsealedTypes[1]->valueType),
+                $unsealedTypes[0]->keyType !== null && $unsealedTypes[1]->keyType !== null
+                    ? $this->union($unsealedTypes[0]->keyType, $unsealedTypes[1]->keyType)
+                    : null,
+            );
+        }
+
+        return ArrayShapeNode::createUnsealed($items, $unsealedType);
+    }
+
+    /**
+     * A key that is not listed in an unsealed shape can still hold a value of its unsealed type.
+     */
+    private function withUnsealedValueType(TypeNode $valueType, ArrayShapeNode $other): TypeNode
+    {
+        if ($other->sealed) {
+            return $valueType;
+        }
+
+        return $this->union($valueType, $other->unsealedType->valueType ?? new IdentifierTypeNode('mixed'));
+    }
+
+    /**
+     * Each type is added once, otherwise the types of contexts merged from many render points grow with every one of them.
+     */
+    private function union(TypeNode $left, TypeNode $right): TypeNode
+    {
+        $types = [];
+        foreach ([$left, $right] as $type) {
+            foreach ($type instanceof UnionTypeNode ? $type->types : [$type] as $member) {
+                $types[(string) $member] ??= $member;
+            }
+        }
+
+        return count($types) === 1 ? reset($types) : new UnionTypeNode(array_values($types));
     }
 }

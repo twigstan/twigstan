@@ -1,0 +1,32 @@
+{
+    "dynamic_extends.twig": [
+        [
+            "BlockContextController.php:13",
+            "array{boxed: bool, name: 'Ruud'}"
+        ]
+    ],
+    "block_function.twig": [
+        [
+            "BlockContextController.php:21",
+            "array{name: 'Ruud'}"
+        ]
+    ],
+    "parent_call.twig": [
+        [
+            "BlockContextController.php:28",
+            "array{name: 'Ruud'}"
+        ]
+    ],
+    "embed_in_block.twig": [
+        [
+            "BlockContextController.php:35",
+            "array{name: 'Ruud'}"
+        ]
+    ],
+    "embed_in_child.twig": [
+        [
+            "BlockContextController.php:42",
+            "array{name: 'Ruud'}"
+        ]
+    ]
+}

@@ -15,3 +15,15 @@ function twigstan_macro_arguments(string $template, string $macro, array $argume
 {
     return $arguments;
 }
+
+/**
+ * Marks where an embedded template, such as {% embed %} or a component, is rendered, so the context of its blocks can be collected.
+ *
+ * @param array<mixed> $context
+ *
+ * @return iterable<never>
+ */
+function twigstan_embed(int $index, array $context): iterable
+{
+    return [];
+}

@@ -24,6 +24,7 @@ use TwigStan\Error\ErrorToSourceFileMapper;
 use TwigStan\Error\ErrorTransformer;
 use TwigStan\Error\IgnoreByIdentifierWhenSourceLocationHasPrevious;
 use TwigStan\Error\IgnoreError;
+use TwigStan\Error\TemplateWithoutContextFilter;
 use TwigStan\Finder\FilesFinder;
 use TwigStan\Finder\GivenFilesFinder;
 use TwigStan\PHPStan\Analysis\Error;
@@ -34,6 +35,7 @@ use TwigStan\Processing\Flattening\TwigFlattener;
 use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
 use TwigStan\Processing\TemplateContext;
 use TwigStan\Processing\TemplateContextFactory;
+use TwigStan\Symfony\AppUserContext;
 use TwigStan\Twig\DependencyFinder;
 use TwigStan\Twig\DependencySorter;
 use TwigStan\Twig\Metadata\MetadataRegistry;
@@ -61,6 +63,8 @@ final class AnalyzeCommand extends Command
         private ErrorCollapser $errorCollapser,
         private ErrorTransformer $errorTransformer,
         private ErrorToSourceFileMapper $errorToSourceFileMapper,
+        private TemplateWithoutContextFilter $templateWithoutContextFilter,
+        private AppUserContext $appUserContext,
         private TemplateContextFactory $templateContextFactory,
         private MetadataRegistry $metadataRegistry,
         private string $environmentLoader,
@@ -288,15 +292,17 @@ final class AnalyzeCommand extends Command
 
         $output->writeln('Collecting scopes from render points...');
 
+        // PHPStan only uses its result cache when it analyses directories, so the configured paths are passed instead of the files in them.
         $analysisResult = $this->phpStanRunner->run(
             $output,
             $errorOutput,
             $this->environmentLoader,
-            $phpFileNames,
-            [],
+            $paths !== [] ? $phpFileNames : [],
+            $paths !== [] ? [] : $this->phpFilesFinder->getPaths(),
             $debugMode,
             $xdebugMode,
             PHPStanRunMode::CollectPhpRenderPoints,
+            $paths !== [] ? [] : $this->phpFilesFinder->getExclusions(),
         );
 
         $result = new TwigStanAnalysisResult();
@@ -315,7 +321,7 @@ final class AnalyzeCommand extends Command
             return $result;
         }
 
-        $templateContext = $this->templateContextFactory->create($analysisResult);
+        $templateContext = $this->appUserContext->apply($this->templateContextFactory->create($analysisResult));
 
         $run = $this->executeRun(
             $output,
@@ -332,7 +338,7 @@ final class AnalyzeCommand extends Command
         $result = $result->withRun($run);
 
         $changedTemplates = [];
-        $templateContext = $templateContext->merge($run->contextAfter, $changedTemplates);
+        $templateContext = $templateContext->merge($this->getContextAfter($run, $templateContext), $changedTemplates);
 
         $result = $result->withContext($templateContext);
 
@@ -376,7 +382,7 @@ final class AnalyzeCommand extends Command
             $errors = [...$errors, ...$run->errors];
 
             $changedTemplates = [];
-            $templateContext = $templateContext->merge($run->contextAfter, $changedTemplates);
+            $templateContext = $templateContext->merge($this->getContextAfter($run, $templateContext), $changedTemplates);
 
             $result = $result->withContext($templateContext);
 
@@ -430,9 +436,6 @@ final class AnalyzeCommand extends Command
             IgnoreError::identifier('missingType.return'),
             IgnoreError::identifier('method.missingOverride'),
             IgnoreError::identifier('return.unusedType'),
-
-            // Compiled Twig templates extend and use Twig internals.
-            IgnoreError::message('#internal (static )?(class|method) Twig\\\#'),
 
             // Compiled Twig templates assign $macros and $context, whether they are read or not.
             IgnoreError::messageAndIdentifier('#Variable \$macros is never read\.#', 'variable.unused'),
@@ -520,11 +523,12 @@ final class AnalyzeCommand extends Command
         if ($this->onlyAnalyzeTemplatesWithContext) {
             // Filter out errors for templates that don't have a render point.
             $errors = array_values(array_filter($errors, function ($error) use ($templateContext, $errorOutput) {
-                if ($error->twigFile === null) {
+                // Templates that Twig cannot load are broken, whatever context they are rendered with.
+                if ($error->twigFile === null || $error->identifier === 'twig.loaderError') {
                     return true;
                 }
 
-                $hasRenderPoint = $templateContext->hasTemplate($error->twigFile);
+                $hasRenderPoint = $this->templateWithoutContextFilter->hasContext($error, $templateContext);
 
                 if ( ! $hasRenderPoint) {
                     $errorOutput->writeln(
@@ -725,6 +729,15 @@ final class AnalyzeCommand extends Command
         return $compilationResults;
     }
 
+    private function getContextAfter(TwigStanRun $run, TemplateContext $templateContext): TemplateContext
+    {
+        if ( ! $this->onlyAnalyzeTemplatesWithContext) {
+            return $run->contextAfter;
+        }
+
+        return $run->contextAfter->withoutIncludesFromTemplatesWithoutContext($templateContext);
+    }
+
     /**
      * @param list<string> $twigFileNames
      * @param positive-int $run
@@ -745,6 +758,8 @@ final class AnalyzeCommand extends Command
         if ($run > 1) {
             $output->writeln(sprintf('Run %d', $run));
         }
+
+        [$twigFileNames, $loaderErrors] = $this->withoutUnloadableTemplates($twigFileNames);
 
         $twigFileNamesToAnalyze = $twigFileNames;
 
@@ -788,6 +803,7 @@ final class AnalyzeCommand extends Command
             $debugMode,
             $xdebugMode,
             PHPStanRunMode::CollectTwigBlockContexts,
+            run: $run,
         );
 
         $result = new TwigStanAnalysisResult();
@@ -826,11 +842,12 @@ final class AnalyzeCommand extends Command
             $debugMode,
             $xdebugMode,
             PHPStanRunMode::AnalyzeTwigTemplates,
+            run: $run,
         );
 
         $newTemplateContext = $this->templateContextFactory->create($analysisResult2);
 
-        $errors = $this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors);
+        $errors = [...$loaderErrors, ...$this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors)];
 
         return new TwigStanRun(
             $run,
@@ -845,5 +862,56 @@ final class AnalyzeCommand extends Command
                 PHPStanRunMode::AnalyzeTwigTemplates->value => $analysisResult2,
             ],
         );
+    }
+
+    /**
+     * Leaves out templates that extend or import templates that Twig cannot load, directly or through other templates.
+     * Twig fails to render them, so this is reported as an error in the template that references the unloadable template.
+     *
+     * @param list<string> $twigFileNames
+     *
+     * @return array{list<string>, list<Error>}
+     */
+    private function withoutUnloadableTemplates(array $twigFileNames): array
+    {
+        $errors = [];
+        $unloadable = [];
+        $isUnloadable = function (string $twigFileName, array $visiting = []) use (&$isUnloadable, &$errors, &$unloadable): bool {
+            if (isset($unloadable[$twigFileName])) {
+                return $unloadable[$twigFileName];
+            }
+
+            // Templates can depend on each other
+            if (isset($visiting[$twigFileName])) {
+                return false;
+            }
+
+            $metadata = $this->metadataRegistry->getMetadata($twigFileName);
+
+            foreach ($metadata->loaderErrors as $loaderError) {
+                $errors[$twigFileName . ':' . $loaderError['line'] . ':' . $loaderError['name']] = new Error(
+                    $loaderError['message'],
+                    twigFile: $metadata->filePath,
+                    sourceLocation: new SourceLocation($metadata->filePath, $loaderError['line']),
+                    identifier: 'twig.loaderError',
+                );
+            }
+
+            $result = $metadata->loaderErrors !== [];
+            foreach ([...$metadata->parents, ...$metadata->dependencies] as $dependency) {
+                // Names that are only known at runtime
+                if (str_starts_with($dependency, '$')) {
+                    continue;
+                }
+
+                $result = $isUnloadable($dependency, [...$visiting, $twigFileName => true]) || $result;
+            }
+
+            return $unloadable[$twigFileName] = $result;
+        };
+
+        $loadable = array_values(array_filter($twigFileNames, fn(string $twigFileName) => ! $isUnloadable($twigFileName)));
+
+        return [$loadable, array_values($errors)];
     }
 }

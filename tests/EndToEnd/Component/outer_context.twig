@@ -1,0 +1,12 @@
+{# The bodies of embeds and components are rendered with the context where they are used. #}
+{% types { users: 'list<string>' } %}
+
+{% for user in users %}
+    {% embed '@EndToEnd/Component/box.twig' %}
+        {% block content %}{% assert_type user 'string' %}{{ user }}{% endblock %}
+    {% endembed %}
+
+    {% component Alert with { type: 'success' } %}
+        {% block content %}{% assert_type user 'string' %}{% assert_type type "'success'" %}{{ user }}{% endblock %}
+    {% endcomponent %}
+{% endfor %}

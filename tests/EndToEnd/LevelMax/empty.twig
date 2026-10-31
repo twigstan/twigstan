@@ -1,0 +1,10 @@
+{% types { name: 'string|null', items: 'list<int>|false' } %}
+{# The empty test is true for null, false, '' and empty arrays. #}
+{% if name is not empty %}
+    {% assert_type name 'non-empty-string' %}
+{% else %}
+    {% assert_type name 'string|null' %}
+{% endif %}
+{% if items is not empty %}
+    {% assert_type items 'non-empty-list<int>' %}
+{% endif %}

@@ -10,6 +10,11 @@ use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
+use PHPStan\Type\Constant\ConstantStringType;
+use PHPStan\Type\ErrorType;
+use PHPStan\Type\Generic\GenericObjectType;
+use PHPStan\Type\Type;
+use Symfony\Bridge\Twig\AppVariable;
 use Twig\Extension\CoreExtension;
 use TwigStan\Twig\CommentHelper;
 
@@ -97,6 +102,12 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
         if ($withContext) {
             $builder = ConstantArrayTypeBuilder::createFromConstantArray($context);
 
+            $app = $this->getAppWithNarrowedUser($context, $scope);
+
+            if ($app !== null) {
+                $builder->setOffsetValueType(new ConstantStringType('app'), $app);
+            }
+
             foreach ($variables->getKeyTypes() as $key) {
                 $builder->setOffsetValueType($key, $variables->getOffsetValueType($key));
             }
@@ -116,5 +127,49 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
         }
 
         return $result;
+    }
+
+    /**
+     * Keeps app.user not null in templates that are only included when there is a user, such as in {% if app.user %}.
+     */
+    private function getAppWithNarrowedUser(ConstantArrayType $context, Scope $scope): ?Type
+    {
+        $app = new ConstantStringType('app');
+
+        if ( ! $context->hasOffsetValueType($app)->yes()) {
+            return null;
+        }
+
+        $declaredUser = $context->getOffsetValueType($app)->getTemplateType(AppVariable::class, 'TUser');
+
+        if ($declaredUser instanceof ErrorType || $declaredUser->isNull()->no()) {
+            return null;
+        }
+
+        // How TwigStan compiles app.user, printed the same way as PHPStan remembers the type narrowed by {% if app.user %}
+        $string = static fn(string $value) => new Node\Scalar\String_($value, ['kind' => Node\Scalar\String_::KIND_DOUBLE_QUOTED]);
+        $false = new Node\Arg(new Node\Expr\ConstFetch(new Node\Name\FullyQualified('false')));
+        $user = $scope->getType(new Node\Expr\StaticCall(
+            new Node\Name\FullyQualified(CoreExtension::class),
+            'getAttribute',
+            [
+                new Node\Arg(new Node\Expr\PropertyFetch(new Node\Expr\Variable('this'), 'env')),
+                new Node\Arg(new Node\Expr\PropertyFetch(new Node\Expr\Variable('this'), 'source')),
+                new Node\Arg(new Node\Expr\ArrayDimFetch(new Node\Expr\Variable('context'), new Node\Scalar\String_('app'))),
+                new Node\Arg($string('user')),
+                new Node\Arg(new Node\Expr\Array_([], ['kind' => Node\Expr\Array_::KIND_SHORT])),
+                new Node\Arg($string('any')),
+                $false,
+                $false,
+                $false,
+                new Node\Arg(new Node\Scalar\Int_(0)),
+            ],
+        ));
+
+        if ( ! $user->isNull()->no() || ! $declaredUser->isSuperTypeOf($user)->yes()) {
+            return null;
+        }
+
+        return new GenericObjectType(AppVariable::class, [$user]);
     }
 }

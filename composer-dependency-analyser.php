@@ -29,6 +29,43 @@ $config->ignoreErrorsOnPackagesAndPaths(
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );
 
+// Only used when the Twig environment loader returns a Symfony kernel
+$config->ignoreErrorsOnPackagesAndPaths(
+    [
+        'symfony/http-foundation',
+        'symfony/routing',
+        'symfony/security-core',
+        'symfony/security-http',
+        'symfony/twig-bridge',
+    ],
+    [
+        __DIR__ . '/src/Symfony/AppUserContext.php',
+    ],
+    [ErrorType::DEV_DEPENDENCY_IN_PROD],
+);
+
+$config->ignoreErrorsOnPackagesAndPaths(
+    [
+        'symfony/dependency-injection',
+        'symfony/http-kernel',
+    ],
+    [
+        __DIR__ . '/src/Twig/TwigFactory.php',
+    ],
+    [ErrorType::DEV_DEPENDENCY_IN_PROD],
+);
+
+$config->ignoreErrorsOnPackagesAndPaths(
+    [
+        'symfony/twig-bridge',
+    ],
+    [
+        __DIR__ . '/src/PHPStan/Collector/ContextFromTwigIncludeCallCollector.php',
+        __DIR__ . '/src/PHPStan/DynamicReturnType/GetGlobalsReturnType.php',
+    ],
+    [ErrorType::DEV_DEPENDENCY_IN_PROD],
+);
+
 // TODO: shipmonk-rnd/composer-dependency-analyser#202
 $config->ignoreErrorsOnPackage(
     'symfony/polyfill-php84',

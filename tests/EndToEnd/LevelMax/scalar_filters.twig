@@ -1,0 +1,11 @@
+{# Twig converts scalars to strings in string filters. #}
+{{ 5 | trim }}
+{{ 5 | lower }}
+{{ 1.5 | upper }}
+{{ 5 | capitalize }}
+{{ 5 | title }}
+{{ 5 | striptags }}
+{{ 5 | nl2br }}
+{{ 5 | convert_encoding('UTF-8', 'ISO-8859-1') }}
+{# Arrays are not converted. #}
+{{ [5] | trim }}

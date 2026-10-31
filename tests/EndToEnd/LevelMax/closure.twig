@@ -1,0 +1,6 @@
+{# Functions, filters and tests defined by closures. #}
+{% assert_type closure_function('a', 2) 'string' %}
+{% assert_type 'abc' | closure_filter 'int' %}
+{% assert_type 3 is closure_test 'bool' %}
+{{ closure_function('a') }}
+{{ 'abc' | closure_filter }}
