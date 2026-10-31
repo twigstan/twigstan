@@ -45,6 +45,11 @@ final class TwigScopeInjector
      */
     private array $cachedParentContext = [];
 
+    /**
+     * @var array<string, true>
+     */
+    private array $parentContextsInProgress = [];
+
     public function __construct(
         private readonly PrettyPrinter $prettyPrinter,
         private readonly Filesystem $filesystem,
@@ -118,7 +123,8 @@ final class TwigScopeInjector
         $this->cachedParentContext = [];
         foreach ($contextBeforeBlockByFilename as $contexts) {
             foreach ($contexts as $context) {
-                $contextBeforeBlock[] = $this->getRecursiveContext($context, $contextBeforeBlockByFilename);
+                // Nothing is in progress yet, so the context is always resolved here.
+                $contextBeforeBlock[] = $this->getRecursiveContext($context, $contextBeforeBlockByFilename) ?? $context;
             }
         }
 
@@ -167,9 +173,9 @@ final class TwigScopeInjector
      * @param ContextData $context
      * @param array<array<ContextData>> $contextBeforeBlockByFilename
      *
-     * @return ContextData
+     * @return null|ContextData null when the context is reached again through a cycle of blocks
      */
-    private function getRecursiveContext(array $context, array $contextBeforeBlockByFilename): array
+    private function getRecursiveContext(array $context, array $contextBeforeBlockByFilename): ?array
     {
         $relatedBlockName = $context['relatedBlockName'];
         $relatedParent = $context['relatedParent'];
@@ -187,9 +193,16 @@ final class TwigScopeInjector
 
         $cacheKey = sprintf('%s#%s#%d', $file, $relatedBlockName, (int) $relatedParent);
 
+        // Blocks that render each other, such as knp_menu's list -> children -> item -> list, form a cycle.
+        // The context that comes back around the cycle adds nothing, so that path is skipped.
+        if (array_key_exists($cacheKey, $this->parentContextsInProgress)) {
+            return null;
+        }
+
         if (array_key_exists($cacheKey, $this->cachedParentContext)) {
             $parentContext = $this->cachedParentContext[$cacheKey];
         } else {
+            $this->parentContextsInProgress[$cacheKey] = true;
             $parentContext = null;
             foreach ($contextBeforeBlockByFilename[$file] as $fileContext) {
                 if ($relatedBlockName !== $fileContext['blockName'] || $relatedParent !== $fileContext['parent']) {
@@ -198,6 +211,10 @@ final class TwigScopeInjector
 
                 $fileContext = $this->getRecursiveContext($fileContext, $contextBeforeBlockByFilename);
 
+                if ($fileContext === null) {
+                    continue;
+                }
+
                 if ($parentContext === null) {
                     $parentContext = $fileContext['context'];
                 } else {
@@ -205,6 +222,7 @@ final class TwigScopeInjector
                 }
             }
 
+            unset($this->parentContextsInProgress[$cacheKey]);
             $this->cachedParentContext[$cacheKey] = $parentContext;
         }
 
