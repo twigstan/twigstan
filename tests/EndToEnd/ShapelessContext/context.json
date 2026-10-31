@@ -1,0 +1,24 @@
+{
+    "shapeless.twig": [
+        [
+            "ShapelessContextController.php:16",
+            "array<string, mixed>"
+        ],
+        [
+            "ShapelessContextController.php:21",
+            "array{name: 'Ruud'}"
+        ]
+    ],
+    "child.twig": [
+        [
+            "ShapelessContextController.php:31",
+            "array<string, mixed>"
+        ]
+    ],
+    "empty.twig": [
+        [
+            "ShapelessContextController.php:36",
+            "array{}"
+        ]
+    ]
+}

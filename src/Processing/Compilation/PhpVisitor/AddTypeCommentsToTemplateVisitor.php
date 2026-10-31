@@ -62,19 +62,28 @@ final class AddTypeCommentsToTemplateVisitor extends NodeVisitorAbstract
                         ),
                     );
 
+                    $globals = new Node\Expr\MethodCall(
+                        new Node\Expr\PropertyFetch(
+                            new Node\Expr\Variable('this'),
+                            'env',
+                        ),
+                        'getGlobals',
+                    );
+
                     $node->stmts = [
                         // Add: $context += $this->env->getGlobals();
+                        // PHPStan drops the unsealed part of a shape such as array{name?: string, ...<string, mixed>} on +,
+                        // so a context without a shape gets the same result from: $context = \array_merge($this->env->getGlobals(), $context);
                         new Node\Stmt\Expression(
-                            new Node\Expr\AssignOp\Plus(
-                                new Node\Expr\Variable('context'),
-                                new Node\Expr\MethodCall(
-                                    new Node\Expr\PropertyFetch(
-                                        new Node\Expr\Variable('this'),
-                                        'env',
+                            $this->contextFromTemplateRender->sealed
+                                ? new Node\Expr\AssignOp\Plus(new Node\Expr\Variable('context'), $globals)
+                                : new Node\Expr\Assign(
+                                    new Node\Expr\Variable('context'),
+                                    new Node\Expr\FuncCall(
+                                        new Node\Name\FullyQualified('array_merge'),
+                                        [new Node\Arg($globals), new Node\Arg(new Node\Expr\Variable('context'))],
                                     ),
-                                    'getGlobals',
                                 ),
-                            ),
                         ),
 
                         ...$node->stmts ?? [],

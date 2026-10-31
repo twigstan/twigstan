@@ -1,0 +1,33 @@
+{
+    "errors": [
+        {
+            "message": "Variable 'title' might not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "child.twig:3",
+            "renderPoints": [
+                "ShapelessContextController.php:31"
+            ]
+        },
+        {
+            "message": "Variable 'name' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "empty.twig:1",
+            "renderPoints": [
+                "ShapelessContextController.php:36"
+            ]
+        },
+        {
+            "message": "Variable 'title' might not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "shapeless.twig:2",
+            "renderPoints": [
+                "ShapelessContextController.php:16",
+                "ShapelessContextController.php:21"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}

@@ -9,6 +9,7 @@ use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprStringNode;
 use PHPStan\PhpDocParser\Ast\ConstExpr\ConstExprTrueNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\ConstTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
@@ -332,6 +333,38 @@ final class ArrayShapeMergerTest extends TestCase
                     new UnionTypeNode([new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)), new ConstTypeNode(new ConstExprStringNode('John', ConstExprStringNode::SINGLE_QUOTED))]),
                 ),
             ]),
+            false,
+        ];
+
+        yield [
+            // left: array{firstName: 'Jane'}
+            ArrayShapeNode::createSealed([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
+                    false,
+                    new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)),
+                ),
+            ]),
+            // right: array{...<string, int>}, such as a context typed array<string, int>
+            ArrayShapeNode::createUnsealed([], new ArrayShapeUnsealedTypeNode(new IdentifierTypeNode('int'), new IdentifierTypeNode('string'))),
+            // result: array{firstName?: 'Jane'|int, ...<string, int>}, because the right context can hold any key
+            ArrayShapeNode::createUnsealed([
+                new ArrayShapeItemNode(
+                    new ConstExprStringNode('firstName', ConstExprStringNode::SINGLE_QUOTED),
+                    true,
+                    new UnionTypeNode([new ConstTypeNode(new ConstExprStringNode('Jane', ConstExprStringNode::SINGLE_QUOTED)), new IdentifierTypeNode('int')]),
+                ),
+            ], new ArrayShapeUnsealedTypeNode(new IdentifierTypeNode('int'), new IdentifierTypeNode('string'))),
+            false,
+        ];
+
+        yield [
+            // left: array{...<string, int>}
+            ArrayShapeNode::createUnsealed([], new ArrayShapeUnsealedTypeNode(new IdentifierTypeNode('int'), new IdentifierTypeNode('string'))),
+            // right: array{...<string, bool>}
+            ArrayShapeNode::createUnsealed([], new ArrayShapeUnsealedTypeNode(new IdentifierTypeNode('bool'), new IdentifierTypeNode('string'))),
+            // result: array{...<string, int|bool>}
+            ArrayShapeNode::createUnsealed([], new ArrayShapeUnsealedTypeNode(new UnionTypeNode([new IdentifierTypeNode('int'), new IdentifierTypeNode('bool')]), new IdentifierTypeNode('string'))),
             false,
         ];
     }
