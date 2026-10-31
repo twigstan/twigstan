@@ -15,7 +15,7 @@ use TwigStan\Twig\CommentHelper;
 final class InlineParentTemplateVisitor extends NodeVisitorAbstract
 {
     /**
-     * @param list<Node\Stmt> $stmts
+     * @param array<Node\Stmt> $stmts
      */
     public function __construct(
         private array $stmts,
@@ -56,6 +56,11 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         // The parent template is inlined, so it must not be rendered again.
         if ($this->inlined && $this->isParentYield($node)) {
             return NodeVisitor::REMOVE_NODE;
+        }
+
+        // A dynamic parent is loaded where it is rendered: yield from $this->getParent($context)->unwrap()->yield(...);
+        if ($this->isDynamicParentYield($node)) {
+            return $this->inline($node);
         }
 
         if ( ! $node->expr instanceof Node\Expr\Assign) {
@@ -108,6 +113,51 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
             return null;
         }
 
+        return $this->inline($node);
+    }
+
+    /**
+     * Statements of which PHPStan can not tell which ones run, such as the bodies of the parents that a dynamic parent can be.
+     *
+     * @param list<array<Node\Stmt>> $alternatives
+     *
+     * @return array<Node\Stmt>
+     */
+    public static function alternatives(array $alternatives): array
+    {
+        $last = array_pop($alternatives) ?? [];
+
+        if ($alternatives === []) {
+            return $last;
+        }
+
+        $condition = static fn() => new Node\Expr\BinaryOp\Identical(
+            new Node\Expr\FuncCall(new Node\Name\FullyQualified('mt_rand'), [
+                new Node\Arg(new Node\Scalar\Int_(0)),
+                new Node\Arg(new Node\Scalar\Int_(1)),
+            ]),
+            new Node\Scalar\Int_(0),
+        );
+
+        $first = array_shift($alternatives);
+
+        return [
+            new Node\Stmt\If_($condition(), [
+                'stmts' => $first,
+                'elseifs' => array_map(
+                    fn(array $stmts) => new Node\Stmt\ElseIf_($condition(), $stmts),
+                    $alternatives,
+                ),
+                'else' => new Node\Stmt\Else_($last),
+            ]),
+        ];
+    }
+
+    /**
+     * @return array<Node>
+     */
+    private function inline(Node\Stmt\Expression $node): array
+    {
         $sourceLocation = CommentHelper::getSourceLocationFromComments($node->getComments());
 
         if ($sourceLocation === null) {
@@ -119,13 +169,41 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
 
         $this->inlined = true;
 
-        // Both templates have their own macros at runtime, but the flattened template has only one.
-        $stmts = array_values(array_filter(
-            $this->stmts,
-            fn(Node\Stmt $stmt) => ! $stmt instanceof Node\Stmt\Expression || ! isset($this->imports[$this->getImport($stmt) ?? '']),
-        ));
+        return $traverser->traverse($this->withoutChildImports($this->stmts));
+    }
 
-        return $traverser->traverse($stmts);
+    /**
+     * Both templates have their own macros at runtime, but the flattened template has only one.
+     *
+     * @param array<Node\Stmt> $stmts
+     *
+     * @return array<Node\Stmt>
+     */
+    private function withoutChildImports(array $stmts): array
+    {
+        $result = [];
+        foreach ($stmts as $stmt) {
+            if ($stmt instanceof Node\Stmt\Expression && isset($this->imports[$this->getImport($stmt) ?? ''])) {
+                continue;
+            }
+
+            // The alternatives of a dynamic parent
+            if ($stmt instanceof Node\Stmt\If_) {
+                $stmt->stmts = $this->withoutChildImports($stmt->stmts);
+
+                foreach ($stmt->elseifs as $elseif) {
+                    $elseif->stmts = $this->withoutChildImports($elseif->stmts);
+                }
+
+                if ($stmt->else !== null) {
+                    $stmt->else->stmts = $this->withoutChildImports($stmt->else->stmts);
+                }
+            }
+
+            $result[] = $stmt;
+        }
+
+        return $result;
     }
 
     /**
@@ -161,6 +239,36 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         }
 
         return $alias->value . '|' . $template->value;
+    }
+
+    /**
+     * Find: yield from $this->getParent($context)->unwrap()->yield($context, \array_merge($this->blocks, $blocks));
+     */
+    private function isDynamicParentYield(Node\Stmt\Expression $node): bool
+    {
+        if ( ! $node->expr instanceof Node\Expr\YieldFrom) {
+            return false;
+        }
+
+        $yield = $node->expr->expr;
+
+        if ( ! $yield instanceof Node\Expr\MethodCall || ! $yield->name instanceof Node\Identifier || $yield->name->name !== 'yield') {
+            return false;
+        }
+
+        $unwrap = $yield->var;
+
+        if ( ! $unwrap instanceof Node\Expr\MethodCall || ! $unwrap->name instanceof Node\Identifier || $unwrap->name->name !== 'unwrap') {
+            return false;
+        }
+
+        $getParent = $unwrap->var;
+
+        return $getParent instanceof Node\Expr\MethodCall
+            && $getParent->var instanceof Node\Expr\Variable
+            && $getParent->var->name === 'this'
+            && $getParent->name instanceof Node\Identifier
+            && $getParent->name->name === 'getParent';
     }
 
     /**

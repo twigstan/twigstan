@@ -1,0 +1,7 @@
+{% extends '@EndToEnd/BlockContext/parent_layout.twig' %}
+
+{% block content %}
+    {% embed '@EndToEnd/BlockContext/card.twig' %}
+        {% block body %}{{ name | upper }} {{ missing }}{% endblock %}
+    {% endembed %}
+{% endblock %}

@@ -1,0 +1,3 @@
+{% extends boxed ? '@EndToEnd/BlockContext/boxed_layout.twig' : '@EndToEnd/BlockContext/wide_layout.twig' %}
+
+{% block content %}{{ name | upper }} {{ missing }}{% endblock %}

@@ -1,0 +1,14 @@
+{
+    "dynamic_extends.twig": [
+        [
+            "BlockContextController.php:13",
+            "array{boxed: bool, name: 'Ruud'}"
+        ]
+    ],
+    "embed_in_block.twig": [
+        [
+            "BlockContextController.php:21",
+            "array{name: 'Ruud'}"
+        ]
+    ]
+}
