@@ -1,0 +1,8 @@
+{% extends '@EndToEnd/BlockContext/embed_layout.twig' %}
+
+{% block content %}
+    {% set label = 'Card' %}
+    {% embed '@EndToEnd/BlockContext/card.twig' %}
+        {% block body %}{{ label | upper }}{% endblock %}
+    {% endembed %}
+{% endblock %}

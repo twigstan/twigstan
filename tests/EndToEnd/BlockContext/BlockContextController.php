@@ -36,4 +36,11 @@ final class BlockContextController
             'name' => 'Ruud',
         ]);
     }
+
+    public function embedInChild(Environment $environment): string
+    {
+        return $environment->render('EndToEnd/BlockContext/embed_in_child.twig', [
+            'name' => 'Ruud',
+        ]);
+    }
 }
