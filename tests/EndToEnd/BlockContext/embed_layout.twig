@@ -1,4 +1,6 @@
 {# @twigstan-abstract #}
+<script>const name = '{{ name | e('js') }}';</script>
+{% block script %}<script>const lowerName = '{{ name | lower | e('js') }}';</script>{% endblock %}
 {% embed '@EndToEnd/BlockContext/card.twig' %}
     {% block body %}{{ name | lower }}{% endblock %}
 {% endembed %}

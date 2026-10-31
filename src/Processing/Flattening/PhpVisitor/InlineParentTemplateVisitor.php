@@ -23,6 +23,8 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
 
     private bool $inlined = false;
 
+    private int $classes = 0;
+
     /**
      * @var array<string, true> The macros that the child template imports, by alias and template
      */
@@ -30,6 +32,12 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
 
     public function enterNode(Node $node): null
     {
+        if ($node instanceof Node\Stmt\Class_) {
+            $this->classes++;
+
+            return null;
+        }
+
         if ($node instanceof Node\Stmt\Expression) {
             $import = $this->getImport($node);
 
@@ -49,7 +57,9 @@ final class InlineParentTemplateVisitor extends NodeVisitorAbstract
         // Find: $this->parent = $this->load("@EndToEnd/Inheritance/_layout.twig", 1);
         // Replace with the statements of the parent template.
 
-        if ( ! $node instanceof Node\Stmt\Expression) {
+        // Embedded templates, such as {% embed %}, are compiled to more classes after the class of the template.
+        // They have parents of their own, so the parent of the template is inlined only in its own class.
+        if ( ! $node instanceof Node\Stmt\Expression || $this->classes !== 1) {
             return null;
         }
 
