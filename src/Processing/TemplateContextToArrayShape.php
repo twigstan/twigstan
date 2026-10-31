@@ -6,6 +6,8 @@ namespace TwigStan\Processing;
 
 use PHPStan\PhpDocParser\Ast\PhpDoc\VarTagValueNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
@@ -72,8 +74,12 @@ final readonly class TemplateContextToArrayShape
             return null;
         }
 
+        // A context without a shape, such as array<string, mixed>, can hold any variable.
         if ( ! $phpDocNode->type instanceof ArrayShapeNode) {
-            return ArrayShapeNode::createSealed([]);
+            return ArrayShapeNode::createUnsealed(
+                [],
+                new ArrayShapeUnsealedTypeNode(new IdentifierTypeNode('mixed'), new IdentifierTypeNode('string')),
+            );
         }
 
         return $phpDocNode->type;

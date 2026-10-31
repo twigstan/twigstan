@@ -6,6 +6,8 @@ namespace TwigStan\Processing\ScopeInjection;
 
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\TypeNode;
 use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
 
@@ -42,7 +44,7 @@ final readonly class ArrayShapeMerger
                 $items[] = new ArrayShapeItemNode(
                     $rightItem->keyName,
                     $append ? $rightItem->optional : true,
-                    $rightItem->valueType,
+                    $this->withUnsealedValueType($rightItem->valueType, $left),
                 );
 
                 continue;
@@ -52,7 +54,7 @@ final readonly class ArrayShapeMerger
                 $items[] = new ArrayShapeItemNode(
                     $leftItem->keyName,
                     $append ? $leftItem->optional : true,
-                    $leftItem->valueType,
+                    $this->withUnsealedValueType($leftItem->valueType, $right),
                 );
 
                 continue;
@@ -67,7 +69,36 @@ final readonly class ArrayShapeMerger
             );
         }
 
-        return ArrayShapeNode::createSealed($items);
+        if ($left->sealed && $right->sealed) {
+            return ArrayShapeNode::createSealed($items);
+        }
+
+        // A context without a shape, such as array<string, mixed>, can hold more keys than it lists.
+        $unsealedTypes = array_values(array_filter([$left->unsealedType, $right->unsealedType]));
+        $unsealedType = $unsealedTypes[0] ?? null;
+
+        if (count($unsealedTypes) === 2) {
+            $unsealedType = new ArrayShapeUnsealedTypeNode(
+                $this->union($unsealedTypes[0]->valueType, $unsealedTypes[1]->valueType),
+                $unsealedTypes[0]->keyType !== null && $unsealedTypes[1]->keyType !== null
+                    ? $this->union($unsealedTypes[0]->keyType, $unsealedTypes[1]->keyType)
+                    : null,
+            );
+        }
+
+        return ArrayShapeNode::createUnsealed($items, $unsealedType);
+    }
+
+    /**
+     * A key that is not listed in an unsealed shape can still hold a value of its unsealed type.
+     */
+    private function withUnsealedValueType(TypeNode $valueType, ArrayShapeNode $other): TypeNode
+    {
+        if ($other->sealed) {
+            return $valueType;
+        }
+
+        return $this->union($valueType, $other->unsealedType->valueType ?? new IdentifierTypeNode('mixed'));
     }
 
     /**
