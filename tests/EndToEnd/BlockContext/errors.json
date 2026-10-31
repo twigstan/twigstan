@@ -35,6 +35,15 @@
             "renderPoints": [
                 "BlockContextController.php:28"
             ]
+        },
+        {
+            "message": "Variable 'box_width' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "wide_layout.twig:2, dynamic_extends.twig:1",
+            "renderPoints": [
+                "BlockContextController.php:13"
+            ]
         }
     ],
     "fileSpecificErrors": []
