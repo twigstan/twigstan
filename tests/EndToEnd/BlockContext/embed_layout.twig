@@ -1,0 +1,5 @@
+{# @twigstan-abstract #}
+{% embed '@EndToEnd/BlockContext/card.twig' %}
+    {% block body %}{{ name | lower }}{% endblock %}
+{% endembed %}
+<main>{% block content %}{% endblock %}</main>

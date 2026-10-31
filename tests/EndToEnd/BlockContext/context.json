@@ -22,5 +22,11 @@
             "BlockContextController.php:35",
             "array{name: 'Ruud'}"
         ]
+    ],
+    "embed_in_child.twig": [
+        [
+            "BlockContextController.php:42",
+            "array{name: 'Ruud'}"
+        ]
     ]
 }

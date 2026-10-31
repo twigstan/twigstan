@@ -17,6 +17,7 @@ use TwigStan\Processing\Flattening\PhpVisitor\InjectBlockMethodsFromParentVisito
 use TwigStan\Processing\Flattening\PhpVisitor\InjectPropertiesFromParentVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\InlineParentTemplateVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\MainMethodFinderVisitor;
+use TwigStan\Processing\Flattening\PhpVisitor\RemoveEmbedsVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\RenameBlocksVisitor;
 use TwigStan\Twig\Metadata\MetadataRegistry;
 use TwigStan\Twig\SourceLocation;
@@ -125,9 +126,10 @@ final class TwigFlattener
                         }
                     }
 
-                    // The block names are renamed in place.
+                    // The parent's statements are changed in place.
                     $traverser = new NodeTraverser();
                     $traverser->addVisitor(new RenameBlocksVisitor($names));
+                    $traverser->addVisitor(new RemoveEmbedsVisitor());
                     $traverser->traverse($parentStmts[$index]);
 
                     foreach ($blocks as $alias => $method) {
