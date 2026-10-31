@@ -184,11 +184,6 @@ final class TwigScopeInjector
             return $context;
         }
 
-        // Avoid infinite loop when a block use `parent()` call.
-        if ($relatedBlockName === $context['blockName']) {
-            return $context;
-        }
-
         $file = $context['sourceLocation']->last()->fileName;
 
         $cacheKey = sprintf('%s#%s#%d', $file, $relatedBlockName, (int) $relatedParent);

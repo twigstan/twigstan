@@ -5,9 +5,15 @@
             "array{boxed: bool, name: 'Ruud'}"
         ]
     ],
-    "embed_in_block.twig": [
+    "parent_call.twig": [
         [
             "BlockContextController.php:21",
+            "array{name: 'Ruud'}"
+        ]
+    ],
+    "embed_in_block.twig": [
+        [
+            "BlockContextController.php:28",
             "array{name: 'Ruud'}"
         ]
     ]
