@@ -4,6 +4,15 @@
             "message": "Variable 'missing' does not exist.",
             "identifier": "offsetAccess.notFound",
             "tip": null,
+            "twigSourceLocation": "block_function.twig:3",
+            "renderPoints": [
+                "BlockContextController.php:21"
+            ]
+        },
+        {
+            "message": "Variable 'missing' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
             "twigSourceLocation": "dynamic_extends.twig:3",
             "renderPoints": [
                 "BlockContextController.php:13"
@@ -15,7 +24,7 @@
             "tip": null,
             "twigSourceLocation": "embed_in_block.twig:5",
             "renderPoints": [
-                "BlockContextController.php:28"
+                "BlockContextController.php:35"
             ]
         },
         {
@@ -24,7 +33,7 @@
             "tip": null,
             "twigSourceLocation": "parent_call.twig:3",
             "renderPoints": [
-                "BlockContextController.php:21"
+                "BlockContextController.php:28"
             ]
         }
     ],

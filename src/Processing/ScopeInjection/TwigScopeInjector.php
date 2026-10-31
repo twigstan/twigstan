@@ -75,47 +75,18 @@ final class TwigScopeInjector
             if ($data->collecterType === MacroCollector::class) {
                 $macros[$data->filePath] = $data->data['macros'];
             } elseif ($data->collecterType === BlockContextCollector::class) {
-                $phpDocNode = $this->phpDocParser->parseTagValue(
-                    new TokenIterator($this->lexer->tokenize($data->data['context'])),
-                    '@var',
-                );
+                foreach ($data->data as $blockContext) {
+                    $sourceLocation = SourceLocation::decode($blockContext['sourceLocation']);
 
-                if ( ! $phpDocNode instanceof VarTagValueNode) {
-                    throw new LogicException('Invalid @var tag.');
+                    $contextBeforeBlockByFilename[$sourceLocation->last()->fileName][] = [
+                        'blockName' => $blockContext['blockName'],
+                        'sourceLocation' => $sourceLocation,
+                        'context' => $this->parseContext($blockContext['context']),
+                        'parent' => $blockContext['parent'],
+                        'relatedBlockName' => $blockContext['relatedBlockName'],
+                        'relatedParent' => $blockContext['relatedParent'],
+                    ];
                 }
-
-                $context = $phpDocNode->type;
-
-                // Variables set in some branches before the block make the context a union of array shapes.
-                if ($context instanceof UnionTypeNode) {
-                    $merged = null;
-                    foreach ($context->types as $type) {
-                        if ( ! $type instanceof ArrayShapeNode) {
-                            $merged = null;
-
-                            break;
-                        }
-
-                        $merged = $merged === null ? $type : $this->arrayShapeMerger->merge($merged, $type);
-                    }
-
-                    $context = $merged ?? $context;
-                }
-
-                if ( ! $context instanceof ArrayShapeNode) {
-                    $context = ArrayShapeNode::createSealed([]);
-                }
-
-                $sourceLocation = SourceLocation::decode($data->data['sourceLocation']);
-
-                $contextBeforeBlockByFilename[$sourceLocation->last()->fileName][] = [
-                    'blockName' => $data->data['blockName'],
-                    'sourceLocation' => $sourceLocation,
-                    'context' => $context,
-                    'parent' => $data->data['parent'],
-                    'relatedBlockName' => $data->data['relatedBlockName'],
-                    'relatedParent' => $data->data['relatedParent'],
-                ];
             }
         }
 
@@ -167,6 +138,42 @@ final class TwigScopeInjector
         }
 
         return $results;
+    }
+
+    private function parseContext(string $context): ArrayShapeNode
+    {
+        $phpDocNode = $this->phpDocParser->parseTagValue(
+            new TokenIterator($this->lexer->tokenize($context)),
+            '@var',
+        );
+
+        if ( ! $phpDocNode instanceof VarTagValueNode) {
+            throw new LogicException('Invalid @var tag.');
+        }
+
+        $type = $phpDocNode->type;
+
+        // Variables set in some branches before the block make the context a union of array shapes.
+        if ($type instanceof UnionTypeNode) {
+            $merged = null;
+            foreach ($type->types as $member) {
+                if ( ! $member instanceof ArrayShapeNode) {
+                    $merged = null;
+
+                    break;
+                }
+
+                $merged = $merged === null ? $member : $this->arrayShapeMerger->merge($merged, $member);
+            }
+
+            $type = $merged ?? $type;
+        }
+
+        if ( ! $type instanceof ArrayShapeNode) {
+            return ArrayShapeNode::createSealed([]);
+        }
+
+        return $type;
     }
 
     /**

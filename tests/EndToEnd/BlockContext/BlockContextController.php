@@ -16,6 +16,13 @@ final class BlockContextController
         ]);
     }
 
+    public function blockFunction(Environment $environment): string
+    {
+        return $environment->render('EndToEnd/BlockContext/block_function.twig', [
+            'name' => 'Ruud',
+        ]);
+    }
+
     public function parentCall(Environment $environment): string
     {
         return $environment->render('EndToEnd/BlockContext/parent_call.twig', [
