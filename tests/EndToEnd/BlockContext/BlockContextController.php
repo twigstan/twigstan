@@ -16,6 +16,13 @@ final class BlockContextController
         ]);
     }
 
+    public function parentCall(Environment $environment): string
+    {
+        return $environment->render('EndToEnd/BlockContext/parent_call.twig', [
+            'name' => 'Ruud',
+        ]);
+    }
+
     public function embedInBlock(Environment $environment): string
     {
         return $environment->render('EndToEnd/BlockContext/embed_in_block.twig', [
