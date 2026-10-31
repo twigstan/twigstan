@@ -1,2 +1,3 @@
 {# @twigstan-abstract #}
-<div class="boxed">{% block page %}{% block content %}{% endblock %}{% endblock %}</div>
+{% set box_width = 960 %}
+<div class="boxed">{% block page %}<div style="width: {{ box_width }}px">{% block content %}{% endblock %}</div>{% endblock %}</div>

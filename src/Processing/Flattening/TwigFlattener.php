@@ -17,6 +17,7 @@ use TwigStan\Processing\Flattening\PhpVisitor\InjectBlockMethodsFromParentVisito
 use TwigStan\Processing\Flattening\PhpVisitor\InjectPropertiesFromParentVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\InlineParentTemplateVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\MainMethodFinderVisitor;
+use TwigStan\Processing\Flattening\PhpVisitor\RenameBlocksVisitor;
 use TwigStan\Twig\Metadata\MetadataRegistry;
 use TwigStan\Twig\SourceLocation;
 
@@ -61,6 +62,7 @@ final class TwigFlattener
                 );
 
                 $parentStmts = [];
+                $parentBlocks = [];
                 $parentBlockMethods = [];
                 $mainMethodFinderVisitors = [];
                 foreach ($parents as $parent) {
@@ -100,16 +102,43 @@ final class TwigFlattener
                     $parentStmts[] = $mainMethodFinderVisitor->stmts;
                     $mainMethodFinderVisitors[] = $mainMethodFinderVisitor;
 
+                    $blocks = [];
                     foreach ($blocksNeededFromParent as $alias => $block) {
                         if ( ! isset($blockMethodFinderVisitor->blocks[$block])) {
                             continue;
                         }
 
-                        $parentBlockMethods[$alias][] = $blockMethodFinderVisitor->blocks[$block];
+                        $blocks[$alias] = $blockMethodFinderVisitor->blocks[$block];
+                    }
+
+                    $parentBlocks[] = $blocks;
+                }
+
+                // A block that more parents define, and the child does not override, is rendered only by its own parent,
+                // with the context of that parent. So each parent after the first gets its own copy, such as block_header__parent1.
+                $blockCounts = array_count_values(array_merge(...array_map(array_keys(...), $parentBlocks)));
+                foreach ($parentBlocks as $index => $blocks) {
+                    $names = [];
+                    foreach (array_keys($blocks) as $alias) {
+                        if ($index > 0 && str_starts_with($alias, 'block_') && $blockCounts[$alias] > 1) {
+                            $names[substr($alias, 6)] = sprintf('%s__parent%d', substr($alias, 6), $index);
+                        }
+                    }
+
+                    // The block names are renamed in place.
+                    $traverser = new NodeTraverser();
+                    $traverser->addVisitor(new RenameBlocksVisitor($names));
+                    $traverser->traverse($parentStmts[$index]);
+
+                    foreach ($blocks as $alias => $method) {
+                        $traverser->traverse($method->stmts ?? []);
+
+                        $name = substr($alias, 6);
+                        $parentBlockMethods[str_starts_with($alias, 'block_') && isset($names[$name]) ? 'block_' . $names[$name] : $alias][] = $method;
                     }
                 }
 
-                // A block that more parents define is declared once, with the body of each parent as an alternative.
+                // A block of the parents that the child calls with parent() is declared once, with the body of each parent as an alternative.
                 $blockMethods = [];
                 foreach ($parentBlockMethods as $alias => $methods) {
                     $method = $methods[0];
