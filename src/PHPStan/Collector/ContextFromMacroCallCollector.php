@@ -8,8 +8,11 @@ use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Reflection\ReflectionProvider;
 use TwigStan\Twig\CommentHelper;
 
 /**
@@ -19,6 +22,10 @@ use TwigStan\Twig\CommentHelper;
  */
 final readonly class ContextFromMacroCallCollector implements TemplateContextCollector
 {
+    public function __construct(
+        private ReflectionProvider $reflectionProvider,
+    ) {}
+
     public function getNodeType(): string
     {
         return Node\Stmt::class;
@@ -39,9 +46,20 @@ final readonly class ContextFromMacroCallCollector implements TemplateContextCol
             return null;
         }
 
+        $function = $this->reflectionProvider->getFunction(new Node\Name('twigstan_macro_arguments'), $scope);
+
         $result = [];
         foreach ($calls as $call) {
-            $args = $call->getArgs();
+            $normalizedCall = ArgumentsNormalizer::reorderFuncArguments(
+                ParametersAcceptorSelector::selectFromArgs($scope, $call->getArgs(), $function->getVariants(), $function->getNamedArgumentsVariants()),
+                $call,
+            );
+
+            if ($normalizedCall === null) {
+                continue;
+            }
+
+            $args = $normalizedCall->getArgs();
 
             if (count($args) !== 3 || ! $args[0]->value instanceof Node\Scalar\String_ || ! $args[1]->value instanceof Node\Scalar\String_) {
                 continue;

@@ -19,11 +19,27 @@
             "array{title: 'SimpleAction', rows: non-empty-list<string>}"
         ],
         [
+            "NamedArgumentsController.php:37",
+            "array{title: 'SimpleAction', rows: non-empty-list<string>}"
+        ],
+        [
             "SimpleTemplateAttributeController.php:21",
             "array{title: 'SimpleAction', rows: non-empty-list<string>}"
         ]
     ],
     "optionality.html.twig": [
+        [
+            "NamedArgumentsController.php:17",
+            "array{name: 'NamedArguments'}"
+        ],
+        [
+            "NamedArgumentsController.php:22",
+            "array{}"
+        ],
+        [
+            "NamedArgumentsController.php:27",
+            "array{name: null}"
+        ],
         [
             "OptionalityController.php:13",
             "array{name: string|null}"
