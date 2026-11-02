@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace TwigStan\PHPStan\Collector;
 
 use PhpParser\Node;
+use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
@@ -56,7 +58,16 @@ final readonly class ContextFromControllerRenderMethodCallCollector implements T
             return null;
         }
 
-        $args = $node->getArgs();
+        $normalizedCall = ArgumentsNormalizer::reorderMethodArguments(
+            ParametersAcceptorSelector::selectFromArgs($scope, $node->getArgs(), $method->getVariants(), $method->getNamedArgumentsVariants()),
+            $node,
+        );
+
+        if ($normalizedCall === null) {
+            return null;
+        }
+
+        $args = $normalizedCall->getArgs();
 
         if ( ! isset($args[0])) {
             return null;

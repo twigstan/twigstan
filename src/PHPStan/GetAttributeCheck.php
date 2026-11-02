@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace TwigStan\PHPStan;
 
 use ArrayAccess;
-use PhpParser\Node;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Scalar\String_;
+use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\CollectedDataEmitter;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
@@ -37,6 +37,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use Twig\Extension\CoreExtension;
 use Twig\Template;
 
 final readonly class GetAttributeCheck
@@ -56,7 +57,7 @@ final readonly class GetAttributeCheck
      */
     public function check(StaticCall $node, Scope $scope): ?array
     {
-        $arguments = $this->getNormalizedArguments($node);
+        $arguments = $this->getNormalizedArguments($node, $scope);
 
         if ($arguments === null) {
             return null;
@@ -398,29 +399,34 @@ final readonly class GetAttributeCheck
     /**
      * @return null|array{object: Expr, item: Expr, args: list<Arg>, type: null|Expr, isDefinedTest: null|Expr, ignoreStrictCheck: null|Expr}
      */
-    public function getNormalizedArguments(StaticCall $methodCall): ?array
+    public function getNormalizedArguments(StaticCall $methodCall, Scope $scope): ?array
     {
-        $args = $this->getNamedArguments($methodCall->args);
+        $method = $scope->getMethodReflection(new ObjectType(CoreExtension::class), 'getAttribute');
 
-        if ( ! isset($args[2])) {
+        if ($method === null) {
             return null;
         }
 
-        if ( ! isset($args[3])) {
+        $normalizedCall = ArgumentsNormalizer::reorderStaticCallArguments(
+            ParametersAcceptorSelector::selectFromArgs($scope, $methodCall->getArgs(), $method->getVariants(), $method->getNamedArgumentsVariants()),
+            $methodCall,
+        );
+
+        if ($normalizedCall === null) {
             return null;
         }
 
-        if ( ! isset($args['arguments']) && ! isset($args[4])) {
+        $args = $normalizedCall->getArgs();
+
+        if ( ! isset($args[4])) {
             return null;
         }
 
-        $argsArray = ($args['arguments'] ?? $args[4]);
+        $argsArray = $args[4]->value;
 
         if ( ! $argsArray instanceof Expr\Array_) {
             return null;
         }
-
-        $type = ($args['type'] ?? $args[5] ?? null);
 
         $passedArgs = [];
         foreach ($argsArray->items as $item) {
@@ -431,38 +437,13 @@ final readonly class GetAttributeCheck
         }
 
         return [
-            'object' => $args[2],
-            'item' => $args[3],
+            'object' => $args[2]->value,
+            'item' => $args[3]->value,
             'args' => $passedArgs,
-            'type' => $type,
-            'isDefinedTest' => $args['isDefinedTest'] ?? $args[6] ?? null,
-            'ignoreStrictCheck' => $args['ignoreStrictCheck'] ?? $args[7] ?? null,
+            'type' => isset($args[5]) ? $args[5]->value : null,
+            'isDefinedTest' => isset($args[6]) ? $args[6]->value : null,
+            'ignoreStrictCheck' => isset($args[7]) ? $args[7]->value : null,
         ];
-    }
-
-    /**
-     * @param array<Node> $args
-     *
-     * @return array<string|int, Expr>
-     */
-    private function getNamedArguments(array $args): array
-    {
-        $argsByName = [];
-        foreach ($args as $i => $arg) {
-            if ( ! $arg instanceof Arg) {
-                continue;
-            }
-
-            if ( ! $arg->name instanceof Identifier) {
-                $argsByName[$i] = $arg->value;
-
-                continue;
-            }
-
-            $argsByName[$arg->name->name] = $arg->value;
-        }
-
-        return $argsByName;
     }
 
     /**

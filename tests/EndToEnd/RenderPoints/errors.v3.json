@@ -7,6 +7,7 @@
             "twigSourceLocation": "simple.html.twig:9",
             "renderPoints": [
                 "CustomRenderPointController.php:17",
+                "NamedArgumentsController.php:37",
                 "SimpleTemplateAttributeController.php:21"
             ]
         }

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace TwigStan\PHPStan\Collector;
 
 use PhpParser\Node;
+use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\ObjectType;
 use Twig\Environment;
@@ -38,7 +40,22 @@ final readonly class ContextFromTwigRenderMethodCallCollector implements Templat
             return null;
         }
 
-        $args = $node->getArgs();
+        $method = $scope->getMethodReflection($varType, $node->name->name);
+
+        if ($method === null) {
+            return null;
+        }
+
+        $normalizedCall = ArgumentsNormalizer::reorderMethodArguments(
+            ParametersAcceptorSelector::selectFromArgs($scope, $node->getArgs(), $method->getVariants(), $method->getNamedArgumentsVariants()),
+            $node,
+        );
+
+        if ($normalizedCall === null) {
+            return null;
+        }
+
+        $args = $normalizedCall->getArgs();
 
         if ( ! isset($args[0])) {
             return null;

@@ -6,13 +6,16 @@ namespace TwigStan\PHPStan\Collector;
 
 use LogicException;
 use PhpParser\Node;
+use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\Generic\GenericObjectType;
+use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use Symfony\Bridge\Twig\AppVariable;
 use Twig\Extension\CoreExtension;
@@ -69,7 +72,22 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
             throw new LogicException(sprintf('Could not find Twig line number on %s:%d.', $scope->getFile(), $node->getStartLine()));
         }
 
-        $args = $node->expr->value->getArgs();
+        $method = $scope->getMethodReflection(new ObjectType(CoreExtension::class), 'include');
+
+        if ($method === null) {
+            return null;
+        }
+
+        $normalizedCall = ArgumentsNormalizer::reorderStaticCallArguments(
+            ParametersAcceptorSelector::selectFromArgs($scope, $node->expr->value->getArgs(), $method->getVariants(), $method->getNamedArgumentsVariants()),
+            $node->expr->value,
+        );
+
+        if ($normalizedCall === null) {
+            return null;
+        }
+
+        $args = $normalizedCall->getArgs();
 
         if (count($args) < 3) {
             return null;

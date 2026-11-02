@@ -9,9 +9,12 @@ use PhpParser\Node;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
 use PHPStan\PhpDocParser\Printer\Printer;
+use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\Type;
 use TwigStan\Twig\CommentHelper;
 use TwigStan\Twig\SourceLocation;
@@ -29,6 +32,10 @@ use TwigStan\Twig\SourceLocation;
  */
 final readonly class BlockContextCollector implements Collector, ExportingCollector
 {
+    public function __construct(
+        private ReflectionProvider $reflectionProvider,
+    ) {}
+
     public function getNodeType(): string
     {
         return Node\Stmt\Expression::class;
@@ -45,7 +52,17 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
 
         // Find: yield from \twigstan_embed(123, $context);
         if ($node->expr->expr instanceof Node\Expr\FuncCall && $node->expr->expr->name instanceof Node\Name && $node->expr->expr->name->toString() === 'twigstan_embed') {
-            $args = $node->expr->expr->getArgs();
+            $function = $this->reflectionProvider->getFunction($node->expr->expr->name, $scope);
+            $call = ArgumentsNormalizer::reorderFuncArguments(
+                ParametersAcceptorSelector::selectFromArgs($scope, $node->expr->expr->getArgs(), $function->getVariants(), $function->getNamedArgumentsVariants()),
+                $node->expr->expr,
+            );
+
+            if ($call === null) {
+                return null;
+            }
+
+            $args = $call->getArgs();
 
             if (count($args) !== 2 || ! $args[0]->value instanceof Node\Scalar\Int_) {
                 return null;
@@ -59,10 +76,12 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             $node->expr->expr instanceof Node\Expr\MethodCall
             && $node->expr->expr->name instanceof Node\Identifier
             && $node->expr->expr->name->name === 'yield'
-            && count($node->expr->expr->args) >= 2
-            && $node->expr->expr->args[0] instanceof Node\Arg
         ) {
-            return [$this->createContextData($node, $scope, null, $scope->getType($node->expr->expr->args[0]->value), false)];
+            $args = $this->getNormalizedArguments($node->expr->expr, $scope);
+
+            if (isset($args[0], $args[1])) {
+                return [$this->createContextData($node, $scope, null, $scope->getType($args[0]->value), false)];
+            }
         }
 
         return $this->collectBlockCalls($node, $scope);
@@ -94,10 +113,6 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
                     $node instanceof Node\Expr\MethodCall
                     && $node->name instanceof Node\Identifier
                     && in_array($node->name->name, ['yieldBlock', 'renderBlock', 'yieldParentBlock', 'renderParentBlock'], true)
-                    && count($node->args) >= 2
-                    && $node->args[0] instanceof Node\Arg
-                    && $node->args[0]->value instanceof Node\Scalar\String_
-                    && $node->args[1] instanceof Node\Arg
                 ) {
                     $this->calls[] = $node;
                 }
@@ -116,18 +131,45 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
 
         $result = [];
         foreach ($visitor->calls as $call) {
-            assert($call->args[0] instanceof Node\Arg && $call->args[0]->value instanceof Node\Scalar\String_ && $call->args[1] instanceof Node\Arg && $call->name instanceof Node\Identifier);
+            assert($call->name instanceof Node\Identifier);
+
+            $args = $this->getNormalizedArguments($call, $scope);
+
+            if ( ! isset($args[0], $args[1]) || ! $args[0]->value instanceof Node\Scalar\String_) {
+                continue;
+            }
 
             $result[] = $this->createContextData(
                 $node,
                 $scope,
-                $call->args[0]->value->value,
-                $scope->getType($call->args[1]->value),
+                $args[0]->value->value,
+                $scope->getType($args[1]->value),
                 in_array($call->name->name, ['yieldParentBlock', 'renderParentBlock'], true),
             );
         }
 
-        return $result;
+        return $result === [] ? null : $result;
+    }
+
+    /**
+     * @return null|array<Node\Arg>
+     */
+    private function getNormalizedArguments(Node\Expr\MethodCall $call, Scope $scope): ?array
+    {
+        if ( ! $call->name instanceof Node\Identifier) {
+            return null;
+        }
+
+        $method = $scope->getMethodReflection($scope->getType($call->var), $call->name->name);
+
+        if ($method === null) {
+            return null;
+        }
+
+        return ArgumentsNormalizer::reorderMethodArguments(
+            ParametersAcceptorSelector::selectFromArgs($scope, $call->getArgs(), $method->getVariants(), $method->getNamedArgumentsVariants()),
+            $call,
+        )?->getArgs();
     }
 
     /**
