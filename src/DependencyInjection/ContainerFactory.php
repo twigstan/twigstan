@@ -80,6 +80,7 @@ final readonly class ContainerFactory
                         $error->message,
                         $error->identifier,
                         $error->path,
+                        $error->count,
                     ],
                 ),
                 $this->configuration->baselineErrors,
