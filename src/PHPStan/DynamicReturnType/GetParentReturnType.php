@@ -6,6 +6,8 @@ namespace TwigStan\PHPStan\DynamicReturnType;
 
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\BooleanType;
@@ -16,6 +18,7 @@ use PHPStan\Type\TypeCombinator;
 use Twig\Template;
 use Twig\TemplateWrapper;
 
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class GetParentReturnType implements DynamicMethodReturnTypeExtension
 {
     public function getClass(): string

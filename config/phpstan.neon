@@ -3,6 +3,14 @@ parameters:
 	treatPhpDocTypesAsCertain: false
 	bootstrapFiles:
 		- ../stubs/functions.php
+	twigstan:
+		# set to true by the config file of the phase PHPStan runs for, see README.md
+		phases:
+			templateContextCollecting: false
+			blockContextCollecting: false
+			analysis: false
+attributeServicesDirectories:
+	- ../src
 parametersSchema:
 	twigstan: structure([
 		twigEnvironmentLoader: string()
@@ -11,11 +19,14 @@ parametersSchema:
 		debugMode: bool()
 		appUserClass: schema(string(), nullable())
 		environmentFingerprint: schema(string(), nullable())
+		phases: structure([
+			templateContextCollecting: bool()
+			blockContextCollecting: bool()
+			analysis: bool()
+		])
 	])
 services:
-	errorFormatter.analysisResultToJson:
-		class: TwigStan\PHPStan\AnalysisResultToJson
-		arguments:
-			jsonFile: %twigstan.analysisResultJsonFile%
-			mode: %twigstan.mode%
-			debugMode: %twigstan.debugMode%
+	# the attribute services of the Twig extensions need it in every phase
+	-
+		class: Twig\Environment
+		factory: @TwigStan\Twig\TwigFactory::create

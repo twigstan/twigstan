@@ -1,15 +1,6 @@
 includes:
 	- phpstan.neon
-services:
-	-
-		class: TwigStan\PHPStan\Collector\ContextFromControllerRenderMethodCallCollector
-		tags:
-			- phpstan.collector
-	-
-		class: TwigStan\PHPStan\Collector\ContextFromReturnedArrayWithTemplateAttributeCollector
-		tags:
-			- phpstan.collector
-	-
-		class: TwigStan\PHPStan\Collector\ContextFromTwigRenderMethodCallCollector
-		tags:
-			- phpstan.collector
+parameters:
+	twigstan:
+		phases:
+			templateContextCollecting: true

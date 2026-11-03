@@ -12,6 +12,8 @@ use PhpParser\NodeVisitorAbstract;
 use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
@@ -30,6 +32,7 @@ use TwigStan\Twig\SourceLocation;
  * }
  * @implements Collector<Node\Stmt\Expression, list<ContextData>>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%twigstan.phases.blockContextCollecting%')]
 final readonly class BlockContextCollector implements Collector, ExportingCollector
 {
     public function __construct(

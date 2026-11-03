@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace TwigStan\Processing\Compilation\Parser;
 
+use PHPStan\DependencyInjection\AutowiredService;
 use Twig\Environment;
 use Twig\Error\LoaderError;
 use Twig\Error\SyntaxError;
 use Twig\Node\ModuleNode;
 use TwigStan\Twig\TwigFileCanonicalizer;
 
+#[AutowiredService]
 final readonly class TwigNodeParser
 {
     public function __construct(

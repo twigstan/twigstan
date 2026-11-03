@@ -14,6 +14,8 @@ use PHPStan\Analyser\SpecifiedTypes;
 use PHPStan\Analyser\TypeSpecifier;
 use PHPStan\Analyser\TypeSpecifierAwareExtension;
 use PHPStan\Analyser\TypeSpecifierContext;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\NullType;
 use PHPStan\Type\StaticMethodTypeSpecifyingExtension;
@@ -25,6 +27,7 @@ use Twig\Extension\CoreExtension;
  * The defined test reads a.b while ignoring the strict check, but the then branch reads it as usual,
  * so both expressions are narrowed.
  */
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final class DefinedTestTypeSpecifyingExtension implements StaticMethodTypeSpecifyingExtension, TypeSpecifierAwareExtension
 {
     private const int IS_DEFINED_TEST = 6;

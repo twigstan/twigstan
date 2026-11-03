@@ -8,6 +8,8 @@ use LogicException;
 use PhpParser\Node;
 use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantArrayType;
@@ -24,6 +26,7 @@ use TwigStan\Twig\CommentHelper;
 /**
  * @implements TemplateContextCollector<Node\Stmt\Expression>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%twigstan.phases.analysis%')]
 final readonly class ContextFromTwigIncludeCallCollector implements TemplateContextCollector
 {
     public function getNodeType(): string
