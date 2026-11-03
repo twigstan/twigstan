@@ -6,6 +6,9 @@ namespace TwigStan\PHPStan\DynamicReturnType;
 
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
@@ -23,10 +26,12 @@ use PHPStan\Type\TypeCombinator;
 use Symfony\Bridge\Twig\AppVariable;
 use Twig\Environment;
 
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class GetGlobalsReturnType implements DynamicMethodReturnTypeExtension
 {
     public function __construct(
         private Environment $twig,
+        #[AutowiredParameter(ref: '%twigstan.appUserClass%')]
         private ?string $appUserClass,
     ) {}
 

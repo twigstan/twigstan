@@ -10,6 +10,8 @@ use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Scalar\String_;
 use PHPStan\Analyser\NameScope;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\PhpDoc\TypeNodeResolver;
 use PHPStan\PhpDocParser\Ast\PhpDoc\VarTagValueNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
@@ -24,6 +26,7 @@ use PHPStan\Type\ErrorType;
 use PHPStan\Type\FunctionParameterOutTypeExtension;
 use PHPStan\Type\Type;
 
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class TypeHintReturnType implements FunctionParameterOutTypeExtension
 {
     public function __construct(

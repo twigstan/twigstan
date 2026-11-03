@@ -1,13 +1,40 @@
 includes:
 	- phpstan.neon
-	- config/phpstan.extensions.neon
+# registers TwigStan's extensions to analyse TwigStan itself, like in the phases that analyse compiled templates;
+# the stubs of config/phpstan.extensions.neon are in phpstan.neon
+attributeServicesDirectories:
+	- src
 parameters:
 	todo_by:
 		ticket:
 			enabled: true
 			tracker: github
+	twigstan:
+		twigEnvironmentLoader: tests/twig-loader.php
+		analysisResultJsonFile: .phpstan/result.json
+		mode: local
+		debugMode: false
+		appUserClass: null
+		environmentFingerprint: null
+		phases:
+			templateContextCollecting: false
+			blockContextCollecting: false
+			analysis: false
+parametersSchema:
+	twigstan: structure([
+		twigEnvironmentLoader: string()
+		analysisResultJsonFile: string()
+		mode: string()
+		debugMode: bool()
+		appUserClass: schema(string(), nullable())
+		environmentFingerprint: schema(string(), nullable())
+		phases: structure([
+			templateContextCollecting: bool()
+			blockContextCollecting: bool()
+			analysis: bool()
+		])
+	])
 services:
 	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
-	- TwigStan\Twig\TwigFactory(environmentLoader: 'tests/twig-loader.php')

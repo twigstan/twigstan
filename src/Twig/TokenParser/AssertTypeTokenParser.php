@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig\TokenParser;
 
+use PHPStan\DependencyInjection\AutowiredService;
 use Twig\Node\EmptyNode;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 
+#[AutowiredService]
 final class AssertTypeTokenParser extends AbstractTokenParser
 {
     /**

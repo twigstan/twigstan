@@ -10,6 +10,8 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantBooleanType;
@@ -18,6 +20,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use Twig\Extension\CoreExtension;
 
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class LastReturnType implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string

@@ -6,7 +6,10 @@ namespace TwigStan\PHPStan\Visitor;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 
+#[Conditional(attribute: new AutowiredService(), if: '%twigstan.phases.analysis%')]
 final class AssertTypeVisitor extends NodeVisitorAbstract
 {
     public const string ATTRIBUTE_NAME = 'isInAssertType';

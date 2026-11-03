@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig\TokenParser;
 
+use PHPStan\DependencyInjection\AutowiredService;
 use Twig\Token;
 use Twig\TokenParser\AbstractTokenParser;
 
+#[AutowiredService]
 final class AssertVariableExistsTokenParser extends AbstractTokenParser
 {
     public function parse(Token $token): AssertVariableExistsNode

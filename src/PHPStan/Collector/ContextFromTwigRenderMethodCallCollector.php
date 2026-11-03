@@ -7,6 +7,8 @@ namespace TwigStan\PHPStan\Collector;
 use PhpParser\Node;
 use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantArrayType;
@@ -17,6 +19,7 @@ use TwigStan\Twig\SourceLocation;
 /**
  * @implements TemplateContextCollector<Node\Expr\MethodCall>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%twigstan.phases.templateContextCollecting%')]
 final readonly class ContextFromTwigRenderMethodCallCollector implements TemplateContextCollector
 {
     public function getNodeType(): string

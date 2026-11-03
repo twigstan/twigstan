@@ -7,16 +7,22 @@ namespace TwigStan\PHPStan;
 use PHPStan\Command\AnalysisResult;
 use PHPStan\Command\ErrorFormatter\ErrorFormatter;
 use PHPStan\Command\Output;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use TwigStan\Application\PHPStanRunMode;
 use TwigStan\PHPStan\Collector\ExportingCollector;
 
+#[AutowiredService(name: 'errorFormatter.analysisResultToJson')]
 final readonly class AnalysisResultToJson implements ErrorFormatter
 {
     private PHPStanRunMode $mode;
 
     public function __construct(
+        #[AutowiredParameter(ref: '%twigstan.analysisResultJsonFile%')]
         private string $jsonFile,
+        #[AutowiredParameter(ref: '%twigstan.mode%')]
         string $mode,
+        #[AutowiredParameter(ref: '%twigstan.debugMode%')]
         private bool $debugMode,
     ) {
         $this->mode = PHPStanRunMode::from($mode);

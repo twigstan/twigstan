@@ -8,6 +8,8 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Rules\Rule;
 use Twig\Extension\CoreExtension;
 use TwigStan\PHPStan\GetAttributeCheck;
@@ -16,6 +18,7 @@ use TwigStan\PHPStan\Visitor\AssertTypeVisitor;
 /**
  * @implements Rule<Node\Expr\StaticCall>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%twigstan.phases.analysis%')]
 final readonly class GetAttributeRule implements Rule
 {
     public function __construct(private GetAttributeCheck $attributeCheck) {}

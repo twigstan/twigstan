@@ -7,6 +7,8 @@ namespace TwigStan\PHPStan\DynamicReturnType\Filter;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
@@ -15,6 +17,7 @@ use PHPStan\Type\Type;
 use Twig\Environment;
 use Twig\Extension\CoreExtension;
 
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class FilterReturnType implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string

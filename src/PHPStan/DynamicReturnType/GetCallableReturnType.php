@@ -7,6 +7,8 @@ namespace TwigStan\PHPStan\DynamicReturnType;
 use Closure;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\ClosureTypeFactory;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -17,6 +19,7 @@ use Twig\Environment;
 /**
  * Types the closure of $this->env->getFunction('name')->getCallable() by the closure that the Twig environment has.
  */
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class GetCallableReturnType implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

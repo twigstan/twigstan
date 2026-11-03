@@ -14,6 +14,8 @@ use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\CollectedDataEmitter;
 use PHPStan\Analyser\NodeCallbackInvoker;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
@@ -40,6 +42,7 @@ use PHPStan\Type\VerbosityLevel;
 use Twig\Extension\CoreExtension;
 use Twig\Template;
 
+#[AutowiredService]
 final readonly class GetAttributeCheck
 {
     public function __construct(
@@ -48,7 +51,9 @@ final readonly class GetAttributeCheck
         private NonexistentOffsetInArrayDimFetchCheck $nonexistentOffsetInArrayDimFetchCheck,
         private ReflectionProvider $reflectionProvider,
         private RuleLevelHelper $ruleLevelHelper,
+        #[AutowiredParameter]
         private bool $checkUnionTypes,
+        #[AutowiredParameter]
         private bool $checkBenevolentUnionTypes,
     ) {}
 

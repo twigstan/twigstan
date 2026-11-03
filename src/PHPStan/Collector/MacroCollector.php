@@ -7,6 +7,8 @@ namespace TwigStan\PHPStan\Collector;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Collectors\Collector;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\MethodReturnStatementsNode;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Type\Accessory\HasOffsetValueType;
@@ -18,6 +20,7 @@ use PHPStan\Type\IntersectionType;
  *     macros: string,
  * }>
  */
+#[Conditional(attribute: new AutowiredService(), if: '%twigstan.phases.blockContextCollecting%')]
 final readonly class MacroCollector implements Collector, ExportingCollector
 {
     public function getNodeType(): string

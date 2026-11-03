@@ -6,12 +6,15 @@ namespace TwigStan\PHPStan\DynamicReturnType;
 
 use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicStaticMethodReturnTypeExtension;
 use PHPStan\Type\Type;
 use Twig\Extension\CoreExtension;
 use TwigStan\PHPStan\GetAttributeCheck;
 
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class GetAttributeReturnType implements DynamicStaticMethodReturnTypeExtension
 {
     public function __construct(private GetAttributeCheck $attributeCheck) {}

@@ -10,6 +10,8 @@ use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Name;
 use PhpParser\Node\Scalar\LNumber;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Node\Expr\TypeExpr;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\Constant\ConstantIntegerType;
@@ -19,6 +21,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use Twig\Extension\CoreExtension;
 
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class RandomReturnType implements DynamicStaticMethodReturnTypeExtension
 {
     public function getClass(): string

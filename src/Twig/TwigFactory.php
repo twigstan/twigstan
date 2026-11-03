@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace TwigStan\Twig;
 
 use InvalidArgumentException;
+use PHPStan\DependencyInjection\AutowiredParameter;
+use PHPStan\DependencyInjection\AutowiredService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Twig\Environment;
@@ -13,6 +15,7 @@ use Twig\Loader\ArrayLoader;
 use Twig\NodeVisitor\NodeVisitorInterface;
 use Twig\TokenParser\AbstractTokenParser;
 
+#[AutowiredService]
 final class TwigFactory
 {
     private ?Environment $twig = null;
@@ -26,6 +29,7 @@ final class TwigFactory
     public function __construct(
         private readonly array $tokenParsers,
         private readonly array $nodeVisitors,
+        #[AutowiredParameter(ref: '%twigstan.twigEnvironmentLoader%')]
         private readonly ?string $environmentLoader = null,
     ) {}
 

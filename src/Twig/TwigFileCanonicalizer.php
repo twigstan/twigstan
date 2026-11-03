@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TwigStan\Twig;
 
+use PHPStan\DependencyInjection\AutowiredService;
 use RuntimeException;
 use Symfony\Component\Filesystem\Path;
 use Twig\Environment;
@@ -11,6 +12,7 @@ use Twig\Error\LoaderError;
 use Twig\Loader\ChainLoader;
 use Twig\Loader\FilesystemLoader;
 
+#[AutowiredService]
 final class TwigFileCanonicalizer
 {
     private FilesystemLoader $loader;

@@ -7,6 +7,8 @@ namespace TwigStan\PHPStan\DynamicReturnType;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
@@ -15,6 +17,7 @@ use PHPStan\Type\Type;
 use Twig\Environment;
 use Twig\Template;
 
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class LoadTemplateReturnType implements DynamicMethodReturnTypeExtension
 {
     public function __construct(

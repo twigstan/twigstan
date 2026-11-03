@@ -7,6 +7,8 @@ namespace TwigStan\PHPStan\DynamicReturnType;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
+use PHPStan\DependencyInjection\AutowiredService;
+use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\ObjectType;
@@ -20,6 +22,7 @@ use Twig\TwigTest;
  * Twig compiles functions, filters and tests that are closures to $this->env->getFunction('name')->getCallable()(...).
  * They exist when the template compiles, so these methods do not return null for them.
  */
+#[Conditional(attribute: new AutowiredService(), if: 'not(%twigstan.phases.templateContextCollecting%)')]
 final readonly class GetTwigCallableReturnType implements DynamicMethodReturnTypeExtension
 {
     private const array METHODS = [
