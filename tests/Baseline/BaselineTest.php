@@ -49,6 +49,21 @@ final class BaselineTest extends TestCase
         self::assertFileEquals(__DIR__ . '/expected.php', $baseline);
     }
 
+    public function testAnalyzeWithBaseline(): void
+    {
+        $result = $this->getAnalyzeCommand(__DIR__ . '/twigstan.php')->analyze(
+            ['tests/Baseline'],
+            $this->output,
+            $this->errorOutput,
+            true,
+            extension_loaded('xdebug') ? true : false,
+            null,
+        );
+
+        self::assertSame([], $result->errors);
+        self::assertSame([], $result->fileSpecificErrors);
+    }
+
     public function testWithoutBaseline(): void
     {
         $result = $this->getAnalyzeCommand(__DIR__ . '/../twigstan.php')->analyze(
