@@ -165,7 +165,6 @@ final readonly class TemplateContext
             }
 
             $flatContext = $this->getUniqueContextByTemplate($template);
-            $uniqueContext = [];
 
             foreach ($renderPoints as $hash => [$sourceLocation, $context]) {
                 if (isset($mergedContext[$template][$hash])) {
@@ -179,10 +178,11 @@ final readonly class TemplateContext
                 }
 
                 $mergedContext[$template][$hash] = [$sourceLocation, $context];
-                $uniqueContext[] = $context;
             }
 
-            $uniqueContext = array_values(array_unique($uniqueContext));
+            $uniqueContext = array_unique(array_column($mergedContext[$template], 1));
+            sort($flatContext);
+            sort($uniqueContext);
 
             if ($flatContext !== $uniqueContext) {
                 $changed[] = self::templateFromKey($template);
