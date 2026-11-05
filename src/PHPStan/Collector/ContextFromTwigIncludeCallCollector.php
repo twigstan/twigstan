@@ -10,6 +10,8 @@ use PHPStan\Analyser\ArgumentsNormalizer;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Conditional;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
+use PHPStan\PhpDocParser\Ast\Type\ArrayShapeUnsealedTypeNode;
 use PHPStan\PhpDocParser\Printer\Printer;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Type\Constant\ConstantArrayType;
@@ -96,14 +98,6 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
             return null;
         }
 
-        $contexts = $scope->getType($args[1]->value)->getConstantArrays();
-
-        if (count($contexts) !== 1) {
-            return null;
-        }
-
-        $context = $contexts[0];
-
         $templates = $scope->getType($args[2]->value)->getConstantStrings();
 
         if (count($templates) === 0) {
@@ -119,23 +113,37 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
         $variables = $variables[0];
 
         $withContext = ! isset($args[4]) || $scope->getType($args[4]->value)->isTrue()->yes();
+        $templateContext = $variables->toPhpDocNode();
 
         if ($withContext) {
-            $builder = ConstantArrayTypeBuilder::createFromConstantArray($context);
+            $context = $scope->getType($args[1]->value);
+            $contexts = $context->getConstantArrays();
 
-            $app = $this->getAppWithNarrowedUser($context, $scope);
+            if (count($contexts) === 1) {
+                $builder = ConstantArrayTypeBuilder::createFromConstantArray($contexts[0]);
 
-            if ($app !== null) {
-                $builder->setOffsetValueType(new ConstantStringType('app'), $app);
+                $app = $this->getAppWithNarrowedUser($contexts[0], $scope);
+
+                if ($app !== null) {
+                    $builder->setOffsetValueType(new ConstantStringType('app'), $app);
+                }
+
+                foreach ($variables->getKeyTypes() as $key) {
+                    $builder->setOffsetValueType($key, $variables->getOffsetValueType($key));
+                }
+
+                $templateContext = $builder->getArray()->toPhpDocNode();
+            } elseif ($context->isArray()->yes() && $templateContext instanceof ArrayShapeNode) {
+                $templateContext = ArrayShapeNode::createUnsealed(
+                    $templateContext->items,
+                    new ArrayShapeUnsealedTypeNode(
+                        $context->getIterableValueType()->toPhpDocNode(),
+                        $context->getIterableKeyType()->toPhpDocNode(),
+                    ),
+                );
+            } else {
+                return null;
             }
-
-            foreach ($variables->getKeyTypes() as $key) {
-                $builder->setOffsetValueType($key, $variables->getOffsetValueType($key));
-            }
-
-            $templateContext = $builder->getArray();
-        } else {
-            $templateContext = $variables;
         }
 
         $result = [];
@@ -143,7 +151,7 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
             $result[] = [
                 'sourceLocation' => $sourceLocation,
                 'template' => $template->getValue(),
-                'context' => (new Printer())->print($templateContext->toPhpDocNode()),
+                'context' => (new Printer())->print($templateContext),
             ];
         }
 
