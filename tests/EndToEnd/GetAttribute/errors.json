@@ -83,6 +83,15 @@
             "renderPoints": [
                 "RenderTest.php:0"
             ]
+        },
+        {
+            "message": "Neither the property \"doesNotExist\" nor one of the methods \"doesNotExist()\", \"getdoesNotExist()\", \"isdoesNotExist()\", \"hasdoesNotExist()\" or \"__call()\" exist and have public access in class \"TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\NonFinalAccount\".",
+            "identifier": "getAttribute.notFound",
+            "tip": null,
+            "twigSourceLocation": "non_final_properties.render.twig:1",
+            "renderPoints": [
+                "RenderTest.php:0"
+            ]
         }
     ],
     "fileSpecificErrors": []
