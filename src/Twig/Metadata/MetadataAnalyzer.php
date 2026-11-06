@@ -159,8 +159,8 @@ final readonly class MetadataAnalyzer
 
         if ($node instanceof ArrayExpression) {
             $strings = [];
-            foreach ($node as $element) {
-                $strings = [...$strings, ...$this->getStringsFromExpression($element)];
+            foreach ($node->getKeyValuePairs() as $pair) {
+                $strings = [...$strings, ...$this->getStringsFromExpression($pair['value'])];
             }
 
             return $strings;
