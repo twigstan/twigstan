@@ -517,8 +517,6 @@ final class AnalyzeCommand extends Command
 
         // Transform PHPStan errors to TwigStan errors
         $errors = $this->errorFilter->filter($errors);
-        $errors = $this->errorCollapser->collapse($errors);
-        $errors = $this->errorTransformer->transform($errors);
 
         if ($this->onlyAnalyzeTemplatesWithContext) {
             // Filter out errors for templates that don't have a render point.
@@ -540,6 +538,9 @@ final class AnalyzeCommand extends Command
                 return $hasRenderPoint;
             }));
         }
+
+        $errors = $this->errorCollapser->collapse($errors);
+        $errors = $this->errorTransformer->transform($errors);
 
         if ($generateBaselineFile === null) {
             $errors = $this->baselineErrorFilter->filter($errors);
