@@ -7,6 +7,7 @@ namespace TwigStan\EndToEnd\GetAttribute;
 use Override;
 use TwigStan\EndToEnd\AbstractRenderingTestCase;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\Account;
+use TwigStan\EndToEnd\GetAttribute\Fixtures\NonFinalAccount;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\OrderStatus;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\State;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\User;
@@ -78,6 +79,13 @@ final class RenderTest extends AbstractRenderingTestCase
             'template' => __DIR__ . '/properties.render.twig',
             'context' => [
                 'account' => new Account('123', 'TwigStan'),
+            ],
+        ];
+
+        yield 'non_final_properties.render.twig' => [
+            'template' => __DIR__ . '/non_final_properties.render.twig',
+            'context' => [
+                'account' => new NonFinalAccount('TwigStan'),
             ],
         ];
     }
