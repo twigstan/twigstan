@@ -31,7 +31,11 @@ final readonly class ErrorCollapser
                 $error->message . $error->sourceLocation->fileName . $error->sourceLocation->lineNumber,
             );
 
-            $collapsed[$hash] ??= $error;
+            // Keep the same copy regardless of the order in which PHPStan reports the errors. That order follows the
+            // compiled file names, which contain a hash of the absolute template path.
+            if ( ! isset($collapsed[$hash]) || $error->sourceLocation->toString() < $collapsed[$hash]->sourceLocation?->toString()) {
+                $collapsed[$hash] = $error;
+            }
         }
 
         return array_values($collapsed);
