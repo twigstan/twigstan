@@ -130,8 +130,8 @@ return TwigStanConfig::configure(__DIR__)
 In Symfony applications, `app.user` is `null` unless the request is authenticated. TwigStan can tell when a template can
 only be rendered with a user, and then types `app.user` as not null.
 
-For this, the Twig environment loader must return the booted kernel, as the default Symfony loader does, and the
-configuration must name the user class:
+For this, the Twig environment loader must return the booted kernel, as the default Symfony loader does. The
+configuration can name the user class, which is otherwise `Symfony\Component\Security\Core\User\UserInterface`:
 ```php
 return TwigStanConfig::configure(__DIR__)
     // ...

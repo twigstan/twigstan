@@ -68,5 +68,6 @@ final class AppUserKernel extends Kernel
     protected function configureRoutes(RoutingConfigurator $routes): void
     {
         $routes->import(__DIR__ . '/AppUserController.php', 'attribute');
+        $routes->import(dirname(__DIR__) . '/AppUserWithoutClass/AppUserWithoutClassController.php', 'attribute');
     }
 }
