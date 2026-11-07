@@ -109,9 +109,8 @@ final readonly class PHPStanRunner
             $parameters['excludePaths'] = ['analyse' => array_map(fn(string $path) => sprintf('%s (?)', $path), $excludePaths)];
         }
 
-        if ($this->appUserClass !== null) {
-            $parameters['stubFiles'] = [Path::join(dirname(__DIR__, 2), 'stubs', 'Symfony', 'AppVariable.stub')];
-        }
+        // Also without a user class, AppUserContext types app as AppVariable<UserInterface>, which needs the stub.
+        $parameters['stubFiles'] = [Path::join(dirname(__DIR__, 2), 'stubs', 'Symfony', 'AppVariable.stub')];
 
         if ($mode === PHPStanRunMode::CollectPhpRenderPoints || $mode === PHPStanRunMode::CollectTwigBlockContexts) {
             $parameters['level'] = null;
