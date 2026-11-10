@@ -5,3 +5,7 @@
 {% assert_type form1.name 'Symfony\\Component\\Form\\FormView' %}
 
 {{ form1.name }}
+
+{# Twig reads the child before the count() method. #}
+{% assert_type form1.count 'Symfony\\Component\\Form\\FormView' %}
+{% assert_type form1.count() 'int<0, max>' %}

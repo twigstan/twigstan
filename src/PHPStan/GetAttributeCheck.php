@@ -39,6 +39,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use Symfony\Component\Form\FormView;
 use Twig\Extension\CoreExtension;
 use Twig\Template;
 
@@ -282,7 +283,8 @@ final readonly class GetAttributeCheck
                 $property = $objectType->getInstanceProperty($propertyOrMethod, $scope);
 
                 if ($property->isPublic()) {
-                    return [$property->getReadableType(), []];
+                    // The type of the fetch, so that expression type resolver extensions apply, such as FormViewVarsTypeResolver.
+                    return [$scope->getType(new Expr\PropertyFetch(new TypeExpr($objectType), new Identifier($propertyOrMethod))), []];
                 }
             }
 
@@ -303,6 +305,13 @@ final readonly class GetAttributeCheck
                     $scope->getType($objectType->getConstant($propertyOrMethod)->getValueExpr()),
                     [],
                 ];
+            }
+
+            // Twig reads an offset of an ArrayAccess before its methods. The children of a form view are its offsets,
+            // so form.count is the child named count, not the count() method. Its properties, such as form.vars, are read
+            // above, because templates read them far more often than a child with the same name.
+            if ($callType === Template::ANY_CALL && (new ObjectType(FormView::class))->isSuperTypeOf($objectType)->yes()) {
+                return [$objectType->getOffsetValueType($propertyOrMethodType), []];
             }
         }
 
