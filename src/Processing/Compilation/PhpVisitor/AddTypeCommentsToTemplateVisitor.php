@@ -98,15 +98,21 @@ final class AddTypeCommentsToTemplateVisitor extends NodeVisitorAbstract
                     return $node;
                 }
 
+                // The context that a block is rendered with is merged in from where it is rendered, see TwigScopeInjector.
+                // The block reads its variables from the context of the template, which keeps them known while the
+                // context of the block is collected. Reading them from an empty context would make it never.
                 if (str_starts_with($node->name->name, 'block_')) {
                     $node->setDocComment(new Doc(
-                        <<<'DOC'
-                            /**
-                             * @param array{} $context
-                             * @param array{} $blocks
-                             * @return iterable<null|scalar|\Stringable>
-                             */
-                            DOC,
+                        sprintf(
+                            <<<'DOC'
+                                /**
+                                 * @param %s $context
+                                 * @param array{} $blocks
+                                 * @return iterable<null|scalar|\Stringable>
+                                 */
+                                DOC,
+                            (new Printer())->print($this->contextFromTemplateRender),
+                        ),
                     ));
 
                     return $node;

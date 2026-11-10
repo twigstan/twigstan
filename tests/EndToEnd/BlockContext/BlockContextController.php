@@ -43,4 +43,11 @@ final class BlockContextController
             'name' => 'Ruud',
         ]);
     }
+
+    public function setInBlock(Environment $environment, bool $dark): string
+    {
+        return $environment->render('EndToEnd/BlockContext/set_in_block.twig', [
+            'dark' => $dark,
+        ]);
+    }
 }
