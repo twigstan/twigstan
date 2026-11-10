@@ -10,7 +10,6 @@ use PhpParser\Node\Scalar;
 use PhpParser\Node\Stmt;
 use PhpParser\NodeFinder;
 use PhpParser\NodeVisitorAbstract;
-use SplObjectStorage;
 
 /**
  * Twig stores a copy of the whole context in the context itself at every for loop, and another one in loop.parent.
@@ -190,8 +189,7 @@ final class KeepLoopParentContextOutOfContextVisitor extends NodeVisitorAbstract
     {
         $nodeFinder = new NodeFinder();
 
-        /** @var SplObjectStorage<Node, null> $knownUses */
-        $knownUses = new SplObjectStorage();
+        $knownUses = [];
 
         foreach ($nodeFinder->find($loopStmts, fn(Node $node) => true) as $node) {
             $uses = [];
@@ -212,13 +210,13 @@ final class KeepLoopParentContextOutOfContextVisitor extends NodeVisitorAbstract
 
             foreach ($uses as $use) {
                 if ($this->isContextOffset($use, 'loop')) {
-                    $knownUses->attach($use);
+                    $knownUses[spl_object_id($use)] = true;
                 }
             }
         }
 
         foreach ($nodeFinder->find($loopStmts, fn(Node $node) => $this->isContextOffset($node, 'loop')) as $use) {
-            if ( ! $knownUses->contains($use)) {
+            if ( ! isset($knownUses[spl_object_id($use)])) {
                 return true;
             }
         }
