@@ -1,0 +1,32 @@
+name: Create release
+
+on:
+    push:
+        tags:
+            - '*'
+    workflow_call:
+        inputs:
+            tag:
+                description: 'Tag to release'
+                required: true
+                type: string
+
+permissions: {}
+
+concurrency:
+    group: release-${{ inputs.tag || github.ref_name }}
+    cancel-in-progress: false
+
+jobs:
+    release:
+        name: Create release
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # to create the release
+        steps:
+            -   name: Create release
+                run: gh release create "$TAG" --verify-tag --title "$TAG" --generate-notes
+                env:
+                    GH_TOKEN: ${{ github.token }}
+                    GH_REPO: ${{ github.repository }}
+                    TAG: ${{ inputs.tag || github.ref_name }}
