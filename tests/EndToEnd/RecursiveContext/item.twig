@@ -1,0 +1,3 @@
+{% assert_type known '42' %}
+{% assert_type node 'TwigStan\\EndToEnd\\RecursiveContext\\TreeNode' %}
+{% include '@EndToEnd/RecursiveContext/children.twig' with { items: node.children } %}

@@ -846,7 +846,7 @@ final class AnalyzeCommand extends Command
             run: $run,
         );
 
-        $newTemplateContext = $this->templateContextFactory->create($analysisResult2);
+        $newTemplateContext = $this->templateContextFactory->create($analysisResult2, $templateContext);
 
         $errors = [...$loaderErrors, ...$this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors)];
 

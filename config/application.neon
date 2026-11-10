@@ -86,6 +86,7 @@ services:
 	- TwigStan\Twig\EnvironmentFingerprint(environmentLoader: %twigEnvironmentLoader%)
 	- TwigStan\Twig\TwigFileCanonicalizer
 	- TwigStan\Processing\TemplateContextFactory
+	- TwigStan\Processing\RecursiveContextNormalizer
 	- TwigStan\Processing\TemplateContextToArrayShape
 	- PHPStan\PhpDocParser\Lexer\Lexer
 	- PHPStan\PhpDocParser\Parser\ConstExprParser

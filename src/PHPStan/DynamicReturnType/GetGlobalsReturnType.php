@@ -51,12 +51,16 @@ final readonly class GetGlobalsReturnType implements DynamicMethodReturnTypeExte
         Scope $scope,
     ): Type {
         $builder = ConstantArrayTypeBuilder::createEmpty();
+        $builder->disableArrayDegradation();
 
         foreach ($this->twig->getGlobals() as $key => $value) {
             $builder->setOffsetValueType(new ConstantStringType($key), $this->getType($value));
         }
 
-        return $builder->getArray();
+        $globals = $builder->getArray()->getConstantArrays();
+        assert(count($globals) === 1);
+
+        return $globals[0]->withPreservedArrayShape();
     }
 
     private function getType(mixed $value): Type

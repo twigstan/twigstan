@@ -1,0 +1,4 @@
+{% for point in 1..3 %}
+    {% include '@EndToEnd/LoopIncludeContext/item.twig' with { point: point, value: 'known' } %}
+    {% include '@EndToEnd/LoopIncludeContext/item.twig' with { point: point, value: 'known' } only %}
+{% endfor %}

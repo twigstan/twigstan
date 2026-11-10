@@ -1,0 +1,6 @@
+{% for node in items %}
+    {% assert_type known '42' %}
+    {% assert_type loop.parent.known '42' %}
+    {% assert_type loop.parent.node 'TwigStan\\EndToEnd\\RecursiveContext\\TreeNode' %}
+    {% include '@EndToEnd/RecursiveContext/item.twig' with { node: node } %}
+{% endfor %}

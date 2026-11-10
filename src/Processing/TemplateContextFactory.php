@@ -13,9 +13,10 @@ final readonly class TemplateContextFactory
 {
     public function __construct(
         private TwigFileCanonicalizer $twigFileCanonicalizer,
+        private RecursiveContextNormalizer $recursiveContextNormalizer,
     ) {}
 
-    public function create(PHPStanAnalysisResult $analysisResult): TemplateContext
+    public function create(PHPStanAnalysisResult $analysisResult, TemplateContext $known = new TemplateContext()): TemplateContext
     {
         /**
          * @var array<string, array<string, array{SourceLocation, string}>> $templateContext
@@ -37,6 +38,6 @@ final readonly class TemplateContextFactory
             }
         }
 
-        return new TemplateContext($templateContext);
+        return $this->recursiveContextNormalizer->normalize(new TemplateContext($templateContext), $known);
     }
 }

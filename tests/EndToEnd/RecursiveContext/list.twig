@@ -1,0 +1,4 @@
+{% for node in items %}
+    {% assert_type known '42' %}
+    {% include '@EndToEnd/RecursiveContext/item.twig' with { node: node } %}
+{% endfor %}
