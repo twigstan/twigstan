@@ -34,5 +34,11 @@
             "BlockContextController.php:49",
             "array{dark: bool}"
         ]
+    ],
+    "form_theme.twig": [
+        [
+            "BlockContextController.php:56",
+            "array{form: Symfony\\Component\\Form\\FormView}"
+        ]
     ]
 }

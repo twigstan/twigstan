@@ -22,11 +22,13 @@ use TwigStan\PHP\StrictPhpParser;
 use TwigStan\PHPStan\Analysis\CollectedData;
 use TwigStan\PHPStan\Collector\BlockContextCollector;
 use TwigStan\PHPStan\Collector\MacroCollector;
+use TwigStan\PHPStan\ExpressionTypeResolver\FormViewVarsTypeResolver;
 use TwigStan\Processing\Flattening\FlatteningResultCollection;
 use TwigStan\Processing\GeneratedFiles;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectMacroVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
+use TwigStan\Twig\Metadata\MetadataRegistry;
 use TwigStan\Twig\SourceLocation;
 
 /**
@@ -59,6 +61,7 @@ final class TwigScopeInjector
         private readonly ArrayShapeMerger $arrayShapeMerger,
         private readonly PhpDocParser $phpDocParser,
         private readonly Lexer $lexer,
+        private readonly MetadataRegistry $metadataRegistry,
     ) {}
 
     /**
@@ -113,6 +116,7 @@ final class TwigScopeInjector
                 new InjectContextVisitor(
                     $contextBeforeBlockRelatedToTemplate,
                     $this->arrayShapeMerger,
+                    $this->metadataRegistry->getMetadata($flatteningResult->twigFilePath)->isSelfFormTheme ? $this->getFormBlockContext() : null,
                 ),
                 ...isset($macros[$flatteningResult->phpFile]) ? [new InjectMacroVisitor($macros[$flatteningResult->phpFile])] : [],
             );
@@ -139,6 +143,20 @@ final class TwigScopeInjector
         $this->generatedFiles->removeAllExcept($targetDirectory, array_map(fn(ScopeInjectionResult $result) => $result->phpFile, iterator_to_array($results, false)));
 
         return $results;
+    }
+
+    /**
+     * The variables of the form view that Symfony's form renderer renders a block with, see FormViewVarsTypeResolver.
+     * Form types add variables of their own, such as choices, so the shape is unsealed.
+     */
+    private function getFormBlockContext(): ArrayShapeNode
+    {
+        $items = ['form: \\Symfony\\Component\\Form\\FormView', 'value: mixed'];
+        foreach (FormViewVarsTypeResolver::VARS as $name => $type) {
+            $items[] = sprintf('%s: %s', $name, $type);
+        }
+
+        return $this->parseContext(sprintf('array{%s, ...<string, mixed>}', implode(', ', $items)));
     }
 
     private function parseContext(string $context): ArrayShapeNode

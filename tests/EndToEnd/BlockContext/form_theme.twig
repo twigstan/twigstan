@@ -1,0 +1,20 @@
+{% extends '@EndToEnd/BlockContext/parent_layout.twig' %}
+
+{% form_theme form _self %}
+
+{# The form renderer renders the form blocks with the variables of the form view. #}
+{% block form_row %}
+    {% assert_type form 'Symfony\\Component\\Form\\FormView' %}
+    {% assert_type disabled 'bool' %}
+    {% assert_type row_attr 'array<string, bool|float|int|string|Stringable|null>' %}
+    {% assert_type expanded 'mixed' %}
+{% endblock %}
+
+{% block _settings_email_widget %}
+    {% assert_type id 'string' %}
+{% endblock %}
+
+{% block content %}
+    {% assert_type form 'Symfony\\Component\\Form\\FormView' %}
+    {{ form(form) }}
+{% endblock %}
