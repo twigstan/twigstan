@@ -14,6 +14,17 @@ $config->ignoreErrorsOnPackagesAndPaths(
     ],
     [
         __DIR__ . '/src/PHPStan/Collector/ContextFromControllerRenderMethodCallCollector.php',
+    ],
+    [ErrorType::DEV_DEPENDENCY_IN_PROD],
+);
+
+// Only used when Symfony forms are rendered
+$config->ignoreErrorsOnPackagesAndPaths(
+    [
+        'symfony/form',
+    ],
+    [
+        __DIR__ . '/src/PHPStan/ExpressionTypeResolver/FormViewVarsTypeResolver.php',
         __DIR__ . '/src/PHPStan/GetAttributeCheck.php',
     ],
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
