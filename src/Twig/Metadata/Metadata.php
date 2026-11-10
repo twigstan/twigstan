@@ -13,6 +13,7 @@ final readonly class Metadata
      * @param list<string> $parentBlocks
      * @param list<string> $dependencies
      * @param list<array{name: string, line: int, message: string}> $loaderErrors The parents and dependencies that Twig cannot load
+     * @param bool $isSelfFormTheme Whether the template is a form theme of its forms, as in {% form_theme form _self %}
      */
     public function __construct(
         public string $name,
@@ -26,6 +27,7 @@ final readonly class Metadata
         public array $dependencies,
         public bool $isAbstract,
         public array $loaderErrors = [],
+        public bool $isSelfFormTheme = false,
     ) {}
 
     public function hasParents(): bool

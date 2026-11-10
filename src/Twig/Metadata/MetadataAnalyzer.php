@@ -14,6 +14,7 @@ use Twig\Node\Expression\BlockReferenceExpression;
 use Twig\Node\Expression\ConstantExpression;
 use Twig\Node\Expression\ParentExpression;
 use Twig\Node\Expression\Ternary\ConditionalTernary;
+use Twig\Node\Expression\Variable\ContextVariable;
 use Twig\Node\ImportNode;
 use Twig\Node\Node;
 use TwigStan\Processing\Compilation\Parser\TwigNodeParser;
@@ -115,7 +116,22 @@ final readonly class MetadataAnalyzer
             array_values(array_unique($dependencies)),
             str_contains($template->getSourceContext()->getCode(), '@twigstan-abstract'),
             $loaderErrors,
+            $this->isSelfFormTheme($template),
         );
+    }
+
+    private function isSelfFormTheme(Node $template): bool
+    {
+        // The node of the form_theme tag of the Twig bridge of Symfony, which is not always installed.
+        foreach ($this->nodeFinder->findInstanceOf($template, 'Symfony\\Bridge\\Twig\\Node\\FormThemeNode') as $formTheme) {
+            foreach ($formTheme->getNode('resources') as $resource) {
+                if ($resource instanceof ContextVariable && $resource->getAttribute('name') === '_self') {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

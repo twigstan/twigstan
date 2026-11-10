@@ -19,11 +19,18 @@ use TwigStan\Processing\ScopeInjection\TwigScopeInjector;
 final class InjectContextVisitor extends NodeVisitorAbstract
 {
     /**
+     * The blocks that Symfony's form renderer renders, such as form_row and _user_email_widget.
+     */
+    private const string FORM_BLOCK_PATTERN = '/(^|_)(row|widget|label|errors|help|rest|start|end|enctype|attributes)$/';
+
+    /**
      * @param list<ContextData> $contextBeforeBlock
+     * @param null|ArrayShapeNode $formBlockContext The context of the form blocks, when the template is a form theme of its forms
      */
     public function __construct(
         private readonly array $contextBeforeBlock,
         private readonly ArrayShapeMerger $arrayShapeMerger,
+        private readonly ?ArrayShapeNode $formBlockContext = null,
     ) {}
 
     /**
@@ -58,9 +65,13 @@ final class InjectContextVisitor extends NodeVisitorAbstract
         }
 
         if (preg_match('/^(?<parent>parent_)?block_(?<blockName>\w+)$/', $node->name->name, $match) === 1) {
-            $contextBeforeBlock = $this->embedIndex !== null
+            // The form renderer renders the form blocks of a form theme with the variables of the form view, not with
+            // the context of the template.
+            $contextBeforeBlock = $this->formBlockContext !== null && $this->embedIndex === null && preg_match(self::FORM_BLOCK_PATTERN, $match['blockName']) === 1
+                ? $this->formBlockContext
+                : ($this->embedIndex !== null
                 ? $this->getContextBeforeBlock(BlockContextCollector::embedKey($this->embedIndex), false)
-                : $this->getContextBeforeBlock($match['blockName'], $match['parent'] !== '');
+                : $this->getContextBeforeBlock($match['blockName'], $match['parent'] !== ''));
 
             $context = $contextBeforeBlock;
         } else {

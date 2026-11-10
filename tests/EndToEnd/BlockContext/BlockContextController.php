@@ -50,4 +50,11 @@ final class BlockContextController
             'dark' => $dark,
         ]);
     }
+
+    public function formTheme(Environment $environment, \Symfony\Component\Form\FormView $form): string
+    {
+        return $environment->render('EndToEnd/BlockContext/form_theme.twig', [
+            'form' => $form,
+        ]);
+    }
 }

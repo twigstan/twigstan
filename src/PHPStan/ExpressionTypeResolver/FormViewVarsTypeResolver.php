@@ -33,7 +33,7 @@ final class FormViewVarsTypeResolver implements ExpressionTypeResolverExtension
      * Set by BaseType and FormType. PHPStan generalizes an array with more than 16 known offsets, so only those that
      * templates read most are listed. The others, such as value, are mixed anyway.
      */
-    private const array VARS = [
+    public const array VARS = [
         'id' => 'string',
         'name' => 'string',
         'full_name' => 'string',
