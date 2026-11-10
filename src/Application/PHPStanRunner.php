@@ -8,6 +8,7 @@ use Nette\Neon\Neon;
 use PhpParser\Node;
 use ReflectionClass;
 use RuntimeException;
+use Symfony\Bridge\Twig\AppVariable;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process;
@@ -112,7 +113,8 @@ final readonly class PHPStanRunner
             $parameters['excludePaths'] = ['analyse' => array_map(fn(string $path) => sprintf('%s (?)', $path), $excludePaths)];
         }
 
-        if ($this->appUserClass !== null) {
+        // Projects without the Twig bridge of Symfony have no app variable.
+        if (class_exists(AppVariable::class)) {
             $parameters['stubFiles'] = [Path::join(dirname(__DIR__, 2), 'stubs', 'Symfony', 'AppVariable.stub')];
         }
 

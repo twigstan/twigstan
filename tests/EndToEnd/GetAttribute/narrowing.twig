@@ -4,10 +4,10 @@
 
 {% if user.lastPurchaseAt %}
     {% assert_type user.lastPurchaseAt 'DateTimeImmutable' %}
-    {% assert_type user.lastPurchaseAt.format('Y-m-d') 'string' %}
+    {% assert_type user.lastPurchaseAt.format('Y-m-d') 'non-falsy-string' %}
 {% else %}
     {% assert_type user.lastPurchaseAt 'null' %}
     {% assert_type user.lastPurchaseAt.format('Y-m-d') '*ERROR*' %}
 {% endif %}
 
-{% assert_type user.lastPurchaseAt.format('Y-m-d') 'string' %}
+{% assert_type user.lastPurchaseAt.format('Y-m-d') 'non-falsy-string' %}

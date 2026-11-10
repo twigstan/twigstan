@@ -330,13 +330,16 @@ final readonly class GetAttributeCheck
                     $methodReflection->getNamedArgumentsVariants(),
                 );
 
+                // The type of the call, so that dynamic return type extensions apply, such as AppRequestReturnType.
+                $returnType = $scope->getType(new Expr\MethodCall(new TypeExpr($objectType), new Identifier($methodName), $args));
+
                 // The scope passed to rules and extensions always implements these interfaces.
                 if ( ! $scope instanceof NodeCallbackInvoker || ! $scope instanceof CollectedDataEmitter) {
-                    return [$parametersAcceptor->getReturnType(), []];
+                    return [$returnType, []];
                 }
 
                 return [
-                    $parametersAcceptor->getReturnType(),
+                    $returnType,
                     [
                         // @phpstan-ignore phpstanApi.method
                         ...$this->prefixErrorIdentifier($this->parametersCheck->check(

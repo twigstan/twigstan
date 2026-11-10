@@ -9,6 +9,7 @@ use PHPStan\PhpDocParser\Ast\Type\ArrayShapeItemNode;
 use PHPStan\PhpDocParser\Ast\Type\ArrayShapeNode;
 use PHPStan\PhpDocParser\Ast\Type\GenericTypeNode;
 use PHPStan\PhpDocParser\Ast\Type\IdentifierTypeNode;
+use PHPStan\PhpDocParser\Ast\Type\UnionTypeNode;
 use PHPStan\PhpDocParser\Lexer\Lexer;
 use PHPStan\PhpDocParser\Parser\PhpDocParser;
 use PHPStan\PhpDocParser\Parser\TokenIterator;
@@ -27,7 +28,8 @@ use TwigStan\Twig\TwigFactory;
 
 /**
  * Types app.user as not null in templates rendered by controllers whose routes require a user,
- * according to the access control of Symfony security and #[IsGranted] attributes.
+ * according to the access control of Symfony security and #[IsGranted] attributes,
+ * and app.request as not null in templates rendered by controllers.
  */
 final class AppUserContext
 {
@@ -74,8 +76,11 @@ final class AppUserContext
         $context = [];
         foreach ($templateContext->context as $template => $renderPoints) {
             foreach ($renderPoints as $hash => [$sourceLocation, $renderContext]) {
-                if ($this->requiresUser($sourceLocation)) {
-                    $renderContext = $this->withUser($renderContext);
+                $controllers = $this->findControllersOf($sourceLocation);
+
+                // Templates rendered outside of a controller can be rendered without a request.
+                if ($controllers !== []) {
+                    $renderContext = $this->withApp($renderContext, $this->requiresUser($controllers));
                 }
 
                 $context[$template][$hash] = [$sourceLocation, $renderContext];
@@ -85,18 +90,22 @@ final class AppUserContext
         return new TemplateContext($context);
     }
 
-    private function requiresUser(SourceLocation $sourceLocation): bool
+    /**
+     * @return list<array{ReflectionMethod, list<array{string, Route}>}> The controllers that contain the render point
+     */
+    private function findControllersOf(SourceLocation $sourceLocation): array
     {
-        $controllers = array_filter(
+        return array_values(array_filter(
             $this->controllers[$sourceLocation->fileName] ?? [],
             fn(array $controller) => $sourceLocation->lineNumber >= $controller[0]->getStartLine() && $sourceLocation->lineNumber <= $controller[0]->getEndLine(),
-        );
+        ));
+    }
 
-        // Templates rendered outside of a controller can be rendered without a request.
-        if ($controllers === []) {
-            return false;
-        }
-
+    /**
+     * @param non-empty-list<array{ReflectionMethod, list<array{string, Route}>}> $controllers
+     */
+    private function requiresUser(array $controllers): bool
+    {
         foreach ($controllers as [$method, $routes]) {
             if ($this->isGrantedRequiresUser($method)) {
                 continue;
@@ -229,7 +238,10 @@ final class AppUserContext
         return $controllers;
     }
 
-    private function withUser(string $context): string
+    /**
+     * A controller always handles a request, so app.request is not null.
+     */
+    private function withApp(string $context, bool $requiresUser): string
     {
         $tagValue = $this->phpDocParser->parseTagValue(new TokenIterator($this->lexer->tokenize($context)), '@var');
 
@@ -238,13 +250,17 @@ final class AppUserContext
         }
 
         $shape = $tagValue->type;
+        $user = new IdentifierTypeNode('\\' . ($this->appUserClass ?? UserInterface::class));
         $shape->items = array_values(array_filter($shape->items, fn(ArrayShapeItemNode $item) => (string) $item->keyName !== 'app'));
         $shape->items[] = new ArrayShapeItemNode(
             new IdentifierTypeNode('app'),
             false,
             new GenericTypeNode(
                 new IdentifierTypeNode('\\' . AppVariable::class),
-                [new IdentifierTypeNode('\\' . ($this->appUserClass ?? UserInterface::class))],
+                [
+                    $requiresUser ? $user : new UnionTypeNode([$user, new IdentifierTypeNode('null')]),
+                    new IdentifierTypeNode('true'),
+                ],
             ),
         );
 
