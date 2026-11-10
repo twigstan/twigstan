@@ -1,5 +1,5 @@
 services:
-    -
-        class: TwigStan\PHPStan\TypeNodeResolver\PreservedContextTypeNodeResolver
-        tags:
-            - phpstan.phpDoc.typeNodeResolverExtension
+	-
+		class: TwigStan\PHPStan\TypeNodeResolver\PreservedContextTypeNodeResolver
+		tags:
+			- phpstan.phpDoc.typeNodeResolverExtension
