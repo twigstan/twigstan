@@ -21,6 +21,7 @@ final readonly class PHPStanRunner
 {
     private const string AGENT_INSTRUCTIONS_START = 'Instructions for interpreting errors';
     private const string AGENT_INSTRUCTIONS_END = "Do not widen parameter or return types just to make the error go away.\n";
+    private const string FIX_HINT_PATTERN = '/^\n?\d+ of the errors can be fixed automatically\. Run PHPStan again with --fix to fix them first, then fix the rest\.\n/';
 
     /**
      * @param list<class-string<TemplateContextCollector<Node>>> $twigContextCollectors
@@ -163,9 +164,29 @@ final readonly class PHPStanRunner
         // in the compiled templates, so the instructions are kept for TwigStan to print once after its errors.
         $agentInstructions = null;
         $capturing = false;
-        $exitCode = $process->run(function ($type, $buffer) use ($errorOutput, $output, &$agentInstructions, &$capturing): void {
+        // The output after the instructions, held back until it shows whether it starts with PHPStan's hint to run
+        // it with --fix. That hint is left out: it counts errors of the compiled templates, and TwigStan cannot fix them.
+        $afterInstructions = null;
+        $writeAfterInstructions = function (string $buffer) use ($errorOutput, &$afterInstructions): void {
+            $afterInstructions .= $buffer;
+            $firstLine = ltrim($afterInstructions, "\n");
+
+            if ( ! str_contains($firstLine, "\n")) {
+                return;
+            }
+
+            $errorOutput->write((string) preg_replace(self::FIX_HINT_PATTERN, '', $afterInstructions));
+            $afterInstructions = null;
+        };
+        $exitCode = $process->run(function ($type, $buffer) use ($errorOutput, $output, &$agentInstructions, &$capturing, &$afterInstructions, $writeAfterInstructions): void {
             if ($type !== Process::ERR) {
                 $output->write($buffer);
+
+                return;
+            }
+
+            if ($afterInstructions !== null) {
+                $writeAfterInstructions($buffer);
 
                 return;
             }
@@ -193,10 +214,16 @@ final readonly class PHPStanRunner
             }
 
             $end += strlen(self::AGENT_INSTRUCTIONS_END);
-            $errorOutput->write(substr($agentInstructions, $end));
+            $remainder = substr($agentInstructions, $end);
             $agentInstructions = substr($agentInstructions, 0, $end);
             $capturing = false;
+            $afterInstructions = '';
+            $writeAfterInstructions($remainder);
         });
+
+        if ($afterInstructions !== null) {
+            $errorOutput->write($afterInstructions);
+        }
 
         return $this->analysisResultFromJsonReader->read(
             $analysisResultJsonFile,
