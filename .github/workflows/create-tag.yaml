@@ -1,0 +1,68 @@
+name: Create tag
+
+on:
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Next version'
+                required: true
+                default: 'patch'
+                type: choice
+                options:
+                    - patch
+                    - minor
+
+permissions: {}
+
+concurrency:
+    group: ${{ github.workflow }}
+    cancel-in-progress: false
+
+jobs:
+    create-tag:
+        name: Create tag
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # rickstaa/action-create-tag pushes the tag with the persisted GITHUB_TOKEN
+        outputs:
+            tag: ${{ steps.next.outputs.tag }}
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+                with:
+                    fetch-depth: 0
+                    persist-credentials: true
+
+            -   name: Get previous tag
+                id: previoustag
+                uses: WyriHaximus/github-action-get-previous-tag@83f26fea93bc7efcbca2eb5591f5eaaf66b8f206 # v2.1.0
+                env:
+                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+            -   name: Get next versions
+                id: semvers
+                uses: WyriHaximus/github-action-next-semvers@18aa9ed4152808ab99b88d71f5481e41f8d89930 # v1.2.1
+                with:
+                    version: ${{ steps.previoustag.outputs.tag }}
+
+            -   name: Pick next version
+                id: next
+                run: echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+                env:
+                    TAG: ${{ inputs.version == 'minor' && steps.semvers.outputs.minor || steps.semvers.outputs.patch }}
+
+            -   name: Create tag
+                uses: rickstaa/action-create-tag@a1c7777fcb2fee4f19b0f283ba888afa11678b72 # v1.7.2
+                with:
+                    tag: ${{ steps.next.outputs.tag }}
+                    message: ${{ steps.next.outputs.tag }}
+
+    # A tag pushed with GITHUB_TOKEN does not trigger release.yaml on its own, so call it here.
+    release:
+        name: Create release
+        needs: create-tag
+        permissions:
+            contents: write
+        uses: ./.github/workflows/release.yaml
+        with:
+            tag: ${{ needs.create-tag.outputs.tag }}
