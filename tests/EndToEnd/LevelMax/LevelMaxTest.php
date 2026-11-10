@@ -51,5 +51,7 @@ final class LevelMaxTest extends AbstractEndToEndTestCase
             strrpos($errorOutput, '🔖'),
             strpos($errorOutput, 'Instructions for interpreting errors'),
         );
+        // PHPStan's hint to run it with --fix counts the missing #[Override] attributes of the compiled templates.
+        self::assertStringNotContainsString('--fix', $errorOutput);
     }
 }

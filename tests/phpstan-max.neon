@@ -2,3 +2,5 @@ includes:
 	- phpstan.neon
 parameters:
 	level: max
+	# Makes PHPStan count fixable errors in the compiled templates, see LevelMaxTest::testAgentInstructions()
+	checkMissingOverrideMethodAttribute: true
