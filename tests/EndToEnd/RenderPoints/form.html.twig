@@ -9,3 +9,10 @@
 {# Twig reads the child before the count() method. #}
 {% assert_type form1.count 'Symfony\\Component\\Form\\FormView' %}
 {% assert_type form1.count() 'int<0, max>' %}
+
+{# The variables of every form view, see FormViewVarsTypeResolver. #}
+{% assert_type form1.vars.id 'string' %}
+{% assert_type form1.vars.attr 'array<string, bool|float|int|string|Stringable|null>' %}
+{% assert_type form1.vars.errors 'Symfony\\Component\\Form\\FormErrorIterator<Symfony\\Component\\Form\\FormError>' %}
+{% assert_type form1.vars.choices 'mixed' %}
+{% assert_type form1.vars['data-custom'] 'mixed' %}
