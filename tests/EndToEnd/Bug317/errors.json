@@ -1,0 +1,77 @@
+{
+    "errors": [
+        {
+            "message": "Offset 'nonexistent' does not exist on 42.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "four_loops.twig:1",
+            "renderPoints": [
+                "Controller.php:22"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on 42.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "four_loops.twig:3",
+            "renderPoints": [
+                "Controller.php:22"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on 42.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "four_loops.twig:6",
+            "renderPoints": [
+                "Controller.php:22"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on 42.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "four_loops.twig:9",
+            "renderPoints": [
+                "Controller.php:22"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on 42.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "four_loops.twig:12",
+            "renderPoints": [
+                "Controller.php:22"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on 42.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "two_loops.twig:1",
+            "renderPoints": [
+                "Controller.php:13"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on 42.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "two_loops.twig:4",
+            "renderPoints": [
+                "Controller.php:13"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on 42.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "two_loops.twig:8",
+            "renderPoints": [
+                "Controller.php:13"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}
