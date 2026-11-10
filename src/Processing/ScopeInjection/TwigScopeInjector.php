@@ -23,6 +23,7 @@ use TwigStan\PHPStan\Analysis\CollectedData;
 use TwigStan\PHPStan\Collector\BlockContextCollector;
 use TwigStan\PHPStan\Collector\MacroCollector;
 use TwigStan\Processing\Flattening\FlatteningResultCollection;
+use TwigStan\Processing\GeneratedFiles;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectContextVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\InjectMacroVisitor;
 use TwigStan\Processing\ScopeInjection\PhpVisitor\PhpToTemplateLinesNodeVisitor;
@@ -53,6 +54,7 @@ final class TwigScopeInjector
     public function __construct(
         private readonly PrettyPrinter $prettyPrinter,
         private readonly Filesystem $filesystem,
+        private readonly GeneratedFiles $generatedFiles,
         private readonly StrictPhpParser $phpParser,
         private readonly ArrayShapeMerger $arrayShapeMerger,
         private readonly PhpDocParser $phpDocParser,
@@ -119,10 +121,7 @@ final class TwigScopeInjector
 
             $phpFile = Path::join($targetDirectory, basename($flatteningResult->phpFile));
 
-            $this->filesystem->dumpFile(
-                $phpFile,
-                $phpSource,
-            );
+            $this->generatedFiles->write($phpFile, $phpSource);
 
             // This is a bit inefficient, maybe we can make this smarter
             $stmts = $this->phpParser->parse($phpSource);
@@ -136,6 +135,8 @@ final class TwigScopeInjector
                 $visitor->getMapping(),
             ));
         }
+
+        $this->generatedFiles->removeAllExcept($targetDirectory, array_map(fn(ScopeInjectionResult $result) => $result->phpFile, iterator_to_array($results, false)));
 
         return $results;
     }

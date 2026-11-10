@@ -252,13 +252,10 @@ final class AnalyzeCommand extends Command
         $this->filesystem->remove($compilationDirectory);
         $this->filesystem->mkdir($compilationDirectory);
 
+        // PHPStan analyses these directories. Their files are kept, and only rewritten when they change, so that
+        // PHPStan does not re-hash every file. The files that are no longer generated are removed.
         $flatteningDirectory = Path::normalize($this->tempDirectory . '/flattening');
-        $this->filesystem->remove($flatteningDirectory);
-        $this->filesystem->mkdir($flatteningDirectory);
-
         $scopeInjectionDirectory = Path::normalize($this->tempDirectory . '/scope-injection');
-        $this->filesystem->remove($scopeInjectionDirectory);
-        $this->filesystem->mkdir($scopeInjectionDirectory);
 
         if ($paths !== []) {
             $files = $this->givenFilesFinder->find($paths);

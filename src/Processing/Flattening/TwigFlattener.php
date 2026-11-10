@@ -19,6 +19,7 @@ use TwigStan\Processing\Flattening\PhpVisitor\InlineParentTemplateVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\MainMethodFinderVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\RemoveEmbedsVisitor;
 use TwigStan\Processing\Flattening\PhpVisitor\RenameBlocksVisitor;
+use TwigStan\Processing\GeneratedFiles;
 use TwigStan\Twig\Metadata\MetadataRegistry;
 use TwigStan\Twig\SourceLocation;
 
@@ -32,6 +33,7 @@ final class TwigFlattener
     public function __construct(
         private readonly PrettyPrinter $prettyPrinter,
         private readonly Filesystem $filesystem,
+        private readonly GeneratedFiles $generatedFiles,
         private readonly MetadataRegistry $metadataRegistry,
         private readonly StrictPhpParser $phpParser,
     ) {}
@@ -168,10 +170,7 @@ final class TwigFlattener
 
                 $phpFile = Path::join($targetDirectory, basename($compilationResult->phpFile));
 
-                $this->filesystem->dumpFile(
-                    $phpFile,
-                    $phpSource,
-                );
+                $this->generatedFiles->write($phpFile, $phpSource);
 
                 $results = $results->with(new FlatteningResult(
                     $compilationResult->twigFilePath,
@@ -181,9 +180,9 @@ final class TwigFlattener
                 continue;
             }
 
-            $this->filesystem->copy(
-                $compilationResult->phpFile,
+            $this->generatedFiles->write(
                 Path::join($targetDirectory, basename($compilationResult->phpFile)),
+                $this->filesystem->readFile($compilationResult->phpFile),
             );
 
             $results = $results->with(
@@ -196,6 +195,8 @@ final class TwigFlattener
                 ),
             );
         }
+
+        $this->generatedFiles->removeAllExcept($targetDirectory, array_map(fn(FlatteningResult $result) => $result->phpFile, iterator_to_array($results, false)));
 
         return $results;
     }
