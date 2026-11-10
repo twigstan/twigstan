@@ -9,12 +9,12 @@ use PhpParser\Node;
 use ReflectionClass;
 use RuntimeException;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Process\Process;
 use TwigStan\PHPStan\Analysis\AnalysisResultFromJsonReader;
 use TwigStan\PHPStan\Analysis\PHPStanAnalysisResult;
 use TwigStan\PHPStan\Collector\TemplateContextCollector;
+use TwigStan\Processing\GeneratedFiles;
 use TwigStan\Twig\EnvironmentFingerprint;
 
 final readonly class PHPStanRunner
@@ -28,7 +28,7 @@ final readonly class PHPStanRunner
      * @param list<string> $phpExtensions
      */
     public function __construct(
-        private Filesystem $filesystem,
+        private GeneratedFiles $generatedFiles,
         private AnalysisResultFromJsonReader $analysisResultFromJsonReader,
         private string $phpstanBinPath,
         private string $phpstanConfigurationFile,
@@ -59,7 +59,9 @@ final readonly class PHPStanRunner
         array $excludePaths = [],
         int $run = 1,
     ): PHPStanAnalysisResult {
-        $configFile = Path::join($this->tempDirectory, sprintf('phpstan.%s.neon', $mode->value));
+        // Each run has its own configuration file, which is only rewritten when it changes, because PHPStan rebuilds its
+        // container when the modification time of a configuration file changes.
+        $configFile = Path::join($this->tempDirectory, $mode === PHPStanRunMode::CollectPhpRenderPoints ? sprintf('phpstan.%s.neon', $mode->value) : sprintf('phpstan.%s.%d.neon', $mode->value, $run));
         $analysisResultJsonFile = Path::join($this->tempDirectory, 'phpstan', sprintf('%s.result.json', $mode->value));
 
         $services = [];
@@ -128,10 +130,7 @@ final readonly class PHPStanRunner
             'services' => array_values($services),
         ];
 
-        $this->filesystem->dumpFile(
-            $configFile,
-            Neon::encode($config, true),
-        );
+        $this->generatedFiles->write($configFile, Neon::encode($config, true));
 
         $process = new Process(
             array_filter([

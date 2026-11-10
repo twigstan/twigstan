@@ -71,6 +71,7 @@ services:
 	- TwigStan\Processing\Compilation\TwigVisitor\RemoveTruthinessTestVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceTypesNodeVisitor
 	- TwigStan\Processing\Flattening\TwigFlattener
+	- TwigStan\Processing\GeneratedFiles
 	- TwigStan\Processing\ScopeInjection\TwigScopeInjector
 	- TwigStan\Processing\ScopeInjection\ArrayShapeMerger
 	- TwigStan\Twig\DependencyFinder
