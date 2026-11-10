@@ -17,12 +17,13 @@ use PHPStan\Analyser\TypeSpecifierContext;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Conditional;
 use PHPStan\Reflection\MethodReflection;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\StaticMethodTypeSpecifyingExtension;
 use Twig\Extension\CoreExtension;
 
 /**
- * When `a.b.c is defined` is true, which is how `a.b.c|default` starts, a and a.b are not null.
+ * When `a.b.c is defined` is true, which is how `a.b.c|default` and `a.b.c ?? d` start, a.b.c exists and a and a.b are not null.
  *
  * The defined test reads a.b while ignoring the strict check, but the then branch reads it as usual,
  * so both expressions are narrowed.
@@ -57,7 +58,9 @@ final class DefinedTestTypeSpecifyingExtension implements StaticMethodTypeSpecif
 
     public function specifyTypes(MethodReflection $staticMethodReflection, StaticCall $node, Scope $scope, TypeSpecifierContext $context): SpecifiedTypes
     {
-        $specifiedTypes = new SpecifiedTypes();
+        // The attribute exists, so the read that the then branch does is known, see GetAttributeRule.
+        // Mixed keeps its type, and does not make it certain, which would report the null check that `a ?? b` compiles to.
+        $specifiedTypes = $this->typeSpecifier->create(self::withoutDefinedTest($node), new MixedType(), TypeSpecifierContext::createTrue(), $scope);
 
         $object = $node->getArgs()[2]->value;
         while (true) {
