@@ -1,0 +1,15 @@
+<?php
+
+namespace Twig;
+
+/**
+ * Types the blocks that the classes of embedded templates merge with the blocks they are given,
+ * see `\array_merge($this->blocks, $blocks)` in their doDisplay() method.
+ */
+abstract class Template
+{
+    /**
+     * @var array<string, array{self, string}>
+     */
+    protected $blocks = [];
+}
