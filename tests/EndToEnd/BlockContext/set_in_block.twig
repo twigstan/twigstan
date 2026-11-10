@@ -1,0 +1,8 @@
+{% block main %}
+    {# Not a constant, so the context of the block is read while it is collected. #}
+    {% set theme = dark ? 'dark' : 'light' %}
+    {% block inner %}{% assert_type theme "'dark'|'light'" %}{% endblock %}
+    {% embed '@EndToEnd/BlockContext/card.twig' %}
+        {% block body %}{% assert_type theme "'dark'|'light'" %}{% endblock %}
+    {% endembed %}
+{% endblock %}
