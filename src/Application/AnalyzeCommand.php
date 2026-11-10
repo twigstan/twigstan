@@ -292,17 +292,20 @@ final class AnalyzeCommand extends Command
 
         $output->writeln('Collecting scopes from render points...');
 
+        // When only templates are given, their render points are collected from the configured PHP paths.
+        $collectFromPhpPaths = $paths === [] || $phpFileNames === [];
+
         // PHPStan only uses its result cache when it analyses directories, so the configured paths are passed instead of the files in them.
         $analysisResult = $this->phpStanRunner->run(
             $output,
             $errorOutput,
             $this->environmentLoader,
-            $paths !== [] ? $phpFileNames : [],
-            $paths !== [] ? [] : $this->phpFilesFinder->getPaths(),
+            $collectFromPhpPaths ? [] : $phpFileNames,
+            $collectFromPhpPaths ? $this->phpFilesFinder->getPaths() : [],
             $debugMode,
             $xdebugMode,
             PHPStanRunMode::CollectPhpRenderPoints,
-            $paths !== [] ? [] : $this->phpFilesFinder->getExclusions(),
+            $collectFromPhpPaths ? $this->phpFilesFinder->getExclusions() : [],
         );
 
         $result = new TwigStanAnalysisResult();
