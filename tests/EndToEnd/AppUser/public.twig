@@ -1,2 +1,4 @@
 {# The route is public. #}
 {% assert_type app.user 'Symfony\\Component\\Security\\Core\\User\\InMemoryUser|null' %}
+{# Rendered by a controller, so there is a request. #}
+{% assert_type app.request 'Symfony\\Component\\HttpFoundation\\Request' %}

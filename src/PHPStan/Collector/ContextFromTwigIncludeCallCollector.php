@@ -191,6 +191,7 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
             return null;
         }
 
-        return new GenericObjectType(AppVariable::class, [$user]);
+        // The request of the including template is kept, see AppUserContext.
+        return new GenericObjectType(AppVariable::class, [$user, $context->getOffsetValueType($app)->getTemplateType(AppVariable::class, 'THasRequest')]);
     }
 }

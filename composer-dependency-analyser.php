@@ -60,8 +60,20 @@ $config->ignoreErrorsOnPackagesAndPaths(
         'symfony/twig-bridge',
     ],
     [
+        __DIR__ . '/src/Application/PHPStanRunner.php',
         __DIR__ . '/src/PHPStan/Collector/ContextFromTwigIncludeCallCollector.php',
         __DIR__ . '/src/PHPStan/DynamicReturnType/GetGlobalsReturnType.php',
+    ],
+    [ErrorType::DEV_DEPENDENCY_IN_PROD],
+);
+
+$config->ignoreErrorsOnPackagesAndPaths(
+    [
+        'symfony/http-foundation',
+        'symfony/twig-bridge',
+    ],
+    [
+        __DIR__ . '/src/PHPStan/DynamicReturnType/AppRequestReturnType.php',
     ],
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );

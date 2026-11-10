@@ -12,9 +12,11 @@ namespace Symfony\Bridge\Twig;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * Lets TwigStan type app.user by the security of the routes that render a template.
+ * Lets TwigStan type app.user by the security of the routes that render a template,
+ * and app.request in templates rendered by controllers, see TwigStan\PHPStan\DynamicReturnType\AppRequestReturnType.
  *
  * @template TUser of UserInterface|null = UserInterface|null
+ * @template THasRequest of bool = bool
  */
 class AppVariable
 {

@@ -83,7 +83,7 @@ final readonly class GetGlobalsReturnType implements DynamicMethodReturnTypeExte
 
         // The user is null when the route does not require one, or when the template is rendered outside a request.
         if ($value instanceof AppVariable && $this->appUserClass !== null) {
-            return new GenericObjectType($value::class, [TypeCombinator::addNull(new ObjectType($this->appUserClass))]);
+            return new GenericObjectType($value::class, [TypeCombinator::addNull(new ObjectType($this->appUserClass)), new BooleanType()]);
         }
 
         if (is_object($value)) {
