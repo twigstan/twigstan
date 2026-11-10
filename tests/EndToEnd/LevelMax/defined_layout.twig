@@ -1,0 +1,6 @@
+{# @twigstan-abstract #}
+{# Not rendered for the page without a deadline. #}
+{% if deadline is defined and not is_optional %}
+    {{ deadline | date('Y') }}
+    {{ deadline.timestamp }}
+{% endif %}

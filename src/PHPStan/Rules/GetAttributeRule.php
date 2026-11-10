@@ -10,7 +10,9 @@ use PhpParser\Node\Identifier;
 use PHPStan\Analyser\Scope;
 use PHPStan\DependencyInjection\AutowiredService;
 use PHPStan\DependencyInjection\Conditional;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
+use PHPStan\Type\ErrorType;
 use Twig\Extension\CoreExtension;
 use TwigStan\PHPStan\GetAttributeCheck;
 use TwigStan\PHPStan\Visitor\AssertTypeVisitor;
@@ -21,6 +23,8 @@ use TwigStan\PHPStan\Visitor\AssertTypeVisitor;
 #[Conditional(attribute: new AutowiredService(), if: '%twigstan.phases.analysis%')]
 final readonly class GetAttributeRule implements Rule
 {
+    private const array MAYBE_NOT_FOUND = ['getAttribute.offsetAccess.notFound', 'getAttribute.maybeNotFound'];
+
     public function __construct(private GetAttributeCheck $attributeCheck) {}
 
     public function getNodeType(): string
@@ -56,6 +60,22 @@ final readonly class GetAttributeRule implements Rule
             return [];
         }
 
+        // The defined test checks whether the attribute exists, and the reads that it guards have a specified type,
+        // see DefinedTestTypeSpecifyingExtension. An attribute that cannot exist is still reported.
+        if ($this->isDefinedTest($node) ? ! $result[0] instanceof ErrorType : $scope->hasExpressionType($node)->yes()) {
+            return array_values(array_filter(
+                $result[1],
+                fn(IdentifierRuleError $error) => ! in_array($error->getIdentifier(), self::MAYBE_NOT_FOUND, true),
+            ));
+        }
+
         return $result[1];
+    }
+
+    private function isDefinedTest(StaticCall $node): bool
+    {
+        $isDefinedTest = $node->getArgs()[6]->value ?? null;
+
+        return $isDefinedTest instanceof Node\Expr\ConstFetch && $isDefinedTest->name->toLowerString() === 'true';
     }
 }

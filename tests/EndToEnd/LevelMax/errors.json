@@ -55,13 +55,6 @@
             "tip": null,
             "twigSourceLocation": "unknown_argument.twig:1",
             "renderPoints": []
-        },
-        {
-            "message": "Generator expects value type bool|float|int|string|Stringable|null, mixed given.",
-            "identifier": "generator.valueType",
-            "tip": null,
-            "twigSourceLocation": "unknown_argument.twig:4",
-            "renderPoints": []
         }
     ],
     "fileSpecificErrors": []

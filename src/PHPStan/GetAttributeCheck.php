@@ -34,6 +34,7 @@ use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -67,6 +68,11 @@ final readonly class GetAttributeCheck
 
         if ($arguments === null) {
             return null;
+        }
+
+        // An attribute of a variable that cannot exist is read in a branch that is not rendered, see ImpossibleContextTypeResolver.
+        if ($scope->getType($arguments['object']) instanceof NeverType) {
+            return [new NeverType(true), []];
         }
 
         $objectType = $this->ruleLevelHelper->findTypeToCheck(

@@ -1,0 +1,13 @@
+{% types {
+    users: 'array<int|numeric-string, \\TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\UserId>',
+    key: "''|numeric-string",
+    date: '\\DateTimeImmutable|\\TwigStan\\EndToEnd\\GetAttribute\\Fixtures\\UserId',
+} %}
+
+{# The defined test checks that the offset exists, and guards the read. #}
+{% if users[key] is defined %}
+    {{ users[key].id }}
+{% endif %}
+
+{# ?? starts with a defined test. #}
+{{ date.timestamp ?? '-' }}
