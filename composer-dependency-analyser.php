@@ -14,6 +14,7 @@ $config->ignoreErrorsOnPackagesAndPaths(
     ],
     [
         __DIR__ . '/src/PHPStan/Collector/ContextFromControllerRenderMethodCallCollector.php',
+        __DIR__ . '/src/PHPStan/GetAttributeCheck.php',
     ],
     [ErrorType::DEV_DEPENDENCY_IN_PROD],
 );
