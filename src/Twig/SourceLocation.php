@@ -111,12 +111,11 @@ final readonly class SourceLocation implements Stringable, IteratorAggregate
         return hash('crc32b', $this->toString());
     }
 
+    /**
+     * Compares the whole chain, so that locations that only differ in their previous locations have a stable order.
+     */
     public function sort(SourceLocation $other): int
     {
-        if ($this->fileName === $other->fileName) {
-            return $this->lineNumber <=> $other->lineNumber;
-        }
-
-        return $this->fileName <=> $other->fileName;
+        return [$this->fileName, $this->lineNumber, $this->previous?->toString() ?? ''] <=> [$other->fileName, $other->lineNumber, $other->previous?->toString() ?? ''];
     }
 }

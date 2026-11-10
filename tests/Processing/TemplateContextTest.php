@@ -30,6 +30,27 @@ final class TemplateContextTest extends TestCase
     }
 
     /**
+     * The render points arrive in the order the parallel PHPStan workers finish, and their order shows in the merged context.
+     */
+    #[Test]
+    public function it_should_order_render_points_that_share_their_first_location(): void
+    {
+        $fromController = new SourceLocation('page.twig', 3, new SourceLocation('Controller.php', 20));
+        $fromCommand = new SourceLocation('page.twig', 3, new SourceLocation('Command.php', 10));
+        $renderPoints = [
+            $fromController->getHash() => [$fromController, 'array{flag: bool}'],
+            $fromCommand->getHash() => [$fromCommand, 'array{flag: true}'],
+        ];
+
+        foreach ([$renderPoints, array_reverse($renderPoints, true)] as $arrival) {
+            self::assertSame(
+                ['array{flag: true}', 'array{flag: bool}'],
+                (new TemplateContext(['partial.twig' => $arrival]))->getUniqueContextByTemplate('partial.twig'),
+            );
+        }
+    }
+
+    /**
      * @param array<string, string> $updates
      */
     #[DataProvider('provideContextUpdates')]
