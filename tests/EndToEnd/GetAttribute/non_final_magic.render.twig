@@ -1,0 +1,11 @@
+{% print_assert_type properties.title 'mixed' %}
+{% print_assert_type methods.title 'mixed' %}
+{% print_assert_type methods.title() 'mixed' %}
+{% print_assert_type date.date 'string' %}
+{% print_assert_type date.timezone_type 'int' %}
+---OUTPUT---
+title from __get()
+title from __call()
+title from __call()
+2026-11-11 00:00:00.000000
+3
