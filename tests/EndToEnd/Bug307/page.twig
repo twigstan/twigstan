@@ -1,0 +1,7 @@
+{% for item in items %}
+    {% for child in item.children %}
+        {{ child.nonexistent }}
+    {% endfor %}
+    {{ item.nonexistent }}
+{% endfor %}
+{{ price.nonexistent }}
