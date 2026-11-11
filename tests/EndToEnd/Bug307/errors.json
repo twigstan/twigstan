@@ -1,0 +1,32 @@
+{
+    "errors": [
+        {
+            "message": "Offset 'nonexistent' does not exist on array{id: int, label: string, from: DateTimeImmutable, until: DateTimeImmutable, weight: float, size: int}.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "page.twig:3",
+            "renderPoints": [
+                "Controller.php:17"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on array{id: int, name: string, email: string, phone: string, city: string, active: bool, score: float, rank: int, ...}.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "page.twig:5",
+            "renderPoints": [
+                "Controller.php:17"
+            ]
+        },
+        {
+            "message": "Offset 'nonexistent' does not exist on float.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "page.twig:7",
+            "renderPoints": [
+                "Controller.php:17"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}

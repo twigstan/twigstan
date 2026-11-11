@@ -1,0 +1,5 @@
+includes:
+	- phpstan.neon
+parameters:
+	# The default of PHPStan, which phpstan-strict-rules turns off.
+	polluteScopeWithAlwaysIterableForeach: true
