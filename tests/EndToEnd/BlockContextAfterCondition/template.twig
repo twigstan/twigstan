@@ -1,0 +1,11 @@
+{% block outer %}
+    {% set message = 'present' %}
+
+    {% if unrelated %}
+        {% set decoration = '!' %}
+    {% endif %}
+
+    {% block inner %}
+        {{ message }}
+    {% endblock %}
+{% endblock %}
