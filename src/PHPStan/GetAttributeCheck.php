@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\PHPStan;
 
 use ArrayAccess;
+use DateTimeInterface;
 use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\StaticCall;
@@ -33,9 +34,11 @@ use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\Enum\EnumCaseObjectType;
 use PHPStan\Type\ErrorType;
+use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NeverType;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
@@ -393,8 +396,31 @@ final readonly class GetAttributeCheck
             }
         }
 
+        // vendor/twig/twig/src/Extension/CoreExtension.php: getAttribute() reads the attribute through __isset() and __get(),
+        // or calls __call() with its name.
+        if (
+            ($callType !== Template::METHOD_CALL && $objectType->hasMethod('__isset')->yes())
+            || $objectType->hasMethod('__call')->yes()
+        ) {
+            return [new MixedType(), []];
+        }
+
+        if (
+            $callType !== Template::METHOD_CALL
+            && in_array($propertyOrMethod, ['date', 'timezone_type'], true)
+            && (new ObjectType(DateTimeInterface::class))->isSuperTypeOf($objectType)->yes()
+        ) {
+            return [$propertyOrMethod === 'date' ? new StringType() : new IntegerType(), []];
+        }
+
         // We already excluded `Yes` certainty, but it can still be `Maybe` for ArrayObject and ArrayAccess.
-        if ($callType !== Template::METHOD_CALL && $objectType->hasOffsetValueType($propertyOrMethodType)->maybe()) {
+        // PHPStan also answers `Maybe` for a class that does not implement ArrayAccess, because a subclass might,
+        // but then the attribute is a property or a method, as it is for a final class.
+        if (
+            $callType !== Template::METHOD_CALL
+            && $objectType->hasOffsetValueType($propertyOrMethodType)->maybe()
+            && ! $this->isClassWithoutArrayAccess($objectType)
+        ) {
             return [$objectType->getOffsetValueType($propertyOrMethodType), [
                 // @phpstan-ignore phpstanApi.method
                 ...$this->prefixErrorIdentifier($this->nonexistentOffsetInArrayDimFetchCheck->check(
@@ -417,6 +443,23 @@ final readonly class GetAttributeCheck
         ];
 
         return [new ErrorType(), $errors];
+    }
+
+    private function isClassWithoutArrayAccess(Type $objectType): bool
+    {
+        $classReflections = $objectType->getObjectClassReflections();
+
+        if ($classReflections === [] || ! $objectType->isObject()->yes()) {
+            return false;
+        }
+
+        foreach ($classReflections as $classReflection) {
+            if ($classReflection->isInterface() || $classReflection->implementsInterface(ArrayAccess::class)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

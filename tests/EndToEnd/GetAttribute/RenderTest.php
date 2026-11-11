@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace TwigStan\EndToEnd\GetAttribute;
 
+use DateTimeImmutable;
+use DateTimeZone;
 use Override;
 use TwigStan\EndToEnd\AbstractRenderingTestCase;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\Account;
+use TwigStan\EndToEnd\GetAttribute\Fixtures\MagicMethods;
+use TwigStan\EndToEnd\GetAttribute\Fixtures\MagicProperties;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\NonFinalAccount;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\OrderStatus;
 use TwigStan\EndToEnd\GetAttribute\Fixtures\State;
@@ -86,6 +90,15 @@ final class RenderTest extends AbstractRenderingTestCase
             'template' => __DIR__ . '/non_final_properties.render.twig',
             'context' => [
                 'account' => new NonFinalAccount('TwigStan'),
+            ],
+        ];
+
+        yield 'non_final_magic.render.twig' => [
+            'template' => __DIR__ . '/non_final_magic.render.twig',
+            'context' => [
+                'properties' => new MagicProperties(),
+                'methods' => new MagicMethods(),
+                'date' => new DateTimeImmutable('2026-11-11', new DateTimeZone('UTC')),
             ],
         ];
     }
