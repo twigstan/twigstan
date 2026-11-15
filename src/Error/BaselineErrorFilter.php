@@ -26,6 +26,10 @@ final readonly class BaselineErrorFilter
         $errors = array_values(array_filter(
             $errors,
             function ($error) {
+                if ( ! $error->canBeIgnored) {
+                    return true;
+                }
+
                 foreach ($this->baselineErrors as $baselineError) {
                     if ($baselineError->shouldIgnore($error)) {
                         return false;

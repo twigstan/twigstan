@@ -46,6 +46,7 @@ final readonly class Error
             $this->sourceLocation,
             $this->identifier,
             $this->tip,
+            $this->canBeIgnored,
         );
     }
 
@@ -59,6 +60,7 @@ final readonly class Error
             $sourceLocation,
             $this->identifier,
             $this->tip,
+            $this->canBeIgnored,
         );
     }
 }

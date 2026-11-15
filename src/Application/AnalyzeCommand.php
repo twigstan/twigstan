@@ -516,7 +516,11 @@ final class AnalyzeCommand extends Command
         }
 
         // Transform PHPStan errors to TwigStan errors
-        $errors = $this->errorFilter->filter($errors);
+        // Configured ignores cannot hide errors that cannot be ignored, such as templates that Twig cannot compile, or errors that PHPStan does not allow to ignore.
+        $errors = array_values(array_filter(
+            $errors,
+            fn(Error $error) => ! $error->canBeIgnored || $this->errorFilter->filter([$error]) !== [],
+        ));
 
         if ($this->onlyAnalyzeTemplatesWithContext) {
             // Filter out errors for templates that don't have a render point.
@@ -919,6 +923,8 @@ final class AnalyzeCommand extends Command
                     twigFile: $metadata->filePath,
                     sourceLocation: new SourceLocation($metadata->filePath, $metadata->syntaxError['line']),
                     identifier: 'twig.syntaxError',
+                    // Twig cannot render the template, so ignoring the error would hide that the template is broken.
+                    canBeIgnored: false,
                 );
             }
 
