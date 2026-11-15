@@ -31,6 +31,7 @@
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpstan/phpstan-symfony": "^2.0",
+        "phpstan/tally": "^1.0.1",
         "phpunit/phpunit": "^11.4",
         "shipmonk/composer-dependency-analyser": "^1.7",
         "staabm/phpstan-todo-by": "^0.2",

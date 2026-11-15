@@ -1,4 +1,5 @@
 /.github export-ignore
+/benchmarks export-ignore
 /tests export-ignore
 .* export-ignore
 castor.php export-ignore
@@ -10,3 +11,4 @@ phpstan-baseline.neon export-ignore
 phpstan-local.neon export-ignore
 phpunit.xml export-ignore
 screenshot.png export-ignore
+tally.php export-ignore

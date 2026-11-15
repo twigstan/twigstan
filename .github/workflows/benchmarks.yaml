@@ -1,0 +1,38 @@
+name: Benchmarks
+
+on:
+    pull_request:
+    push:
+        branches: [ main ]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+    tally:
+        # A fixed image and PHP version, because Tally's counts change with the system libraries and the PHP build.
+        runs-on: ubuntu-24.04
+        name: Tally
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.5'
+                    extensions: posix
+                    coverage: none
+
+            -   name: Install Composer packages
+                uses: ramsey/composer-install@v3
+
+            -   name: Run benchmarks
+                run: vendor/bin/tally run --output=tmp/tally-results
+
+            -   name: Upload results
+                if: always()
+                uses: actions/upload-artifact@v4
+                with:
+                    name: tally-results
+                    path: tmp/tally-results

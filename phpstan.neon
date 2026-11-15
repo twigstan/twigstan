@@ -4,9 +4,11 @@ includes:
 parameters:
 	level: '8'
 	paths:
+		- benchmarks
 		- bin/twigstan
 		- src
 		- tests
+		- tally.php
 	tmpDir: .phpstan
 	reportUnmatchedIgnoredErrors: false
 	errorFormat: ticketswap
@@ -33,6 +35,13 @@ parameters:
 		-
 			identifier: instanceof.internalClass
 			message: '#internal class Symfony\\UX\\TwigComponent\\#'
+		# The benchmarks run PHPStan's analyser in their own process, as PHPStan's own tests do.
+		-
+			identifier: phpstanApi.classConstant
+			path: benchmarks/support/TwigStanProject.php
+		-
+			identifier: phpstanApi.method
+			path: benchmarks/support/TwigStanProject.php
 	dynamicConstantNames:
 		- Twig\Environment::MAJOR_VERSION
 		- Twig\Environment::VERSION_ID

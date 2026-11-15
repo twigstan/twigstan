@@ -39,6 +39,18 @@ function phpunit(
     return exit_code(['vendor/bin/phpunit', ...$rawTokens]);
 }
 
+#[AsTask(name: 'tally', aliases: ['bench', 'benchmarks'], ignoreValidationErrors: true)]
+function tally(
+    #[AsRawTokens]
+    array $rawTokens = [],
+): int {
+    if ( ! fs()->exists('vendor')) {
+        composer_install();
+    }
+
+    return exit_code(['vendor/bin/tally', 'run', ...$rawTokens]);
+}
+
 #[AsTask(name: 'phpstan', aliases: ['stan'])]
 function phpstan(
     #[AsOption]
