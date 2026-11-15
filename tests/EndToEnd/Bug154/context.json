@@ -14,7 +14,7 @@
     "include.twig": [
         [
             "page.twig:5",
-            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'Welcome'}"
+            "array{title: 'Welcome', app: Symfony\\Bridge\\Twig\\AppVariable}"
         ]
     ]
 }

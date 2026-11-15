@@ -36,8 +36,21 @@ final class InjectBlockMethodsFromParentVisitor extends NodeVisitorAbstract
             return null;
         }
 
+        // The blocks of the parent read their variables from the context of the parent, see AddTypeCommentsToTemplateVisitor.
+        // In the child, they are rendered with the context of the child, which can be narrower than the context of the parent.
+        $contextDoc = null;
+        foreach ($node->stmts as $stmt) {
+            if ($stmt instanceof Node\Stmt\ClassMethod && $stmt->name->name === 'doDisplay') {
+                $contextDoc = $stmt->getDocComment();
+            }
+        }
+
         foreach ($this->blocks as $blockName => [$method,$sourceLocation]) {
             $method->name = new Node\Identifier($blockName);
+
+            if ($contextDoc !== null) {
+                $method->setDocComment($contextDoc);
+            }
 
             if ($method->stmts === null) {
                 continue;
