@@ -1,0 +1,8 @@
+{% block head %}
+    {% block css %}
+        {% block stylesheets %}{{ app.debug }}{% endblock %}
+        {% set font = 'Inter' %}
+        {% block css_vars %}{{ app.debug }} {{ font }} {{ missing }}{% endblock %}
+    {% endblock %}
+{% endblock %}
+{% block body %}{% endblock %}

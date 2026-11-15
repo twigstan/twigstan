@@ -1,0 +1,3 @@
+{% extends 'EndToEnd/Bug328/base.twig' %}
+{% block css %}{{ parent() }} {{ app.debug }}{% endblock %}
+{% block body %}{% block content %}{% endblock %}{% endblock %}
