@@ -11,6 +11,28 @@
             "array{content: string, attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: TwigStan\\EndToEnd\\TwigComponents\\MyComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
         ]
     ],
+    "templates/components/Card.html.twig": [
+        [
+            "templates/cards.twig:1",
+            "array{attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: Symfony\\UX\\TwigComponent\\AnonymousComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ],
+        [
+            "templates/cards.twig:2",
+            "array{title: 'Hello', attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: Symfony\\UX\\TwigComponent\\AnonymousComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ],
+        [
+            "templates/cards.twig:3",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, subtitle: 'Only a subtitle', attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: Symfony\\UX\\TwigComponent\\AnonymousComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ],
+        [
+            "templates/cards.twig:4",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'Embedded', attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: Symfony\\UX\\TwigComponent\\AnonymousComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ],
+        [
+            "templates/cards.twig:6",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, title: 'From the outer context', attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: Symfony\\UX\\TwigComponent\\AnonymousComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ]
+    ],
     "templates/components/Example.html.twig": [
         [
             "templates/page.twig:1",

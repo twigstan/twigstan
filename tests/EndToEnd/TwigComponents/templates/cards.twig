@@ -1,0 +1,6 @@
+<twig:Card />
+<twig:Card title="Hello" />
+<twig:Card subtitle="Only a subtitle">Body</twig:Card>
+{% component Card with { title: 'Embedded' } %}{% endcomponent %}
+{% set title = 'From the outer context' %}
+<twig:Card>Body</twig:Card>

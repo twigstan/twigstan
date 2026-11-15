@@ -27,6 +27,20 @@
             "renderPoints": [
                 "Alert.php:10"
             ]
+        },
+        {
+            "message": "Component \"Card\" is rendered without its required prop \"title\".",
+            "identifier": "twigComponent.missingProp",
+            "tip": null,
+            "twigSourceLocation": "templates/cards.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "Component \"Card\" is rendered without its required prop \"title\".",
+            "identifier": "twigComponent.missingProp",
+            "tip": null,
+            "twigSourceLocation": "templates/cards.twig:3",
+            "renderPoints": []
         }
     ],
     "fileSpecificErrors": []
