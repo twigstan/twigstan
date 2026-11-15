@@ -297,6 +297,15 @@ final readonly class GetAttributeCheck
                 }
             }
 
+            // Twig reads these from the array cast of the object before its methods, so date.timezone is the name of
+            // the timezone, not the result of getTimezone().
+            if (
+                in_array($propertyOrMethod, ['date', 'timezone', 'timezone_type'], true)
+                && (new ObjectType(DateTimeInterface::class))->isSuperTypeOf($objectType)->yes()
+            ) {
+                return [$propertyOrMethod === 'timezone_type' ? new IntegerType() : new StringType(), []];
+            }
+
             if ($objectType->isEnum()->yes()) {
                 $className = $objectType->getObjectClassNames()[0];
                 $classReflection = $this->reflectionProvider->getClass($className);
@@ -403,14 +412,6 @@ final readonly class GetAttributeCheck
             || $objectType->hasMethod('__call')->yes()
         ) {
             return [new MixedType(), []];
-        }
-
-        if (
-            $callType !== Template::METHOD_CALL
-            && in_array($propertyOrMethod, ['date', 'timezone_type'], true)
-            && (new ObjectType(DateTimeInterface::class))->isSuperTypeOf($objectType)->yes()
-        ) {
-            return [$propertyOrMethod === 'date' ? new StringType() : new IntegerType(), []];
         }
 
         // We already excluded `Yes` certainty, but it can still be `Maybe` for ArrayObject and ArrayAccess.
