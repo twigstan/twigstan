@@ -7,12 +7,15 @@ namespace TwigStan\Twig;
 use InvalidArgumentException;
 use PHPStan\DependencyInjection\AutowiredParameter;
 use PHPStan\DependencyInjection\AutowiredService;
+use ReflectionProperty;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Twig\Environment;
 use Twig\Extension\EscaperExtension;
+use Twig\ExtensionSet;
 use Twig\Loader\ArrayLoader;
 use Twig\NodeVisitor\NodeVisitorInterface;
+use Twig\Parser;
 use Twig\TokenParser\AbstractTokenParser;
 
 #[AutowiredService]
@@ -43,6 +46,12 @@ final class TwigFactory
 
         $twig->getExtension(EscaperExtension::class)->setDefaultStrategy(false);
 
+        // The loader can already have initialized the extensions, such as Symfony's TemplateCacheWarmer, which compiles
+        // the templates when a kernel with a separate build directory boots. Then Twig refuses new token parsers and node
+        // visitors. Twig initializes the extensions again on the next read.
+        $extensionSet = (new ReflectionProperty(Environment::class, 'extensionSet'))->getValue($twig);
+        (new ReflectionProperty(ExtensionSet::class, 'initialized'))->setValue($extensionSet, false);
+
         foreach ($this->tokenParsers as $tokenParser) {
             $twig->addTokenParser($tokenParser);
         }
@@ -50,6 +59,9 @@ final class TwigFactory
         foreach ($this->nodeVisitors as $nodeVisitor) {
             $twig->addNodeVisitor($nodeVisitor);
         }
+
+        // A parser that already parsed a template keeps the node visitors that it read then.
+        $twig->setParser(new Parser($twig));
 
         return $twig;
     }
