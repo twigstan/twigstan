@@ -27,10 +27,6 @@ final class BaselineError implements Stringable
 
     public function shouldIgnore(Error $error): bool
     {
-        if ($error->sourceLocation === null) {
-            return false;
-        }
-
         if ($this->identifier !== null && $this->identifier !== $error->identifier) {
             return false;
         }

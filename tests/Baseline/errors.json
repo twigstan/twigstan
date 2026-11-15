@@ -1,6 +1,15 @@
 {
     "errors": [
         {
+            "message": "Template is marked as abstract but is rendered directly.",
+            "identifier": null,
+            "tip": null,
+            "twigSourceLocation": "abstract.html.twig:0",
+            "renderPoints": [
+                "RenderAbstract.php:13"
+            ]
+        },
+        {
             "message": "If condition is always false.",
             "identifier": "if.alwaysFalse",
             "tip": null,

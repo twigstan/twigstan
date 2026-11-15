@@ -514,6 +514,7 @@ final class AnalyzeCommand extends Command
 
             $errors[] = new Error(
                 'Template is marked as abstract but is rendered directly.',
+                twigFile: $abstractTemplate,
                 sourceLocation: new SourceLocation($abstractTemplate, 0),
             );
         }

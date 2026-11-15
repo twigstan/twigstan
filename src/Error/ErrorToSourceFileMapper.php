@@ -28,15 +28,11 @@ final readonly class ErrorToSourceFileMapper
 
                 $transformResult = $mapping->getByPhpFile($error->phpFile);
 
-                $sourceLocation = $transformResult->getSourceLocationForPhpLine($error->phpLine);
-
-                if ($sourceLocation === null) {
-                    return $error;
-                }
-
+                // Errors in code that Twig generates before the first template line, such as properties, have no
+                // source location, but they still belong to the template.
                 return $error->withTwigFileAndSourceLocation(
                     $transformResult->twigFilePath,
-                    $sourceLocation,
+                    $transformResult->getSourceLocationForPhpLine($error->phpLine),
                 );
             },
             $errors,

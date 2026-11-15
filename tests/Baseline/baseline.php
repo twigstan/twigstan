@@ -29,4 +29,10 @@ return [
         __DIR__ . '/layout.html.twig',
         1,
     ),
+    new BaselineError(
+        'Template is marked as abstract but is rendered directly.',
+        null,
+        __DIR__ . '/abstract.html.twig',
+        1,
+    ),
 ];
