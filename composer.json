@@ -45,7 +45,7 @@
         "symfony/security-http": "^6.4 || ^7.1 || ^8.0",
         "symfony/twig-bridge": "^6.4 || ^7.1 || ^8.0",
         "symfony/twig-bundle": "^6.4 || ^7.1 || ^8.0",
-        "symfony/ux-twig-component": "^2.20",
+        "symfony/ux-twig-component": "^2.20 || ^3.7",
         "symfony/var-dumper": "^6.4 || ^7.1 || ^8.0",
         "ticketswap/phpstan-error-formatter": "^1.0.3",
         "vincentlanglet/twig-cs-fixer": "^3.1"
