@@ -1,0 +1,6 @@
+{# A macro named dump is not the debug function. #}
+{% from _self import dump %}
+
+{% macro dump(value) %}{{ value }}{% endmacro %}
+
+{{ dump('value') }}

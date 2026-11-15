@@ -1,0 +1,10 @@
+{% types { user: 'string' } %}
+{{ dump(user) }}
+
+{% if user is not empty %}
+    {{ dump() }}
+{% endif %}
+
+{% block content %}
+    {{ (dump(user) ~ '') | upper }}
+{% endblock %}

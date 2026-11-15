@@ -1,0 +1,26 @@
+{
+    "errors": [
+        {
+            "message": "Value for argument \"high\" is required for function \"range\".",
+            "identifier": "twig.syntaxError",
+            "tip": null,
+            "twigSourceLocation": "duplicate_argument.twig:1",
+            "renderPoints": []
+        },
+        {
+            "message": "The block 'title' has already been defined line 1.",
+            "identifier": "twig.syntaxError",
+            "tip": null,
+            "twigSourceLocation": "duplicate_block.twig:3",
+            "renderPoints": []
+        },
+        {
+            "message": "Argument \"name\" is defined twice for macro \"input\".",
+            "identifier": "twig.syntaxError",
+            "tip": null,
+            "twigSourceLocation": "duplicate_parameter.twig:1",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}

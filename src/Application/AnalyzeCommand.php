@@ -521,8 +521,8 @@ final class AnalyzeCommand extends Command
         if ($this->onlyAnalyzeTemplatesWithContext) {
             // Filter out errors for templates that don't have a render point.
             $errors = array_values(array_filter($errors, function ($error) use ($templateContext, $errorOutput) {
-                // Templates that Twig cannot load are broken, whatever context they are rendered with.
-                if ($error->twigFile === null || $error->identifier === 'twig.loaderError') {
+                // Templates that Twig cannot load or parse are broken, whatever context they are rendered with.
+                if ($error->twigFile === null || in_array($error->identifier, ['twig.loaderError', 'twig.syntaxError'], true)) {
                     return true;
                 }
 
@@ -764,6 +764,20 @@ final class AnalyzeCommand extends Command
 
         $twigFileNamesToAnalyze = $twigFileNames;
 
+        $templateErrors = [];
+        foreach ($twigFileNamesToAnalyze as $twigFileName) {
+            $metadata = $this->metadataRegistry->getMetadata($twigFileName);
+
+            foreach ($metadata->errors as $templateError) {
+                $templateErrors[] = new Error(
+                    $templateError['message'],
+                    twigFile: $metadata->filePath,
+                    sourceLocation: new SourceLocation($metadata->filePath, $templateError['line']),
+                    identifier: $templateError['identifier'],
+                );
+            }
+        }
+
         $output->writeln(sprintf('Finding dependencies for %d templates...', count($twigFileNamesToAnalyze)));
 
         // Maybe this should be done using a graph later.
@@ -848,7 +862,7 @@ final class AnalyzeCommand extends Command
 
         $newTemplateContext = $this->templateContextFactory->create($analysisResult2);
 
-        $errors = [...$loaderErrors, ...$this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors)];
+        $errors = [...$loaderErrors, ...$templateErrors, ...$this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors)];
 
         return new TwigStanRun(
             $run,
@@ -866,8 +880,9 @@ final class AnalyzeCommand extends Command
     }
 
     /**
-     * Leaves out templates that extend or import templates that Twig cannot load, directly or through other templates.
-     * Twig fails to render them, so this is reported as an error in the template that references the unloadable template.
+     * Leaves out templates that Twig cannot parse, and templates that extend or import templates that Twig cannot load or parse,
+     * directly or through other templates. Twig fails to render them, so this is reported as an error in the template
+     * that Twig cannot parse, or in the template that references the template that Twig cannot load.
      *
      * @param list<string> $twigFileNames
      *
@@ -898,7 +913,16 @@ final class AnalyzeCommand extends Command
                 );
             }
 
-            $result = $metadata->loaderErrors !== [];
+            if ($metadata->syntaxError !== null) {
+                $errors[$twigFileName . ':' . $metadata->syntaxError['line']] = new Error(
+                    $metadata->syntaxError['message'],
+                    twigFile: $metadata->filePath,
+                    sourceLocation: new SourceLocation($metadata->filePath, $metadata->syntaxError['line']),
+                    identifier: 'twig.syntaxError',
+                );
+            }
+
+            $result = $metadata->loaderErrors !== [] || $metadata->syntaxError !== null;
             foreach ([...$metadata->parents, ...$metadata->dependencies] as $dependency) {
                 // Names that are only known at runtime
                 if (str_starts_with($dependency, '$')) {

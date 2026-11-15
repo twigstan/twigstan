@@ -1,0 +1,26 @@
+{
+    "errors": [
+        {
+            "message": "Since twig/twig 3.29: Defining the macro \"title\" more than once is deprecated and will throw a SyntaxError in Twig 4.0 (previous definition at line 1, new definition at line 3). The last definition is used in Twig 3.",
+            "identifier": "twig.deprecated",
+            "tip": null,
+            "twigSourceLocation": "duplicate_macro.twig:3",
+            "renderPoints": []
+        },
+        {
+            "message": "Since twig/twig 3.12: Twig Filter \"spaceless\" is deprecated.",
+            "identifier": "twig.deprecated",
+            "tip": null,
+            "twigSourceLocation": "spaceless.twig:2",
+            "renderPoints": []
+        },
+        {
+            "message": "Since twig/twig 3.12: Twig Filter \"spaceless\" is deprecated.",
+            "identifier": "twig.deprecated",
+            "tip": null,
+            "twigSourceLocation": "spaceless.twig:4",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}
