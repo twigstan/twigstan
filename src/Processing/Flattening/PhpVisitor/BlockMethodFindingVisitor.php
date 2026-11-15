@@ -15,6 +15,13 @@ final class BlockMethodFindingVisitor extends NodeVisitorAbstract
      */
     public array $blocks = [];
 
+    /**
+     * The blocks of the parent template that the template renders with parent(), by the name of the block.
+     *
+     * @var array<string, Node\Stmt\ClassMethod>
+     */
+    public array $parentBlocks = [];
+
     private bool $inTemplateClass = false;
 
     public function enterNode(Node $node): ?int
@@ -31,6 +38,12 @@ final class BlockMethodFindingVisitor extends NodeVisitorAbstract
         }
 
         if ( ! $node instanceof Node\Stmt\ClassMethod) {
+            return null;
+        }
+
+        if (str_starts_with($node->name->name, 'parent_block_')) {
+            $this->parentBlocks[substr($node->name->name, 13)] = $node;
+
             return null;
         }
 

@@ -1,0 +1,21 @@
+{
+    "errors": [
+        {
+            "message": "Variable 'missing' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "base.twig:5",
+            "renderPoints": []
+        },
+        {
+            "message": "Variable 'missing' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "base.twig:5, layout.twig:1, page.twig:1",
+            "renderPoints": [
+                "Controller.php:13"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}

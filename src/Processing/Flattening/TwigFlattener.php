@@ -114,6 +114,14 @@ final class TwigFlattener
                         $blocks[$alias] = $blockMethodFinderVisitor->blocks[$block];
                     }
 
+                    // A block of the parent that calls parent() renders the block of the grandparent, which the flattened
+                    // parent declares as parent_block_*. The child needs it too, unless it overrides the block.
+                    foreach ($blockMethodFinderVisitor->parentBlocks as $block => $method) {
+                        if ( ! in_array($block, $metadata->blocks, true)) {
+                            $blocks['parent_block_' . $block] = $method;
+                        }
+                    }
+
                     $parentBlocks[] = $blocks;
                 }
 
