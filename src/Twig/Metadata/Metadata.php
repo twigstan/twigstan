@@ -14,6 +14,8 @@ final readonly class Metadata
      * @param list<string> $dependencies
      * @param list<array{name: string, line: int, message: string}> $loaderErrors The parents and dependencies that Twig cannot load
      * @param bool $isSelfFormTheme Whether the template is a form theme of its forms, as in {% form_theme form _self %}
+     * @param null|array{line: int, message: string} $syntaxError Why Twig cannot parse the template, the rest of the metadata is then empty
+     * @param list<array{line: int, message: string, identifier: string}> $errors Problems found while parsing the template, such as deprecations
      */
     public function __construct(
         public string $name,
@@ -28,6 +30,8 @@ final readonly class Metadata
         public bool $isAbstract,
         public array $loaderErrors = [],
         public bool $isSelfFormTheme = false,
+        public ?array $syntaxError = null,
+        public array $errors = [],
     ) {}
 
     public function hasParents(): bool

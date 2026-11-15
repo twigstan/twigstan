@@ -1,0 +1,26 @@
+{
+    "errors": [
+        {
+            "message": "Call to the debug function dump().",
+            "identifier": "twig.dump",
+            "tip": null,
+            "twigSourceLocation": "dump.twig:2",
+            "renderPoints": []
+        },
+        {
+            "message": "Call to the debug function dump().",
+            "identifier": "twig.dump",
+            "tip": null,
+            "twigSourceLocation": "dump.twig:5",
+            "renderPoints": []
+        },
+        {
+            "message": "Call to the debug function dump().",
+            "identifier": "twig.dump",
+            "tip": null,
+            "twigSourceLocation": "dump.twig:9",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}

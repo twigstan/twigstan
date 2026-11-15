@@ -6,6 +6,7 @@ use Symfony\Bridge\Twig\AppVariable;
 use Symfony\Bridge\Twig\Extension\FormExtension;
 use Symfony\UX\TwigComponent\Twig\ComponentExtension;
 use Twig\Environment;
+use Twig\Extension\DebugExtension;
 use Twig\Loader\FilesystemLoader;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
@@ -18,6 +19,8 @@ $loader->addPath(__DIR__ . '/EndToEnd', 'EndToEnd');
 $environment = new Environment($loader);
 $environment->addGlobal('app', new AppVariable());
 $environment->addExtension(new FormExtension());
+// Provides the dump() function, as in the development environment of applications.
+$environment->addExtension(new DebugExtension());
 // Registered by the Symfony UX Twig component bundle in applications.
 $environment->addExtension(new ComponentExtension()); // @phpstan-ignore new.internalClass
 // Twig compiles closures to $this->env->getFunction('name')->getCallable(), see LevelMax/closure.twig
