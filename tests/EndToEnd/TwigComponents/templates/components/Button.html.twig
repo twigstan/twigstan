@@ -1,0 +1,3 @@
+{% props variant = 'primary' %}
+<button {{ attributes }}>{% assert_type variant "'primary'|'secondary'" %}{{ variant }}</button>
+{{ label }}

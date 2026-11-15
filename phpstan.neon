@@ -26,6 +26,13 @@ parameters:
 		-
 			identifier: method.internal
 			message: '#internal method Twig\\#'
+		# The same for the Twig nodes and runtime of Symfony UX Twig components, that templates with components compile to.
+		-
+			identifier: classConstant.internalClass
+			message: '#internal class Symfony\\UX\\TwigComponent\\#'
+		-
+			identifier: instanceof.internalClass
+			message: '#internal class Symfony\\UX\\TwigComponent\\#'
 	dynamicConstantNames:
 		- Twig\Environment::MAJOR_VERSION
 		- Twig\Environment::VERSION_ID

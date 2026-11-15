@@ -322,6 +322,7 @@ final class AnalyzeCommand extends Command
         }
 
         $templateContext = $this->appUserContext->apply($this->templateContextFactory->create($analysisResult));
+        $twigComponentClassTemplates = $this->templateContextFactory->getTwigComponentClassTemplates($analysisResult);
 
         $run = $this->executeRun(
             $output,
@@ -331,6 +332,7 @@ final class AnalyzeCommand extends Command
             $flatteningDirectory,
             $scopeInjectionDirectory,
             $templateContext,
+            $twigComponentClassTemplates,
             $debugMode,
             $xdebugMode,
         );
@@ -372,6 +374,7 @@ final class AnalyzeCommand extends Command
                 $flatteningDirectory,
                 $scopeInjectionDirectory,
                 $templateContext,
+                $twigComponentClassTemplates,
                 $debugMode,
                 $xdebugMode,
                 ++$runNumber,
@@ -745,6 +748,7 @@ final class AnalyzeCommand extends Command
 
     /**
      * @param list<string> $twigFileNames
+     * @param list<string> $twigComponentClassTemplates
      * @param positive-int $run
      * @throws Throwable
      */
@@ -756,6 +760,7 @@ final class AnalyzeCommand extends Command
         string $flatteningDirectory,
         string $scopeInjectionDirectory,
         TemplateContext $templateContext,
+        array $twigComponentClassTemplates,
         bool $debugMode,
         bool $xdebugMode,
         int $run = 1,
@@ -864,7 +869,7 @@ final class AnalyzeCommand extends Command
             run: $run,
         );
 
-        $newTemplateContext = $this->templateContextFactory->create($analysisResult2);
+        $newTemplateContext = $this->templateContextFactory->create($analysisResult2, $twigComponentClassTemplates);
 
         $errors = [...$loaderErrors, ...$templateErrors, ...$this->errorToSourceFileMapper->map($scopeInjectionResults, $analysisResult2->errors)];
 
