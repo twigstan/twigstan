@@ -1,0 +1,15 @@
+{
+    "errors": [
+        {
+            "message": "Offset 'nonexistent' does not exist on int.",
+            "identifier": "getAttribute.offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "category_navigation.twig:5",
+            "renderPoints": [
+                "Controller.php:17",
+                "category_navigation.twig:7"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}
