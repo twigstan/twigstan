@@ -101,6 +101,7 @@ $config->ignoreErrorsOnPackageAndPaths(
     [
         __DIR__ . '/src/PHPStan/Collector/ContextFromTwigComponentClassCollector.php',
         __DIR__ . '/src/PHPStan/Collector/ContextFromTwigComponentTagCollector.php',
+        __DIR__ . '/src/PHPStan/Rules/TwigComponentRequiredPropsRule.php',
         __DIR__ . '/src/PHPStan/TwigComponentCallResolver.php',
         __DIR__ . '/src/Processing/Compilation/TwigVisitor/ReplaceTwigComponentNodesVisitor.php',
     ],
