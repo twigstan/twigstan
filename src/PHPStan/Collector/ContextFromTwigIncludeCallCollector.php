@@ -16,12 +16,15 @@ use PHPStan\Type\Constant\ConstantArrayType;
 use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ErrorType;
+use PHPStan\Type\GeneralizePrecision;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\Type;
+use PHPStan\Type\TypeTraverser;
 use Symfony\Bridge\Twig\AppVariable;
 use Twig\Extension\CoreExtension;
 use TwigStan\Twig\CommentHelper;
+use TwigStan\Twig\TwigFileCanonicalizer;
 
 /**
  * @implements TemplateContextCollector<Node\Stmt\Expression>
@@ -29,6 +32,10 @@ use TwigStan\Twig\CommentHelper;
 #[Conditional(attribute: new AutowiredService(), if: '%twigstan.phases.analysis%')]
 final readonly class ContextFromTwigIncludeCallCollector implements TemplateContextCollector
 {
+    public function __construct(
+        private TwigFileCanonicalizer $twigFileCanonicalizer,
+    ) {}
+
     public function getNodeType(): string
     {
         return Node\Stmt\Expression::class;
@@ -143,11 +150,33 @@ final readonly class ContextFromTwigIncludeCallCollector implements TemplateCont
             $result[] = [
                 'sourceLocation' => $sourceLocation,
                 'template' => $template->getValue(),
-                'context' => (new Printer())->print($templateContext->toPhpDocNode()),
+                'context' => (new Printer())->print(
+                    ($this->twigFileCanonicalizer->absolute($template->getValue()) === $sourceLocation->fileName ? $this->generalizeScalars($templateContext) : $templateContext)->toPhpDocNode(),
+                ),
             ];
         }
 
         return $result;
+    }
+
+    /**
+     * A template that includes itself, such as a tree of categories that passes `level: level + 1` to its children, is
+     * analysed again with the context it passes to itself, and would pass another constant every time. Like PHPStan
+     * does in loops, its scalars are generalized, so the context stops changing. The shapes of arrays are kept.
+     */
+    private function generalizeScalars(Type $context): Type
+    {
+        return $context->traverse(fn(Type $type) => TypeTraverser::map($type, function (Type $type, callable $traverse): Type {
+            if ($type->isScalar()->yes() && $type->isBoolean()->no()) {
+                return $type->generalize(GeneralizePrecision::lessSpecific());
+            }
+
+            if ($type->isObject()->yes()) {
+                return $type;
+            }
+
+            return $traverse($type);
+        }));
     }
 
     /**

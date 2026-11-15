@@ -1,0 +1,11 @@
+<ul class="level-{{ level }}">
+    {% for category in categories %}
+        <li>
+            {{ category.name }}
+            {{ level.nonexistent }}
+            {% if category.children is not empty %}
+                {% include '@EndToEnd/RecursiveInclude/category_navigation.twig' with { categories: category.children, level: level + 1 } only %}
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>
