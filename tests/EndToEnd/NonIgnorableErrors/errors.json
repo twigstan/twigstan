@@ -1,0 +1,19 @@
+{
+    "errors": [
+        {
+            "message": "Expected type string, actual: 1",
+            "identifier": "phpstan.type",
+            "tip": null,
+            "twigSourceLocation": "_assert_type.twig:2",
+            "renderPoints": []
+        },
+        {
+            "message": "Unexpected end of template.",
+            "identifier": "twig.syntaxError",
+            "tip": null,
+            "twigSourceLocation": "_syntax_error.twig:3",
+            "renderPoints": []
+        }
+    ],
+    "fileSpecificErrors": []
+}
