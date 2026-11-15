@@ -1,0 +1,33 @@
+{
+    "errors": [
+        {
+            "message": "Variable 'label' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "templates/components/Button.html.twig:3",
+            "renderPoints": [
+                "templates/page.twig:4",
+                "templates/page.twig:5"
+            ]
+        },
+        {
+            "message": "Neither the property \"unknownProperty\" nor one of the methods \"unknownProperty()\", \"getunknownProperty()\", \"isunknownProperty()\", \"hasunknownProperty()\" or \"__call()\" exist and have public access in class \"TwigStan\\EndToEnd\\TwigComponents\\MyComponent\".",
+            "identifier": "getAttribute.notFound",
+            "tip": null,
+            "twigSourceLocation": "templates/components/MyComponent.html.twig:3",
+            "renderPoints": [
+                "MyComponent.php:9"
+            ]
+        },
+        {
+            "message": "Variable 'type' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "templates/components/alert/custom.html.twig:6",
+            "renderPoints": [
+                "Alert.php:10"
+            ]
+        }
+    ],
+    "fileSpecificErrors": []
+}

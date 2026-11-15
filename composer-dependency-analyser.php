@@ -96,6 +96,17 @@ $config->ignoreErrorsOnPackage(
     [ErrorType::UNUSED_DEPENDENCY],
 );
 
+$config->ignoreErrorsOnPackageAndPaths(
+    'symfony/ux-twig-component',
+    [
+        __DIR__ . '/src/PHPStan/Collector/ContextFromTwigComponentClassCollector.php',
+        __DIR__ . '/src/PHPStan/Collector/ContextFromTwigComponentTagCollector.php',
+        __DIR__ . '/src/PHPStan/TwigComponentCallResolver.php',
+        __DIR__ . '/src/Processing/Compilation/TwigVisitor/ReplaceTwigComponentNodesVisitor.php',
+    ],
+    [ErrorType::DEV_DEPENDENCY_IN_PROD],
+);
+
 $config->addPathRegexToExclude('#\.twigstan/#');
 
 return $config;

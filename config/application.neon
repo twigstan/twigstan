@@ -70,6 +70,7 @@ services:
 	- TwigStan\Processing\Compilation\TwigVisitor\MarkNameExpressionAsAlwaysDefinedVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\RemoveTruthinessTestVisitor
 	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceTypesNodeVisitor
+	- TwigStan\Processing\Compilation\TwigVisitor\ReplaceTwigComponentNodesVisitor
 	- TwigStan\Processing\Flattening\TwigFlattener
 	- TwigStan\Processing\GeneratedFiles
 	- TwigStan\Processing\ScopeInjection\TwigScopeInjector

@@ -27,3 +27,17 @@ function twigstan_embed(int $index, array $context): iterable
 {
     return [];
 }
+
+/**
+ * Marks where a Symfony UX Twig component is rendered with `{% component %}` or `<twig:Name>...</twig:Name>`, see SimpleComponentNode.
+ * Returns the variables that the component adds to the context of its body, see ComponentRenderer::preRender().
+ *
+ * @param array<mixed> $context
+ * @param array<mixed> $props
+ *
+ * @return array{this: object, attributes: Symfony\UX\TwigComponent\ComponentAttributes, outerScope: array<mixed>}
+ */
+function twigstan_component(array $context, string $name, array $props): array
+{
+    throw new LogicException('Only used for static analysis.');
+}

@@ -1,0 +1,30 @@
+{
+    "templates/components/alert/custom.html.twig": [
+        [
+            "Alert.php:10",
+            "array{message: string, icon: string, dismissible: bool, attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: TwigStan\\EndToEnd\\TwigComponents\\Alert, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ]
+    ],
+    "templates/components/MyComponent.html.twig": [
+        [
+            "MyComponent.php:9",
+            "array{content: string, attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: TwigStan\\EndToEnd\\TwigComponents\\MyComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ]
+    ],
+    "templates/components/Example.html.twig": [
+        [
+            "templates/page.twig:1",
+            "array{app: Symfony\\Bridge\\Twig\\AppVariable, class: 'demo', attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: Symfony\\UX\\TwigComponent\\AnonymousComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ]
+    ],
+    "templates/components/Button.html.twig": [
+        [
+            "templates/page.twig:4",
+            "array{variant: 'secondary', attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: Symfony\\UX\\TwigComponent\\AnonymousComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ],
+        [
+            "templates/page.twig:5",
+            "array{attributes: Symfony\\UX\\TwigComponent\\ComponentAttributes, this: Symfony\\UX\\TwigComponent\\AnonymousComponent, computed: Symfony\\UX\\TwigComponent\\ComputedPropertiesProxy, outerScope: array<string, mixed>}"
+        ]
+    ]
+}
