@@ -6,6 +6,7 @@ namespace TwigStan\Benchmarks;
 
 use Tally\Attribute\Before;
 use Tally\Attribute\DataProvider;
+use Tally\Attribute\ExpectedFor;
 use Tally\ScratchDirectory;
 use TwigStan\Benchmarks\Support\Fixtures;
 use TwigStan\Benchmarks\Support\TwigStanProject;
@@ -56,6 +57,11 @@ final class TemplateAnalysisBench
      * @param array<string, string> $files
      */
     #[DataProvider('projects')]
+    #[ExpectedFor('bug-317-nested-loops', instructions: '265.5M', cycles: '345.3M', memory: '1.758MiB')]
+    #[ExpectedFor('huge-context', instructions: '4.964B', cycles: '6.382B', memory: '37.12MiB')]
+    #[ExpectedFor('huge-template', instructions: '6.174B', cycles: '8.862B', memory: '76.23MiB')]
+    #[ExpectedFor('many-render-points', instructions: '213.3M', cycles: '263.7M', memory: '1.910MiB')]
+    #[ExpectedFor('nested-loops-6-levels', instructions: '538.5M', cycles: '704.2M', memory: '6.275MiB')]
     public function benchAnalyse(array $files): int
     {
         return ($this->analyse)();
