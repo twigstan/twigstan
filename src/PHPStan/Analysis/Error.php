@@ -50,7 +50,7 @@ final readonly class Error
         );
     }
 
-    public function withTwigFileAndSourceLocation(string $twigFile, SourceLocation $sourceLocation): self
+    public function withTwigFileAndSourceLocation(string $twigFile, ?SourceLocation $sourceLocation): self
     {
         return new self(
             $this->message,
