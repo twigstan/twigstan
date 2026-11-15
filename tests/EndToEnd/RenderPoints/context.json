@@ -19,6 +19,10 @@
             "array{title: 'SimpleAction', rows: non-empty-list<string>}"
         ],
         [
+            "CustomRouteTemplateAttributeController.php:20",
+            "array{title: 'SimpleAction', rows: non-empty-list<string>}"
+        ],
+        [
             "NamedArgumentsController.php:37",
             "array{title: 'SimpleAction', rows: non-empty-list<string>}"
         ],

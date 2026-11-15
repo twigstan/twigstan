@@ -88,7 +88,8 @@ final readonly class ContextFromReturnedArrayWithTemplateAttributeCollector impl
     private function hasRouteAttribute(MethodReturnStatementsNode $node, ClassReflection $classReflection): bool
     {
         foreach ($classReflection->getNativeReflection()->getMethod($node->getMethodName())->getAttributes() as $attribute) {
-            if ($attribute->getName() === Route::class) {
+            // Symfony also reads subclasses of the Route attribute as routes.
+            if ($this->reflectionProvider->hasClass($attribute->getName()) && $this->reflectionProvider->getClass($attribute->getName())->is(Route::class)) {
                 return true;
             }
 
