@@ -208,6 +208,12 @@ If you want to indicate that a variable is optional, you can do it as follows:
 > [!NOTE]
 > Starting from Twig version 4 you [no longer have to escape backslashes](https://github.com/twigphp/Twig/pull/4199) in fully qualified class names.
 
+## Benchmarks
+
+The benchmarks in [benchmarks](benchmarks) count the instructions, cycles and memory of analyses with [Tally](https://github.com/phpstan/tally),
+instead of the time, which depends on how fast and how busy the machine is. Run them with `castor tally`, and filter them with `castor tally --filter=huge-template`.
+The counts depend on the PHP build and the system libraries, so take the expected numbers from the Benchmarks workflow in CI.
+
 ## They use TwigStan
 
 * MicroSymfony ([PR](https://github.com/strangebuzz/MicroSymfony/pull/95), [GitHub action output](https://github.com/strangebuzz/MicroSymfony/pull/95/checks))
