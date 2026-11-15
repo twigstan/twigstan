@@ -9,4 +9,17 @@
     {% component Alert with { type: 'success' } %}
         {% block content %}{% assert_type user 'string' %}{% assert_type type "'success'" %}{{ user }}{% endblock %}
     {% endcomponent %}
+
+    {# Also when they are nested in the body of another embed or component, see https://github.com/twigstan/twigstan/issues/338 #}
+    {% embed '@EndToEnd/Component/box.twig' %}
+        {% block content %}
+            {% embed '@EndToEnd/Component/box.twig' %}
+                {% block content %}{% assert_type user 'string' %}{{ user }}{% endblock %}
+            {% endembed %}
+        {% endblock %}
+    {% endembed %}
+
+    <twig:Example>
+        <twig:Example>{% assert_type user 'string' %}{{ user }}</twig:Example>
+    </twig:Example>
 {% endfor %}

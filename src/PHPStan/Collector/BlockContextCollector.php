@@ -207,6 +207,11 @@ final readonly class BlockContextCollector implements Collector, ExportingCollec
             preg_match('/^(?<parent>parent_)?block_(?<blockName>\w+)$/', $functionName, $match);
         }
 
+        // The blocks of an embedded template, such as __TwigTemplate_abc___123, are rendered with the context where it is embedded.
+        if (isset($match['blockName']) && preg_match('/___(?<index>\d+)$/', $scope->getClassReflection()?->getName() ?? '', $embedMatch) === 1) {
+            $match = ['blockName' => self::embedKey((int) $embedMatch['index'])];
+        }
+
         return [
             'blockName' => $blockName,
             'sourceLocation' => $sourceLocation,
