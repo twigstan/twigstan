@@ -1,0 +1,26 @@
+{
+    "errors": [
+        {
+            "message": "Variable 'missingName' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "unguarded.twig:1",
+            "renderPoints": ["Controller.php:22"]
+        },
+        {
+            "message": "Variable 'missingProfile' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "unguarded.twig:2",
+            "renderPoints": ["Controller.php:22"]
+        },
+        {
+            "message": "Variable 'missingProfile' does not exist.",
+            "identifier": "offsetAccess.notFound",
+            "tip": null,
+            "twigSourceLocation": "unguarded.twig:3",
+            "renderPoints": ["Controller.php:22"]
+        }
+    ],
+    "fileSpecificErrors": []
+}
