@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TwigStan\Processing;
 
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
+use TwigStan\Filesystem\Filesystem;
 
 /**
  * Keeps the modification times of generated files that did not change. PHPStan rebuilds its container when the

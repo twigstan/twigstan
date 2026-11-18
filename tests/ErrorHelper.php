@@ -8,11 +8,11 @@ use JsonException;
 use LogicException;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Twig\Environment;
 use TwigStan\Application\TwigStanAnalysisResult;
 use TwigStan\Application\TwigStanError;
+use TwigStan\Filesystem\Filesystem;
 use TwigStan\Processing\TemplateContext;
 
 final readonly class ErrorHelper

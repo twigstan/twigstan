@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TwigStan\PHPStan\Analysis;
 
 use InvalidArgumentException;
-use Symfony\Component\Filesystem\Filesystem;
+use TwigStan\Filesystem\Filesystem;
 
 final readonly class AnalysisResultFromJsonReader
 {

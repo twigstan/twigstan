@@ -8,7 +8,7 @@ use PhpParser\Node\Stmt;
 use PhpParser\Parser;
 use PhpParser\ParserFactory;
 use RuntimeException;
-use Symfony\Component\Filesystem\Filesystem;
+use TwigStan\Filesystem\Filesystem;
 
 final readonly class StrictPhpParser
 {
