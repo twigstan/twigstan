@@ -1,0 +1,7 @@
+{% block outer %}
+    {% set label = 'present' %}
+    {% block middle %}
+        {% set message = label %}
+        {% block inner %}{{ message }}{% endblock %}
+    {% endblock %}
+{% endblock %}

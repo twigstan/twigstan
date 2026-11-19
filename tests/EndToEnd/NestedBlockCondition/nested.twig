@@ -1,0 +1,8 @@
+{% block outer %}
+    {% set flag = enabled %}
+    {% block middle %}
+        {% set message = 'present' %}
+        {% if flag %}{% set decoration = '!' %}{% endif %}
+        {% block inner %}{{ message }}{% endblock %}
+    {% endblock %}
+{% endblock %}
