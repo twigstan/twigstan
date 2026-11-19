@@ -9,11 +9,11 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Path;
 use Symfony\Component\Finder\Finder;
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;
+use TwigStan\Filesystem\Filesystem;
 use TwigStan\Twig\TokenParser\AssertTypeTokenParser;
 use TwigStan\Twig\TokenParser\PrintAssertTypeTokenParser;
 

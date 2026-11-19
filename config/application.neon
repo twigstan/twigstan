@@ -7,7 +7,7 @@ services:
 	-
 		class: Twig\Environment
 		factory: @TwigStan\Twig\TwigFactory::create
-	- Symfony\Component\Filesystem\Filesystem
+	- TwigStan\Filesystem\Filesystem
 	- TwigStan\Application\AnalyzeCommand(
 		environmentLoader: %twigEnvironmentLoader%
 		tempDirectory: %tempDir%

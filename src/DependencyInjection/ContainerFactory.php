@@ -74,7 +74,7 @@ final readonly class ContainerFactory
             'editorUrl' => $this->configuration->editorUrl,
             'appUserClass' => $this->configuration->appUserClass,
             'baselineErrors' => array_map(
-                fn(BaselineError $error) => new Statement(
+                static fn(BaselineError $error) => new Statement(
                     BaselineError::class,
                     [
                         $error->message,
@@ -86,7 +86,7 @@ final readonly class ContainerFactory
                 $this->configuration->baselineErrors,
             ),
             'ignoreErrors' => array_map(
-                function (IgnoreError $error) {
+                static function (IgnoreError $error) {
                     return match (true) {
                         $error->message !== null && $error->identifier !== null && $error->path !== null => new Statement(
                             sprintf('%s::create', IgnoreError::class),
