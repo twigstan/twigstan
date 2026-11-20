@@ -1,0 +1,2 @@
+{% set key = 'name' %}
+{{ { ('%' ~ key ~ '%'): 'value' } | json_encode }}
